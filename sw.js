@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v2-premium-c2';
+const CACHE_NAME = 'codebrew-roadtrip-2026-v3';
 const ASSETS = ['./','index.html','styles.css','app.js','manifest.webmanifest','data/products.js','assets/icon-192.png','assets/icon-512.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))).then(() => self.clients.claim())));
