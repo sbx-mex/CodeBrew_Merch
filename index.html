@@ -12,6 +12,47 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="data/products.js" defer></script>
   <script src="app.js" defer></script>
+
+  <style>
+    .release-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 18px;
+      padding: 9px 16px;
+      border: 1.5px solid rgba(255, 214, 88, .95);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .10);
+      color: #fff8d9;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .01em;
+      box-shadow: 0 6px 18px rgba(0,0,0,.12);
+      white-space: nowrap;
+    }
+    .release-badge::before {
+      content: "★";
+      color: #ffd84d;
+      font-size: 15px;
+      line-height: 1;
+    }
+    @media (max-width: 760px) {
+      .hero {
+        align-items: flex-start;
+        height: auto;
+        min-height: 92px;
+        flex-wrap: wrap;
+      }
+      .release-badge {
+        margin-left: 72px;
+        margin-top: -8px;
+        font-size: 12px;
+        padding: 7px 12px;
+        max-width: calc(100vw - 96px);
+        white-space: normal;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="hero">
@@ -20,6 +61,7 @@
       <h1>CodeBrew <span>2.0</span></h1>
       <p>Buscador de códigos · Merch POS</p>
     </div>
+    <div class="release-badge" aria-label="Versión actualizada">Actualizado al Lanzamiento Road Trip · 6 de julio</div>
   </header>
 
   <nav class="tabs" aria-label="Pestañas">
@@ -123,5 +165,5 @@
       </section>
     </section>
   </main>
-<div style="position:fixed;bottom:8px;right:12px;font:12px sans-serif;color:#666;background:#ffffffcc;padding:4px 8px;border-radius:12px">Actualizado al Lanzamiento Road Trip · 6 de julio</div></body>
+</body>
 </html>
