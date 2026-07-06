@@ -6,6 +6,10 @@
   let currentProduct = null;
   let currentTier = 'C2';
   const labelItems = [];
+  const OCR_MIN_FOCUS = 18;
+  const OCR_TARGET_MAX_SIDE = 2100;
+  const OCR_VARIANTS = ['normal','contrast','zoom','binary','invert'];
+
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
   function normalizeText(value){ return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
@@ -46,12 +50,45 @@
     return products.find(p => normalizeText(`${p.nombrePos} ${p.nombreInventario} ${p.descripcion} ${p.botonPos} ${p.skuPos}`).includes(q)) || null;
   }
 
+  function correctSkuText(value){
+    return String(value || '')
+      .replace(/[OoQqD]/g,'0')
+      .replace(/[Il|!]/g,'1')
+      .replace(/[Ss]/g,'5')
+      .replace(/[Bb]/g,'8')
+      .replace(/[Zz]/g,'2')
+      .replace(/[Gg]/g,'6');
+  }
+
   function extractSku(text){
-    const clean = String(text || '').replace(/[Oo]/g,'0').replace(/[Il|]/g,'1');
-    const skuLine = clean.match(/SKU\s*#?\s*[:\-]?\s*(0?\d[\d\s\-]{6,14})/i);
-    if (skuLine) return normalizeSku(skuLine[1]);
-    const any = clean.match(/\b0?\d{8,9}\b/);
-    return any ? normalizeSku(any[0]) : '';
+    const raw = String(text || '');
+    const prepared = correctSkuText(raw)
+      .replace(/S\s*K\s*U/ig,'SKU')
+      .replace(/#/g,' # ')
+      .replace(/[^A-Za-z0-9#:\-\s]/g,' ');
+    const skuPatterns = [
+      /SKU\s*#?\s*[:\-]?\s*(0?[0-9][0-9\s\-]{6,16})/i,
+      /SKV\s*#?\s*[:\-]?\s*(0?[0-9][0-9\s\-]{6,16})/i,
+      /#\s*(0?[0-9][0-9\s\-]{6,16})/i
+    ];
+    for (const pattern of skuPatterns) {
+      const found = prepared.match(pattern);
+      if (found) {
+        const sku = normalizeSku(found[1]);
+        if (sku.length >= 7 && sku.length <= 10) return sku;
+      }
+    }
+    const candidates = prepared.match(/0?[0-9][0-9\s\-]{6,16}/g) || [];
+    const scored = candidates
+      .map(v => normalizeSku(v))
+      .filter(v => v.length >= 7 && v.length <= 10)
+      .sort((a,b) => {
+        const aKnown = numericIndex.has(a) ? 1 : 0;
+        const bKnown = numericIndex.has(b) ? 1 : 0;
+        if (aKnown !== bKnown) return bKnown - aKnown;
+        return Math.abs(8 - a.length) - Math.abs(8 - b.length);
+      });
+    return scored[0] || '';
   }
 
   function qrDataUrl(value, size=260){
@@ -200,30 +237,219 @@
     doc.save(`CodeBrew_Etiquetas_${expanded.length}_pzas.pdf`);
   }
 
+  function cameraConstraints(){
+    return {
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 2560, min: 1280 },
+        height: { ideal: 1440, min: 720 },
+        aspectRatio: { ideal: 1.7777778 },
+        focusMode: { ideal: 'continuous' },
+        exposureMode: { ideal: 'continuous' },
+        whiteBalanceMode: { ideal: 'continuous' }
+      },
+      audio: false
+    };
+  }
+
+  async function applyCameraEnhancements(mediaStream){
+    const track = mediaStream?.getVideoTracks?.()[0];
+    if (!track || !track.getCapabilities || !track.applyConstraints) return;
+    const caps = track.getCapabilities();
+    const advanced = [];
+    if (Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) advanced.push({ focusMode: 'continuous' });
+    if (Array.isArray(caps.exposureMode) && caps.exposureMode.includes('continuous')) advanced.push({ exposureMode: 'continuous' });
+    if (Array.isArray(caps.whiteBalanceMode) && caps.whiteBalanceMode.includes('continuous')) advanced.push({ whiteBalanceMode: 'continuous' });
+    if (caps.zoom) advanced.push({ zoom: Math.min(caps.zoom.max || 1, Math.max(caps.zoom.min || 1, 1.2)) });
+    if (advanced.length) {
+      try { await track.applyConstraints({ advanced }); } catch(e) { /* soporte parcial */ }
+    }
+  }
+
+  function streamForMode(mode){ return mode === 'label' ? labelStream : stream; }
+
+  function getSmartZoom(mode){
+    const el = $(mode === 'label' ? 'labelSmartZoom' : 'smartZoom');
+    return el?.checked ? 1.55 : 1;
+  }
+
+  function drawRegion(video, canvas, mode, variant='normal'){
+    const vw = video.videoWidth || 1280, vh = video.videoHeight || 720;
+    const zoom = variant === 'zoom' ? Math.max(1.9, getSmartZoom(mode) + .35) : getSmartZoom(mode);
+    const regionW = Math.floor(vw * (zoom > 1 ? .58 : .78));
+    const regionH = Math.floor(vh * (zoom > 1 ? .28 : .38));
+    const sx = Math.max(0, Math.floor((vw - regionW) / 2));
+    const sy = Math.max(0, Math.floor((vh - regionH) / 2));
+    const scale = Math.min(3.2, Math.max(1.8, OCR_TARGET_MAX_SIDE / Math.max(regionW, regionH)));
+    canvas.width = Math.floor(regionW * scale);
+    canvas.height = Math.floor(regionH * scale);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(video, sx, sy, regionW, regionH, 0, 0, canvas.width, canvas.height);
+    preprocessCanvas(ctx, canvas.width, canvas.height, variant);
+    return canvas;
+  }
+
+  function preprocessCanvas(ctx, w, h, variant){
+    const image = ctx.getImageData(0, 0, w, h);
+    const data = image.data;
+    let sum = 0;
+    const gray = new Uint8ClampedArray(w*h);
+    for (let i=0, j=0; i<data.length; i+=4, j++) {
+      let g = Math.round(data[i]*0.299 + data[i+1]*0.587 + data[i+2]*0.114);
+      if (variant === 'contrast' || variant === 'zoom') g = Math.max(0, Math.min(255, (g - 128) * 1.55 + 138));
+      gray[j] = g; sum += g;
+    }
+    const avg = sum / gray.length;
+    for (let i=0, j=0; i<data.length; i+=4, j++) {
+      let g = gray[j];
+      if (variant === 'binary' || variant === 'invert') {
+        const threshold = avg * 0.96;
+        g = g > threshold ? 255 : 0;
+      }
+      if (variant === 'invert') g = 255 - g;
+      data[i] = data[i+1] = data[i+2] = g;
+      data[i+3] = 255;
+    }
+    ctx.putImageData(image, 0, 0);
+    if (variant === 'contrast' || variant === 'zoom') sharpenCanvas(ctx, w, h);
+  }
+
+  function sharpenCanvas(ctx, w, h){
+    const src = ctx.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    const s = src.data, d = out.data;
+    const kernel = [0,-1,0,-1,5,-1,0,-1,0];
+    for (let y=1; y<h-1; y++) {
+      for (let x=1; x<w-1; x++) {
+        const idx = (y*w+x)*4;
+        let v = 0, k = 0;
+        for (let ky=-1; ky<=1; ky++) for (let kx=-1; kx<=1; kx++) v += s[((y+ky)*w+(x+kx))*4] * kernel[k++];
+        v = Math.max(0, Math.min(255, v));
+        d[idx] = d[idx+1] = d[idx+2] = v; d[idx+3] = 255;
+      }
+    }
+    ctx.putImageData(out, 0, 0);
+  }
+
+  function focusScore(video){
+    if (!video.videoWidth || !video.videoHeight) return 0;
+    const probe = document.createElement('canvas');
+    probe.width = 220; probe.height = 120;
+    const ctx = probe.getContext('2d', { willReadFrequently: true });
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const sw = Math.floor(vw * .58), sh = Math.floor(vh * .32);
+    ctx.drawImage(video, Math.floor((vw-sw)/2), Math.floor((vh-sh)/2), sw, sh, 0, 0, probe.width, probe.height);
+    const data = ctx.getImageData(0,0,probe.width,probe.height).data;
+    let total = 0, count = 0;
+    for (let y=1; y<probe.height-1; y+=2) {
+      for (let x=1; x<probe.width-1; x+=2) {
+        const p = (yy,xx) => data[(yy*probe.width+xx)*4];
+        const lap = Math.abs(4*p(y,x) - p(y-1,x) - p(y+1,x) - p(y,x-1) - p(y,x+1));
+        total += lap; count++;
+      }
+    }
+    return total / Math.max(1, count);
+  }
+
+  function setQuality(mode, values){
+    const prefix = mode === 'label' ? 'label' : '';
+    const qEl = $(prefix ? 'labelQualityValue' : 'qualityValue');
+    const fEl = $(prefix ? 'labelFocusValue' : 'focusValue');
+    const rEl = $(prefix ? 'labelResolutionValue' : 'resolutionValue');
+    const readyEl = $(prefix ? 'labelReadyValue' : 'readyValue');
+    if (qEl) qEl.textContent = values.quality;
+    if (fEl) fEl.textContent = values.focus;
+    if (rEl) rEl.textContent = values.resolution;
+    if (readyEl) readyEl.textContent = values.ready;
+  }
+
+  async function waitForSharpFrame(video, statusId, mode){
+    for (let attempt=0; attempt<8; attempt++) {
+      const score = focusScore(video);
+      const ready = score >= OCR_MIN_FOCUS;
+      setQuality(mode, {
+        quality: ready ? 'Alta' : (score > OCR_MIN_FOCUS*.72 ? 'Media' : 'Baja'),
+        focus: String(Math.round(score)),
+        resolution: `${video.videoWidth || 0}×${video.videoHeight || 0}`,
+        ready: ready ? 'Preparado para leer' : 'No mover la cámara'
+      });
+      if (ready || attempt >= 5) return score;
+      $(statusId).textContent = 'Detectando enfoque... no mover la cámara';
+      await new Promise(r => setTimeout(r, 260));
+    }
+    return focusScore(video);
+  }
+
+  async function runOcr(canvas, statusId, variant){
+    const options = {
+      tessedit_char_whitelist: 'SKUsku#0123456789OIl|SsBb:- ',
+      preserve_interword_spaces: '1'
+    };
+    const { data:{ text, confidence } } = await Tesseract.recognize(canvas, 'eng', {
+      logger:m => { if(m.status) $(statusId).textContent = `${Math.round((m.progress || 0) * 100)}% OCR · ${variant}`; },
+      ...options
+    });
+    return { text, confidence: confidence || 0, sku: extractSku(text), variant };
+  }
+
+  function chooseBestOcr(results){
+    return results.sort((a,b) => {
+      const ak = a.sku && numericIndex.has(a.sku) ? 1000 : 0;
+      const bk = b.sku && numericIndex.has(b.sku) ? 1000 : 0;
+      const al = a.sku ? 100 : 0;
+      const bl = b.sku ? 100 : 0;
+      return (bk+bl+b.confidence) - (ak+al+a.confidence);
+    })[0] || { sku:'', text:'' };
+  }
+
   async function openCamera(videoId, statusId, startId, scanId, stopId, mode){
     try{
-      const s = await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}}, audio:false});
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error('Cámara no soportada');
+      const s = await navigator.mediaDevices.getUserMedia(cameraConstraints());
+      await applyCameraEnhancements(s);
       if (mode === 'label') labelStream = s; else stream = s;
-      $(videoId).srcObject = s; await $(videoId).play();
-      $(scanId).disabled = false; $(stopId).disabled = false; $(startId).disabled = true; $(statusId).textContent = 'Cámara activa';
+      const video = $(videoId);
+      video.srcObject = s; await video.play();
+      $(scanId).disabled = false; $(stopId).disabled = false; $(startId).disabled = true;
+      const settings = s.getVideoTracks?.()[0]?.getSettings?.() || {};
+      $(statusId).textContent = 'Cámara activa · acerca SKU al marco central';
+      setQuality(mode, { quality:'Midiendo', focus:'-', resolution:`${settings.width || video.videoWidth || 0}×${settings.height || video.videoHeight || 0}`, ready:'Alinea SKU #' });
     }catch(err){ $(statusId).textContent = 'Sin permiso de cámara'; alert('No se pudo abrir la cámara. En GitHub Pages debe abrirse con HTTPS y permiso de cámara.'); }
   }
   function closeCamera(videoId, statusId, startId, scanId, stopId, mode){
-    const s = mode === 'label' ? labelStream : stream; if(s) s.getTracks().forEach(t => t.stop());
+    const s = streamForMode(mode); if(s) s.getTracks().forEach(t => t.stop());
     if (mode === 'label') labelStream = null; else stream = null;
     $(videoId).srcObject = null; $(scanId).disabled = true; $(stopId).disabled = true; $(startId).disabled = false; $(statusId).textContent = 'Listo';
+    setQuality(mode, { quality:'-', focus:'-', resolution:'-', ready:'Listo' });
   }
   async function scanFromCamera(videoId, canvasId, statusId, scanBtnId, targetInputId, mode){
-    const video = $(videoId), canvas = $(canvasId), ctx = canvas.getContext('2d');
-    canvas.width = video.videoWidth; canvas.height = video.videoHeight; ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    $(statusId).textContent = 'Leyendo texto...'; $(scanBtnId).disabled = true;
+    const video = $(videoId), canvas = $(canvasId);
+    if (!video.videoWidth) { $(statusId).textContent = 'Cámara no lista'; return; }
+    $(statusId).textContent = 'Detectando enfoque...'; $(scanBtnId).disabled = true;
     try{
       if (!window.Tesseract) throw new Error('OCR no cargó');
-      const { data:{ text } } = await Tesseract.recognize(canvas, 'eng', { logger:m => { if(m.status) $(statusId).textContent = Math.round((m.progress || 0) * 100) + '% OCR'; }});
-      const sku = extractSku(text); $(targetInputId).value = sku;
-      if (mode === 'label') setLabelProduct(findProduct(sku)); else (sku ? search(sku) : renderNotFound(''));
-    }catch(e){ if (mode === 'label') setLabelProduct(null); else renderNotFound('Error OCR'); }
-    $(statusId).textContent = 'Listo'; $(scanBtnId).disabled = false;
+      await waitForSharpFrame(video, statusId, mode);
+      $(statusId).textContent = 'Mejorando imagen...';
+      const results = [];
+      for (const variant of OCR_VARIANTS) {
+        drawRegion(video, canvas, mode, variant);
+        $(statusId).textContent = variant === 'normal' ? 'Leyendo SKU...' : `Reintentando OCR · ${variant}`;
+        const result = await runOcr(canvas, statusId, variant);
+        results.push(result);
+        if (result.sku && numericIndex.has(result.sku)) break;
+      }
+      const best = chooseBestOcr(results);
+      const sku = best.sku;
+      $(targetInputId).value = sku;
+      $(statusId).textContent = sku ? `SKU detectado (${best.variant}): ${sku}` : 'No se detectó SKU; intenta acercar y centrar';
+      if (mode === 'label') setLabelProduct(findProduct(sku)); else (sku ? search(sku) : renderNotFound(best.text || 'sin lectura'));
+    }catch(e){
+      $(statusId).textContent = 'Error OCR';
+      if (mode === 'label') setLabelProduct(null); else renderNotFound('Error OCR');
+    }
+    $(scanBtnId).disabled = false;
   }
 
   function init(){
@@ -243,7 +469,7 @@
     $('labelStopCamera').addEventListener('click', () => closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label'));
     $('labelScanBtn').addEventListener('click', () => scanFromCamera('labelVideo','labelSnapshot','labelOcrStatus','labelScanBtn','labelSku','label'));
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v2-ocr'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

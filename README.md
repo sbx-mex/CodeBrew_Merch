@@ -1,19 +1,16 @@
-# CodeBrew Merch POS · Versión 1.0 Premium
+# CodeBrew Merch POS v2
 
-Proyecto PWA listo para GitHub Pages.
+Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 
-## Ajustes incluidos
-- Consulta muestra Tier C2 como precio base operativo.
-- Aviso visual: usar **Consultar Precio** antes de escanear si sólo se valida precio.
-- Buscador por SKU INTL, SKU POS, Código DIA, Nombre POS y Nombre Inventario.
-- Mensaje claro cuando no encuentra producto.
-- Exclusión de códigos Essentials / métodos COR23, COR24, COR25 y COR26.
-- Discovery cargado completo desde la base actual.
-- Etiquetado con QR para SKU POS.
+## Cambios principales
+- Cámara priorizando resolución alta, cámara trasera, enfoque continuo y soporte de zoom cuando el navegador lo permite.
+- Marco central de lectura para reducir ruido fuera de la etiqueta.
+- Medidor visible de calidad, enfoque, resolución y estado.
+- Preprocesamiento automático antes de OCR: recorte central, escalado, escala de grises, contraste, nitidez, binarización e inversión cuando se requiere.
+- OCR progresivo: normal, contraste, zoom, binarizado e invertido.
+- Corrección inteligente de caracteres similares: O/0, I/1, S/5, B/8.
+- Cache PWA actualizado para GitHub Pages.
+- Limpieza de duplicados no conectados en raíz.
 
-## Base cargada
-- Productos activos en buscador: 1007
-- Registros Essentials/métodos excluidos: 4
-- Discovery activo: 50
-
-Sube todos los archivos al repositorio de GitHub Pages.
+## Publicación
+Subir a GitHub Pages desde `main` / `/root` con `index.html` en raíz.

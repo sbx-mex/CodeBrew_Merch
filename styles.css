@@ -21,3 +21,18 @@
 .price-warning h2{margin:0 0 6px;color:#6d430a;font-size:24px}
 .price-warning p{margin:5px 0;color:#463b2d;font-size:17px;line-height:1.35}
 .price-warning span{display:inline-block;background:#8b5e18;color:white;border-radius:8px;padding:3px 8px;margin:0 3px}
+
+/* CodeBrew v2 OCR móvil: marco de lectura, calidad y zoom inteligente */
+.camera-stage{position:relative;border-radius:18px;overflow:hidden;margin:14px 0;background:#14261e}
+.camera-stage video{margin:0;border-radius:18px;max-height:420px}
+.camera-stage.small video{max-height:280px}
+.sku-frame{position:absolute;left:10%;right:10%;top:37%;height:26%;border:3px solid rgba(255,216,77,.95);border-radius:18px;box-shadow:0 0 0 999px rgba(0,0,0,.22),0 0 20px rgba(255,216,77,.35);pointer-events:none;display:flex;align-items:flex-start;justify-content:center}
+.sku-frame span{transform:translateY(-50%);background:#006241;color:#fff;border-radius:999px;padding:7px 13px;font-weight:900;font-size:13px;letter-spacing:.02em}
+.quality-meter{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.quality-meter div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-height:64px}
+.quality-meter span{display:block;text-transform:uppercase;letter-spacing:.07em;color:#68766f;font-size:11px;font-weight:900;margin-bottom:5px}
+.quality-meter b{display:block;color:var(--green);font-size:16px;line-height:1.15}
+.quality-meter.compact{grid-template-columns:repeat(2,1fr)}
+.zoom-helper{display:flex;align-items:center;gap:10px;margin:8px 0 14px;color:var(--dark);font-size:15px;background:#eef7f2;border:1px solid rgba(0,98,65,.16);border-radius:14px;padding:10px 12px;width:max-content;max-width:100%}
+.zoom-helper input{width:auto;transform:scale(1.2);accent-color:var(--green)}
+@media(max-width:760px){.quality-meter{grid-template-columns:1fr 1fr}.sku-frame{left:7%;right:7%;top:35%;height:28%}.camera-stage video{max-height:360px}.quality-meter b{font-size:14px}}

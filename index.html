@@ -58,10 +58,10 @@
   <header class="hero">
     <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
     <div>
-      <h1>CodeBrew <span>2.0</span></h1>
+      <h1>CodeBrew <span>v2 OCR</span></h1>
       <p>Buscador de códigos · Merch POS</p>
     </div>
-    <div class="release-badge" aria-label="Versión actualizada">Actualizado al Lanzamiento Road Trip · 6 de julio</div>
+    <div class="release-badge" aria-label="Versión actualizada">OCR móvil optimizado · v2</div>
   </header>
 
   <nav class="tabs" aria-label="Pestañas">
@@ -98,14 +98,24 @@
 
       <section class="panel camera-panel">
         <div class="camera-head"><h2>Escaneo por cámara</h2><span id="ocrStatus">Listo</span></div>
-        <video id="video" playsinline muted></video>
+        <div class="camera-stage">
+          <video id="video" playsinline muted></video>
+          <div class="sku-frame" aria-hidden="true"><span>Centra aquí el SKU #</span></div>
+        </div>
         <canvas id="snapshot" hidden></canvas>
+        <div class="quality-meter" aria-label="Calidad de imagen para OCR">
+          <div><span>Calidad</span><b id="qualityValue">-</b></div>
+          <div><span>Enfoque</span><b id="focusValue">-</b></div>
+          <div><span>Resolución</span><b id="resolutionValue">-</b></div>
+          <div><span>Estado</span><b id="readyValue">Listo</b></div>
+        </div>
+        <label class="zoom-helper"><input id="smartZoom" type="checkbox" checked> Modo SKU pequeño / zoom inteligente</label>
         <div class="actions">
           <button id="startCamera">Abrir cámara</button>
           <button id="scanBtn" disabled>Leer SKU #</button>
           <button id="stopCamera" disabled>Detener</button>
         </div>
-        <p class="hint">Enfoca la etiqueta donde diga <b>SKU # 011...</b>. Si no reconoce, escribe SKU, Código DIA o Nombre Inventario.</p>
+        <p class="hint">Centra la etiqueta donde diga <b>SKU # 011...</b> dentro del marco. La app valida enfoque antes de leer.</p>
       </section>
 
       <section id="result" class="result empty">
@@ -125,14 +135,24 @@
         </div>
         <div class="label-camera">
           <div class="camera-head"><h3>Escaneo rápido para etiquetado</h3><span id="labelOcrStatus">Listo</span></div>
-          <video id="labelVideo" playsinline muted></video>
+          <div class="camera-stage small">
+            <video id="labelVideo" playsinline muted></video>
+            <div class="sku-frame" aria-hidden="true"><span>Centra aquí el SKU #</span></div>
+          </div>
           <canvas id="labelSnapshot" hidden></canvas>
+          <div class="quality-meter compact" aria-label="Calidad de imagen para etiquetado">
+            <div><span>Calidad</span><b id="labelQualityValue">-</b></div>
+            <div><span>Enfoque</span><b id="labelFocusValue">-</b></div>
+            <div><span>Resolución</span><b id="labelResolutionValue">-</b></div>
+            <div><span>Estado</span><b id="labelReadyValue">Listo</b></div>
+          </div>
+          <label class="zoom-helper"><input id="labelSmartZoom" type="checkbox" checked> Modo SKU pequeño / zoom inteligente</label>
           <div class="actions">
             <button id="labelStartCamera">Abrir cámara</button>
             <button id="labelScanBtn" disabled>Leer SKU #</button>
             <button id="labelStopCamera" disabled>Detener</button>
           </div>
-          <p class="hint">Flujo lineal: escanear → validar → piezas → agregar etiquetas → siguiente artículo.</p>
+          <p class="hint">Flujo lineal: centrar SKU → validar enfoque → leer → piezas → agregar etiquetas.</p>
         </div>
         <div class="label-grid">
           <div>

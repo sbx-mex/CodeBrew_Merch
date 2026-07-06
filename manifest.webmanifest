@@ -1,1 +1,15 @@
-{"name":"CodeBrew Merch POS 2.0","short_name":"CodeBrew","start_url":"./","display":"standalone","background_color":"#fbf7ef","theme_color":"#006241","icons":[{"src":"assets/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"assets/icon-512.png","sizes":"512x512","type":"image/png"}]}
+{
+  "name": "CodeBrew Merch POS v2",
+  "short_name": "CodeBrew",
+  "description": "Buscador Merch POS con OCR móvil optimizado, cámara, etiquetado y funcionamiento PWA.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf7ef",
+  "theme_color": "#006241",
+  "icons": [
+    { "src": "./assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
