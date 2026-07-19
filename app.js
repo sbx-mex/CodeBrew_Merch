@@ -19,10 +19,9 @@
   function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); const price = p.tier?.[k] || ''; return price ? `${k}: ${price}` : '-'; }
   function priceOnly(p, tier){ return priceFor(p, tier) || '-'; }
   function qrValue(p){ return String(p?.skuPos || p?.botonPos || p?.nombrePos || '').trim(); }
-  function routeText(p){ return `Mercancía → ${p?.botonPos || 'Botón POS'}`; }
-  function looksEssentialQuery(value){ return /\bCOR(?:23|24|25|26)/i.test(String(value || '')); }
+  function routeText(p){ return `Mercancía → ${p?.botonPos || 'Botón por validar'}`; }
   function posStepsHtml(p){
-    const btn = p?.botonPos || 'Botón POS';
+    const btn = p?.botonPos || 'Botón por validar';
     return `<div class="pos-flow-title">Ayuda visual POS</div>
       <div class="pos-flow-visual">
         <div class="pos-step"><b>1</b><span><strong>Identifica Mercancía</strong><br><span class="pos-chip">Mercancía</span></span></div>
@@ -158,8 +157,7 @@
   function renderNotFound(q){
     currentProduct = null;
     $('result').className = 'result notfound';
-    const essential = looksEssentialQuery(q);
-    $('result').innerHTML = `<div class="not-card"><div class="title">${essential ? 'Essentials / método no se etiqueta como Merch' : 'Artículo no encontrado'}</div><p>Se buscó: <b>${q || 'sin lectura'}</b></p><p class="desc">${essential ? 'Los códigos COR23, COR24, COR25 y COR26 pertenecen a métodos / Essentials. Para Merch, busca SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario.' : 'Verifica SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.'}</p></div>`;
+    $('result').innerHTML = `<div class="not-card"><div class="title">Artículo no encontrado</div><p>Se buscó: <b>${q || 'sin lectura'}</b></p><p class="desc">Verifica SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.</p></div>`;
   }
 
   function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
