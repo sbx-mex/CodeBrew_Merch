@@ -36,3 +36,32 @@
 .zoom-helper{display:flex;align-items:center;gap:10px;margin:8px 0 14px;color:var(--dark);font-size:15px;background:#eef7f2;border:1px solid rgba(0,98,65,.16);border-radius:14px;padding:10px 12px;width:max-content;max-width:100%}
 .zoom-helper input{width:auto;transform:scale(1.2);accent-color:var(--green)}
 @media(max-width:760px){.quality-meter{grid-template-columns:1fr 1fr}.sku-frame{left:7%;right:7%;top:35%;height:28%}.camera-stage video{max-height:360px}.quality-meter b{font-size:14px}}
+
+/* CodeBrew v3: capacidades reales de cámara y respaldo fotográfico */
+.camera-tools{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+.camera-selector,.zoom-control{margin:0;min-width:180px;flex:1}
+.camera-selector select{font-size:15px;padding:10px 12px;border-radius:12px;margin-top:5px}
+.zoom-control{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px;background:#eef7f2;border:1px solid rgba(0,98,65,.16);border-radius:14px;padding:10px 12px}
+.zoom-control input{padding:0;min-width:100px;accent-color:var(--green)}
+.zoom-control output{font-weight:900;color:var(--green);min-width:42px;text-align:right}
+.zoom-reset{min-height:36px;padding:8px 10px;border-radius:10px;font-size:12px}
+.compact-control,.file-action{min-height:44px;padding:12px 16px;font-size:15px}
+.file-action{display:inline-flex;align-items:center;justify-content:center;margin:0;border:0;border-radius:16px;background:#eef0ed;color:var(--dark);font-weight:900;cursor:pointer}
+.file-action input{display:none}
+.photo-preview{display:block;max-width:100%;max-height:240px;object-fit:contain;margin:12px auto;border:1px solid var(--line);border-radius:16px;background:#fff}
+.app-footer{text-align:center;padding:18px max(14px,env(safe-area-inset-left)) calc(22px + env(safe-area-inset-bottom));color:var(--muted);font-size:12px}
+button,.file-action,.tab{min-height:44px}
+button:focus-visible,.file-action:focus-within,.tab:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(0,98,65,.28);outline-offset:2px}
+@media(max-width:520px){
+  .camera-head{align-items:flex-start;flex-direction:column}
+  #ocrStatus,#labelOcrStatus{width:100%;border-radius:12px;line-height:1.25}
+  .camera-stage,.camera-stage video{min-height:220px;max-height:54vh}
+  .sku-frame{left:5%;right:5%;top:31%;height:38%}
+  .actions>*{flex:1 1 calc(50% - 8px)}
+  .camera-tools{display:grid;grid-template-columns:1fr;width:100%}
+  .camera-selector,.zoom-control{width:100%;min-width:0}
+}
+@media(orientation:landscape) and (max-height:520px){
+  .camera-stage,.camera-stage video{max-height:62vh}
+  .sku-frame{top:27%;height:46%}
+}

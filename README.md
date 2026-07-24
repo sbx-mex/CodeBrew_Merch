@@ -1,16 +1,20 @@
-# CodeBrew Merch POS v2
+# CodeBrew Merch POS v3
 
 Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 
 ## Cambios principales
-- Cámara priorizando resolución alta, cámara trasera, enfoque continuo y soporte de zoom cuando el navegador lo permite.
-- Marco central de lectura para reducir ruido fuera de la etiqueta.
-- Medidor visible de calidad, enfoque, resolución y estado.
-- Preprocesamiento automático antes de OCR: recorte central, escalado, escala de grises, contraste, nitidez, binarización e inversión cuando se requiere.
-- OCR progresivo: normal, contraste, zoom, binarizado e invertido.
-- Corrección inteligente de caracteres similares: O/0, I/1, S/5, B/8.
+- Restricciones progresivas sin mínimos obligatorios que bloqueen cámaras limitadas.
+- Cámara trasera priorizada y selector cuando el navegador expone varias cámaras.
+- Enfoque, exposición y balance continuos únicamente cuando la cámara los soporta.
+- Zoom óptico y linterna visibles solo cuando existen capacidades reales.
+- Validación adaptativa de nitidez, iluminación, contraste y movimiento antes del OCR.
+- Región de lectura ampliada con margen adicional y diseño responsive.
+- Confirmación OCR por repetición de resultados en varios fotogramas.
+- Prevención de procesos OCR simultáneos y cancelación al cerrar u ocultar la aplicación.
+- Respaldo local mediante selección o captura de fotografía.
+- Liberación de pistas, referencias de imagen y temporizadores.
 - Cache PWA actualizado para GitHub Pages.
-- Limpieza de duplicados no conectados en raíz.
+- Leyenda de diseño integrada una sola vez.
 
 ## Publicación
 Subir a GitHub Pages desde `main` / `/root` con `index.html` en raíz.

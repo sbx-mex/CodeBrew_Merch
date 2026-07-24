@@ -7,8 +7,12 @@
   let currentTier = 'C2';
   const labelItems = [];
   const OCR_MIN_FOCUS = 18;
-  const OCR_TARGET_MAX_SIDE = 2100;
-  const OCR_VARIANTS = ['normal','contrast','zoom','binary','invert'];
+  const OCR_TARGET_MAX_SIDE = 1600;
+  const OCR_VARIANTS = ['normal','contrast','binary'];
+  const cameraState = {
+    consulta:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' },
+    label:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' }
+  };
 
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
@@ -235,59 +239,95 @@
     doc.save(`CodeBrew_Etiquetas_${expanded.length}_pzas.pdf`);
   }
 
-  function cameraConstraints(){
+  function idsForMode(mode){
+    const label = mode === 'label';
     return {
-      video: {
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 2560, min: 1280 },
-        height: { ideal: 1440, min: 720 },
-        aspectRatio: { ideal: 1.7777778 },
-        focusMode: { ideal: 'continuous' },
-        exposureMode: { ideal: 'continuous' },
-        whiteBalanceMode: { ideal: 'continuous' }
-      },
-      audio: false
+      video:label?'labelVideo':'video', status:label?'labelOcrStatus':'ocrStatus',
+      start:label?'labelStartCamera':'startCamera', scan:label?'labelScanBtn':'scanBtn',
+      stop:label?'labelStopCamera':'stopCamera', canvas:label?'labelSnapshot':'snapshot',
+      input:label?'labelSku':'manualSku', camera:label?'labelCameraSelect':'cameraSelect',
+      zoomWrap:label?'labelZoomControl':'zoomControl', zoom:label?'labelZoomRange':'zoomRange',
+      zoomValue:label?'labelZoomValue':'zoomValue', resetZoom:label?'labelResetZoomBtn':'resetZoomBtn', torch:label?'labelTorchBtn':'torchBtn',
+      photo:label?'labelPhotoInput':'photoInput', takePhoto:label?'labelTakePhotoInput':'takePhotoInput',
+      preview:label?'labelPhotoPreview':'photoPreview'
     };
   }
 
-  async function applyCameraEnhancements(mediaStream){
-    const track = mediaStream?.getVideoTracks?.()[0];
-    if (!track || !track.getCapabilities || !track.applyConstraints) return;
-    const caps = track.getCapabilities();
-    const advanced = [];
-    if (Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) advanced.push({ focusMode: 'continuous' });
-    if (Array.isArray(caps.exposureMode) && caps.exposureMode.includes('continuous')) advanced.push({ exposureMode: 'continuous' });
-    if (Array.isArray(caps.whiteBalanceMode) && caps.whiteBalanceMode.includes('continuous')) advanced.push({ whiteBalanceMode: 'continuous' });
-    if (caps.zoom) advanced.push({ zoom: Math.min(caps.zoom.max || 1, Math.max(caps.zoom.min || 1, 1.2)) });
-    if (advanced.length) {
-      try { await track.applyConstraints({ advanced }); } catch(e) { /* soporte parcial */ }
-    }
+  function cameraConstraints(deviceId=''){
+    return {
+      video: {
+        ...(deviceId ? { deviceId:{ exact:deviceId } } : { facingMode:{ ideal:'environment' } }),
+        width:{ ideal:1920 },
+        height:{ ideal:1080 },
+        aspectRatio:{ ideal:1.7777778 },
+        frameRate:{ ideal:24, max:30 }
+      },
+      audio:false
+    };
   }
 
-  function streamForMode(mode){ return mode === 'label' ? labelStream : stream; }
+  async function safeApply(track, constraint){
+    if (!track?.applyConstraints) return false;
+    try { await track.applyConstraints({ advanced:[constraint] }); return true; }
+    catch(e) { return false; }
+  }
+
+  async function applyCameraEnhancements(mode){
+    const state = cameraState[mode], ids = idsForMode(mode), track = state.track;
+    const caps = track?.getCapabilities?.() || {};
+    if (Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) await safeApply(track,{focusMode:'continuous'});
+    if (Array.isArray(caps.exposureMode) && caps.exposureMode.includes('continuous')) await safeApply(track,{exposureMode:'continuous'});
+    if (Array.isArray(caps.whiteBalanceMode) && caps.whiteBalanceMode.includes('continuous')) await safeApply(track,{whiteBalanceMode:'continuous'});
+    const zoomWrap=$(ids.zoomWrap), zoom=$(ids.zoom), torch=$(ids.torch);
+    if (caps.zoom && Number.isFinite(caps.zoom.min) && Number.isFinite(caps.zoom.max) && caps.zoom.max > caps.zoom.min) {
+      zoom.min=caps.zoom.min; zoom.max=caps.zoom.max; zoom.step=caps.zoom.step || .1;
+      const initial=Math.min(caps.zoom.max,Math.max(caps.zoom.min,1.15));
+      zoom.value=initial; $(ids.zoomValue).textContent=`${Number(initial).toFixed(1)}×`;
+      zoomWrap.hidden=false; await safeApply(track,{zoom:initial});
+    } else zoomWrap.hidden=true;
+    const torchSupported=Boolean(caps.torch);
+    torch.hidden=!torchSupported; torch.dataset.on='false'; torch.textContent='Linterna';
+    return { caps, settings:track?.getSettings?.() || {} };
+  }
+
+  async function populateCameraSelector(mode){
+    const ids=idsForMode(mode), select=$(ids.camera);
+    if (!navigator.mediaDevices?.enumerateDevices || !select) return;
+    const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
+    select.innerHTML='';
+    devices.forEach((d,i)=>{
+      const option=document.createElement('option');
+      option.value=d.deviceId; option.textContent=d.label || `Cámara ${i+1}`;
+      if (d.deviceId===cameraState[mode].deviceId) option.selected=true;
+      select.appendChild(option);
+    });
+    select.closest('.camera-selector').hidden=devices.length<2;
+  }
 
   function getSmartZoom(mode){
-    const el = $(mode === 'label' ? 'labelSmartZoom' : 'smartZoom');
-    return el?.checked ? 1.55 : 1;
+    const el=$(mode==='label'?'labelSmartZoom':'smartZoom');
+    return el?.checked ? 1.28 : 1;
   }
 
-  function drawRegion(video, canvas, mode, variant='normal'){
-    const vw = video.videoWidth || 1280, vh = video.videoHeight || 720;
-    const zoom = variant === 'zoom' ? Math.max(1.9, getSmartZoom(mode) + .35) : getSmartZoom(mode);
-    const regionW = Math.floor(vw * (zoom > 1 ? .58 : .78));
-    const regionH = Math.floor(vh * (zoom > 1 ? .28 : .38));
-    const sx = Math.max(0, Math.floor((vw - regionW) / 2));
-    const sy = Math.max(0, Math.floor((vh - regionH) / 2));
-    const scale = Math.min(3.2, Math.max(1.8, OCR_TARGET_MAX_SIDE / Math.max(regionW, regionH)));
-    canvas.width = Math.floor(regionW * scale);
-    canvas.height = Math.floor(regionH * scale);
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(video, sx, sy, regionW, regionH, 0, 0, canvas.width, canvas.height);
-    preprocessCanvas(ctx, canvas.width, canvas.height, variant);
+  function drawSourceRegion(source, canvas, mode, variant='normal'){
+    const vw=source.videoWidth || source.naturalWidth || source.width || 1280;
+    const vh=source.videoHeight || source.naturalHeight || source.height || 720;
+    const cropZoom=getSmartZoom(mode);
+    const regionW=Math.floor(vw*(cropZoom>1?.72:.88));
+    const regionH=Math.floor(vh*(cropZoom>1?.42:.54));
+    const sx=Math.max(0,Math.floor((vw-regionW)/2));
+    const sy=Math.max(0,Math.floor((vh-regionH)/2));
+    const scale=Math.min(2.5,Math.max(1.2,OCR_TARGET_MAX_SIDE/Math.max(regionW,regionH)));
+    canvas.width=Math.max(1,Math.floor(regionW*scale));
+    canvas.height=Math.max(1,Math.floor(regionH*scale));
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    ctx.drawImage(source,sx,sy,regionW,regionH,0,0,canvas.width,canvas.height);
+    preprocessCanvas(ctx,canvas.width,canvas.height,variant);
     return canvas;
   }
+
+  function drawRegion(video, canvas, mode, variant='normal'){ return drawSourceRegion(video,canvas,mode,variant); }
 
   function preprocessCanvas(ctx, w, h, variant){
     const image = ctx.getImageData(0, 0, w, h);
@@ -331,25 +371,39 @@
     ctx.putImageData(out, 0, 0);
   }
 
-  function focusScore(video){
-    if (!video.videoWidth || !video.videoHeight) return 0;
-    const probe = document.createElement('canvas');
-    probe.width = 220; probe.height = 120;
-    const ctx = probe.getContext('2d', { willReadFrequently: true });
-    const vw = video.videoWidth, vh = video.videoHeight;
-    const sw = Math.floor(vw * .58), sh = Math.floor(vh * .32);
-    ctx.drawImage(video, Math.floor((vw-sw)/2), Math.floor((vh-sh)/2), sw, sh, 0, 0, probe.width, probe.height);
-    const data = ctx.getImageData(0,0,probe.width,probe.height).data;
-    let total = 0, count = 0;
-    for (let y=1; y<probe.height-1; y+=2) {
-      for (let x=1; x<probe.width-1; x+=2) {
-        const p = (yy,xx) => data[(yy*probe.width+xx)*4];
-        const lap = Math.abs(4*p(y,x) - p(y-1,x) - p(y+1,x) - p(y,x-1) - p(y,x+1));
-        total += lap; count++;
-      }
+  function analyzeFrame(source, mode, remember=true){
+    const vw=source.videoWidth || source.naturalWidth || source.width || 0;
+    const vh=source.videoHeight || source.naturalHeight || source.height || 0;
+    if (!vw || !vh) return {focus:0,brightness:0,contrast:0,motion:0,ready:false,reason:'Cámara no lista'};
+    const probe=document.createElement('canvas'); probe.width=240; probe.height=140;
+    const ctx=probe.getContext('2d',{willReadFrequently:true});
+    const sw=Math.floor(vw*.76),sh=Math.floor(vh*.48);
+    ctx.drawImage(source,Math.floor((vw-sw)/2),Math.floor((vh-sh)/2),sw,sh,0,0,probe.width,probe.height);
+    const rgba=ctx.getImageData(0,0,probe.width,probe.height).data;
+    const gray=new Uint8Array(probe.width*probe.height);
+    let sum=0,sumSq=0,lapTotal=0,lapCount=0;
+    for(let i=0,j=0;i<rgba.length;i+=4,j++){const g=Math.round(rgba[i]*.299+rgba[i+1]*.587+rgba[i+2]*.114);gray[j]=g;sum+=g;sumSq+=g*g;}
+    for(let y=1;y<probe.height-1;y+=2)for(let x=1;x<probe.width-1;x+=2){
+      const p=(yy,xx)=>gray[yy*probe.width+xx];
+      lapTotal+=Math.abs(4*p(y,x)-p(y-1,x)-p(y+1,x)-p(y,x-1)-p(y,x+1));lapCount++;
     }
-    return total / Math.max(1, count);
+    const brightness=sum/gray.length,variance=Math.max(0,sumSq/gray.length-brightness*brightness),contrast=Math.sqrt(variance);
+    const state=cameraState[mode]; let motion=0;
+    if(state.previousFrame?.length===gray.length){for(let i=0;i<gray.length;i+=4)motion+=Math.abs(gray[i]-state.previousFrame[i]);motion/=Math.ceil(gray.length/4);}
+    if(remember)state.previousFrame=gray;
+    const focus=lapTotal/Math.max(1,lapCount);
+    if(focus>state.focusBaseline)state.focusBaseline=focus;
+    const adaptiveFocus=Math.max(10,Math.min(26,(state.focusBaseline||OCR_MIN_FOCUS)*.56));
+    let reason='Preparado para leer';
+    if(brightness<48)reason='Se necesita más luz';
+    else if(brightness>224)reason='Evita el reflejo directo';
+    else if(contrast<22)reason='Acerca el texto al área amarilla';
+    else if(motion>24)reason='Mantén estable el dispositivo';
+    else if(focus<adaptiveFocus)reason='Aleja ligeramente para enfocar';
+    return {focus,brightness,contrast,motion,threshold:adaptiveFocus,ready:reason==='Preparado para leer',reason};
   }
+
+  function focusScore(video,mode='consulta'){ return analyzeFrame(video,mode,false).focus; }
 
   function setQuality(mode, values){
     const prefix = mode === 'label' ? 'label' : '';
@@ -363,21 +417,25 @@
     if (readyEl) readyEl.textContent = values.ready;
   }
 
-  async function waitForSharpFrame(video, statusId, mode){
-    for (let attempt=0; attempt<8; attempt++) {
-      const score = focusScore(video);
-      const ready = score >= OCR_MIN_FOCUS;
-      setQuality(mode, {
-        quality: ready ? 'Alta' : (score > OCR_MIN_FOCUS*.72 ? 'Media' : 'Baja'),
-        focus: String(Math.round(score)),
-        resolution: `${video.videoWidth || 0}×${video.videoHeight || 0}`,
-        ready: ready ? 'Preparado para leer' : 'No mover la cámara'
-      });
-      if (ready || attempt >= 5) return score;
-      $(statusId).textContent = 'Detectando enfoque... no mover la cámara';
-      await new Promise(r => setTimeout(r, 260));
+  function updateLiveQuality(mode){
+    const ids=idsForMode(mode),video=$(ids.video);
+    if(!video?.videoWidth || cameraState[mode].scanning)return;
+    const q=analyzeFrame(video,mode,true);
+    setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth}×${video.videoHeight}`,ready:q.reason});
+    $(ids.status).textContent=q.ready?'Cámara lista · puedes leer':q.reason;
+  }
+
+  async function waitForSharpFrame(video,statusId,mode,token){
+    let best=null;
+    for(let attempt=0;attempt<12;attempt++){
+      if(token!==cameraState[mode].token)throw new Error('Lectura cancelada');
+      const q=analyzeFrame(video,mode,true); if(!best||q.focus>best.focus)best=q;
+      setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth||0}×${video.videoHeight||0}`,ready:q.reason});
+      $(statusId).textContent=q.reason;
+      if(q.ready){await new Promise(r=>setTimeout(r,180));return q;}
+      await new Promise(r=>setTimeout(r,240));
     }
-    return focusScore(video);
+    throw new Error(best?.reason || 'Aleja ligeramente la cámara hasta que el texto se vea nítido.');
   }
 
   async function runOcr(canvas, statusId, variant){
@@ -402,52 +460,109 @@
     })[0] || { sku:'', text:'' };
   }
 
-  async function openCamera(videoId, statusId, startId, scanId, stopId, mode){
+  async function openCamera(videoId,statusId,startId,scanId,stopId,mode,deviceId=''){
+    closeCamera(videoId,statusId,startId,scanId,stopId,mode,false);
+    const state=cameraState[mode],ids=idsForMode(mode);
     try{
-      if (!navigator.mediaDevices?.getUserMedia) throw new Error('Cámara no soportada');
-      const s = await navigator.mediaDevices.getUserMedia(cameraConstraints());
-      await applyCameraEnhancements(s);
-      if (mode === 'label') labelStream = s; else stream = s;
-      const video = $(videoId);
-      video.srcObject = s; await video.play();
-      $(scanId).disabled = false; $(stopId).disabled = false; $(startId).disabled = true;
-      const settings = s.getVideoTracks?.()[0]?.getSettings?.() || {};
-      $(statusId).textContent = 'Cámara activa · acerca SKU al marco central';
-      setQuality(mode, { quality:'Midiendo', focus:'-', resolution:`${settings.width || video.videoWidth || 0}×${settings.height || video.videoHeight || 0}`, ready:'Alinea SKU #' });
-    }catch(err){ $(statusId).textContent = 'Sin permiso de cámara'; alert('No se pudo abrir la cámara. En GitHub Pages debe abrirse con HTTPS y permiso de cámara.'); }
-  }
-  function closeCamera(videoId, statusId, startId, scanId, stopId, mode){
-    const s = streamForMode(mode); if(s) s.getTracks().forEach(t => t.stop());
-    if (mode === 'label') labelStream = null; else stream = null;
-    $(videoId).srcObject = null; $(scanId).disabled = true; $(stopId).disabled = true; $(startId).disabled = false; $(statusId).textContent = 'Listo';
-    setQuality(mode, { quality:'-', focus:'-', resolution:'-', ready:'Listo' });
-  }
-  async function scanFromCamera(videoId, canvasId, statusId, scanBtnId, targetInputId, mode){
-    const video = $(videoId), canvas = $(canvasId);
-    if (!video.videoWidth) { $(statusId).textContent = 'Cámara no lista'; return; }
-    $(statusId).textContent = 'Detectando enfoque...'; $(scanBtnId).disabled = true;
-    try{
-      if (!window.Tesseract) throw new Error('OCR no cargó');
-      await waitForSharpFrame(video, statusId, mode);
-      $(statusId).textContent = 'Mejorando imagen...';
-      const results = [];
-      for (const variant of OCR_VARIANTS) {
-        drawRegion(video, canvas, mode, variant);
-        $(statusId).textContent = variant === 'normal' ? 'Leyendo SKU...' : `Reintentando OCR · ${variant}`;
-        const result = await runOcr(canvas, statusId, variant);
-        results.push(result);
-        if (result.sku && numericIndex.has(result.sku)) break;
-      }
-      const best = chooseBestOcr(results);
-      const sku = best.sku;
-      $(targetInputId).value = sku;
-      $(statusId).textContent = sku ? `SKU detectado (${best.variant}): ${sku}` : 'No se detectó SKU; intenta acercar y centrar';
-      if (mode === 'label') setLabelProduct(findProduct(sku)); else (sku ? search(sku) : renderNotFound(best.text || 'sin lectura'));
-    }catch(e){
-      $(statusId).textContent = 'Error OCR';
-      if (mode === 'label') setLabelProduct(null); else renderNotFound('Error OCR');
+      if(!window.isSecureContext)throw new Error('La cámara requiere HTTPS');
+      if(!navigator.mediaDevices?.getUserMedia)throw new Error('Cámara no soportada');
+      $(statusId).textContent='Solicitando permiso de cámara';
+      const s=await navigator.mediaDevices.getUserMedia(cameraConstraints(deviceId));
+      state.stream=s;state.track=s.getVideoTracks?.()[0]||null;state.deviceId=state.track?.getSettings?.().deviceId||deviceId||'';
+      if(mode==='label')labelStream=s;else stream=s;
+      const video=$(videoId);video.srcObject=s;await video.play();
+      const info=await applyCameraEnhancements(mode);
+      await populateCameraSelector(mode);
+      $(scanId).disabled=false;$(stopId).disabled=false;$(startId).disabled=true;
+      $(statusId).textContent='Cámara lista';
+      setQuality(mode,{quality:'Midiendo',focus:'-',resolution:`${info.settings.width||video.videoWidth||0}×${info.settings.height||video.videoHeight||0}`,ready:'Mantén estable el dispositivo'});
+      clearInterval(state.qualityTimer);state.qualityTimer=setInterval(()=>updateLiveQuality(mode),450);
+    }catch(err){
+      $(statusId).textContent=err?.name==='NotAllowedError'?'Permiso de cámara rechazado':(err?.message||'No se pudo abrir la cámara');
+      $(startId).disabled=false;$(scanId).disabled=true;$(stopId).disabled=true;
     }
-    $(scanBtnId).disabled = false;
+  }
+
+  function closeCamera(videoId,statusId,startId,scanId,stopId,mode,reset=true){
+    const state=cameraState[mode];state.token++;state.scanning=false;
+    clearInterval(state.qualityTimer);state.qualityTimer=null;state.previousFrame=null;state.focusBaseline=0;
+    if(state.stream)state.stream.getTracks().forEach(t=>t.stop());
+    state.stream=null;state.track=null;if(mode==='label')labelStream=null;else stream=null;
+    const video=$(videoId);if(video){video.pause();video.srcObject=null;}
+    $(scanId).disabled=true;$(stopId).disabled=true;$(startId).disabled=false;
+    $(idsForMode(mode).zoomWrap).hidden=true;$(idsForMode(mode).torch).hidden=true;
+    if(reset){$(statusId).textContent='Listo';setQuality(mode,{quality:'-',focus:'-',resolution:'-',ready:'Listo'});}
+  }
+
+  async function scanSource(source,canvas,statusId,targetInputId,mode,token,validateLive){
+    if(!window.Tesseract)throw new Error('OCR no cargó; revisa la conexión inicial.');
+    const votes=new Map(),results=[];
+    for(let frame=0;frame<3;frame++){
+      if(token!==cameraState[mode].token)throw new Error('Lectura cancelada');
+      if(validateLive)await waitForSharpFrame(source,statusId,mode,token);
+      const frameResults=[];
+      for(const variant of OCR_VARIANTS){
+        if(token!==cameraState[mode].token)throw new Error('Lectura cancelada');
+        drawSourceRegion(source,canvas,mode,variant);
+        $(statusId).textContent=frame===0?'Buscando texto':`Confirmando lectura ${frame+1}/3`;
+        const result=await runOcr(canvas,statusId,variant);results.push(result);frameResults.push(result);
+        if(result.sku&&numericIndex.has(result.sku))break;
+      }
+      const frameBest=chooseBestOcr(frameResults);
+      if(frameBest.sku)votes.set(frameBest.sku,(votes.get(frameBest.sku)||0)+1);
+      const confirmed=[...votes.entries()].sort((a,b)=>b[1]-a[1])[0];
+      if(confirmed?.[1]>=2)break;
+      if(validateLive)await new Promise(r=>setTimeout(r,180));
+    }
+    const confirmed=[...votes.entries()].sort((a,b)=>b[1]-a[1])[0];
+    const best=chooseBestOcr(results),sku=confirmed?.[1]>=2?confirmed[0]:(best.sku&&numericIndex.has(best.sku)?best.sku:'');
+    $(targetInputId).value=sku;
+    if(sku){$(statusId).textContent=`Lectura encontrada: ${sku}`;if(mode==='label')setLabelProduct(findProduct(sku));else search(sku);}
+    else{$(statusId).textContent='No se pudo reconocer; corrige manualmente o intenta nuevamente';if(mode==='label')setLabelProduct(null);}
+    return sku;
+  }
+
+  async function scanFromCamera(videoId,canvasId,statusId,scanBtnId,targetInputId,mode){
+    const state=cameraState[mode],video=$(videoId),canvas=$(canvasId);
+    if(!video.videoWidth){$(statusId).textContent='Cámara no lista';return;}
+    if(state.scanning)return;state.scanning=true;const token=++state.token;$(scanBtnId).disabled=true;
+    try{await scanSource(video,canvas,statusId,targetInputId,mode,token,true);}
+    catch(e){if(token===state.token)$(statusId).textContent=e.message||'Error OCR';}
+    finally{if(token===state.token){state.scanning=false;$(scanBtnId).disabled=false;}}
+  }
+
+  async function toggleTorch(mode){
+    const state=cameraState[mode],ids=idsForMode(mode),btn=$(ids.torch);
+    const next=btn.dataset.on!=='true';
+    if(await safeApply(state.track,{torch:next})){btn.dataset.on=String(next);btn.textContent=next?'Apagar linterna':'Linterna';}
+  }
+
+  async function setOpticalZoom(mode,value){
+    const state=cameraState[mode],ids=idsForMode(mode),zoom=Number(value);
+    if(await safeApply(state.track,{zoom}))$(ids.zoomValue).textContent=`${zoom.toFixed(1)}×`;
+  }
+
+  async function loadImageFile(file){
+    if(!file)return null;
+    if('createImageBitmap' in window){try{return await createImageBitmap(file,{imageOrientation:'from-image'});}catch(e){}}
+    return await new Promise((resolve,reject)=>{
+      const url=URL.createObjectURL(file),img=new Image();
+      img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo abrir la imagen'));};img.src=url;
+    });
+  }
+
+  async function scanPhotoFile(mode,input){
+    const file=input.files?.[0],ids=idsForMode(mode),state=cameraState[mode];if(!file)return;
+    const token=++state.token;state.scanning=true;$(ids.scan).disabled=true;$(ids.status).textContent='Preparando fotografía';
+    let image=null,previewUrl='';
+    try{
+      image=await loadImageFile(file);
+      const quality=analyzeFrame(image,mode,false);
+      if(!quality.ready&&['Se necesita más luz','Evita el reflejo directo','Aleja ligeramente para enfocar'].includes(quality.reason))throw new Error(quality.reason);
+      previewUrl=URL.createObjectURL(file);const preview=$(ids.preview);preview.src=previewUrl;preview.hidden=false;
+      await scanSource(image,$(ids.canvas),ids.status,ids.input,mode,token,false);
+    }catch(e){if(token===state.token)$(ids.status).textContent=e.message||'No se pudo reconocer la fotografía';}
+    finally{image?.close?.();if(previewUrl)setTimeout(()=>URL.revokeObjectURL(previewUrl),1000);input.value='';state.scanning=false;if(cameraState[mode].stream)$(ids.scan).disabled=false;}
   }
 
   function init(){
@@ -466,8 +581,28 @@
     $('labelStartCamera').addEventListener('click', () => openCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label'));
     $('labelStopCamera').addEventListener('click', () => closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label'));
     $('labelScanBtn').addEventListener('click', () => scanFromCamera('labelVideo','labelSnapshot','labelOcrStatus','labelScanBtn','labelSku','label'));
+    ['consulta','label'].forEach(mode => {
+      const ids=idsForMode(mode);
+      $(ids.zoom).addEventListener('input',e=>setOpticalZoom(mode,e.target.value));
+      $(ids.resetZoom).addEventListener('click',()=>{const z=$(ids.zoom);z.value=z.min;setOpticalZoom(mode,z.min);});
+      $(ids.torch).addEventListener('click',()=>toggleTorch(mode));
+      $(ids.camera).addEventListener('change',e=>openCamera(ids.video,ids.status,ids.start,ids.scan,ids.stop,mode,e.target.value));
+      $(ids.photo).addEventListener('change',e=>scanPhotoFile(mode,e.target));
+      $(ids.takePhoto).addEventListener('change',e=>scanPhotoFile(mode,e.target));
+    });
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){
+        closeCamera('video','ocrStatus','startCamera','scanBtn','stopCamera','consulta',false);
+        closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
+        $('ocrStatus').textContent='Cámara pausada';$('labelOcrStatus').textContent='Cámara pausada';
+      }
+    });
+    window.addEventListener('pagehide',()=>{
+      closeCamera('video','ocrStatus','startCamera','scanBtn','stopCamera','consulta',false);
+      closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
+    });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v2-ocr'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v3-ocr'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
