@@ -1,1 +1,46 @@
+name: Actualizar lista de precios
 
+on:
+  push:
+    branches: [main]
+    paths:
+      - Lista_Precios_Base.xlsx
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codebrew-price-list
+  cancel-in-progress: false
+
+jobs:
+  validate-and-generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar lector de Excel
+        run: pip install --requirement scripts/requirements.txt
+
+      - name: Validar Excel y generar datos
+        run: python scripts/generate_products.py
+
+      - name: Publicar datos validados
+        run: |
+          if git diff --quiet -- data/products.js data/import-report.json; then
+            echo "La lista ya está actualizada."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/products.js data/import-report.json
+          git commit -m "Actualizar datos desde Lista_Precios_Base.xlsx"
+          git push
