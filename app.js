@@ -566,6 +566,10 @@
   }
 
   function init(){
+    const latestItem = String(window.PRODUCT_META?.latestItem || '').trim();
+    $('latestItem').textContent = latestItem
+      ? `Último artículo actualizado: ${latestItem}`
+      : 'Último artículo actualizado: información no disponible';
     document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
@@ -602,7 +606,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v3-ocr'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v4-excel'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

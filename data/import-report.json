@@ -1,0 +1,115 @@
+{
+  "status": "ok",
+  "sourceFile": "Lista_Precios_Base.xlsx",
+  "generatedAtUtc": "2026-07-25T06:12:23+00:00",
+  "latestItemCell": "Base_Campaña!D2",
+  "latestItem": "SII26SSCC16Pony",
+  "totalValidProducts": 948,
+  "sheets": [
+    {
+      "sheet": "Base_Campaña",
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C2"
+      ],
+      "records": 112,
+      "valid": 110,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [
+        {
+          "row": 55,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 56,
+          "reason": "sin identificador útil o sin precio"
+        }
+      ],
+      "duplicateHeaders": []
+    },
+    {
+      "sheet": "Discovery",
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "Botón POS",
+        "SKU POS",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6"
+      ],
+      "records": 50,
+      "valid": 50,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [],
+      "duplicateHeaders": []
+    },
+    {
+      "sheet": "Homologados",
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6"
+      ],
+      "records": 730,
+      "valid": 715,
+      "emptyRows": 0,
+      "duplicatesIgnored": 12,
+      "invalidRows": [
+        {
+          "row": 410,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 550,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 551,
+          "reason": "sin identificador útil o sin precio"
+        }
+      ],
+      "duplicateHeaders": []
+    },
+    {
+      "sheet": "Essentials",
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C2"
+      ],
+      "records": 73,
+      "valid": 73,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [],
+      "duplicateHeaders": []
+    }
+  ]
+}

@@ -49,7 +49,10 @@
 .file-action{display:inline-flex;align-items:center;justify-content:center;margin:0;border:0;border-radius:16px;background:#eef0ed;color:var(--dark);font-weight:900;cursor:pointer}
 .file-action input{display:none}
 .photo-preview{display:block;max-width:100%;max-height:240px;object-fit:contain;margin:12px auto;border:1px solid var(--line);border-radius:16px;background:#fff}
-.app-footer{text-align:center;padding:18px max(14px,env(safe-area-inset-left)) calc(22px + env(safe-area-inset-bottom));color:var(--muted);font-size:12px}
+.latest-item{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+.app-footer{display:flex;justify-content:center;align-items:center;gap:8px 16px;flex-wrap:wrap;text-align:center;padding:18px max(14px,env(safe-area-inset-left)) calc(22px + env(safe-area-inset-bottom));color:var(--muted);font-size:12px}
+.app-footer a{color:var(--green);font-weight:800;text-underline-offset:3px}
+.app-footer a:focus-visible{outline:3px solid rgba(0,98,65,.28);outline-offset:3px;border-radius:4px}
 button,.file-action,.tab{min-height:44px}
 button:focus-visible,.file-action:focus-within,.tab:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(0,98,65,.28);outline-offset:2px}
 @media(max-width:520px){

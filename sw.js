@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v3-ocr-camera-2026-07-24';
+const CACHE_NAME = 'codebrew-merch-v4-excel-2026-07-25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,8 @@ const APP_SHELL = [
   './app.js',
   './manifest.webmanifest',
   './data/products.js',
+  './data/import-report.json',
+  './Lista_Precios_Base.xlsx',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
@@ -32,13 +34,14 @@ self.addEventListener('fetch', event => {
     event.respondWith(fetch(event.request).catch(() => caches.match('./index.html')));
     return;
   }
+  const isGeneratedData = new URL(event.request.url).pathname.endsWith('/data/products.js');
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    (isGeneratedData ? fetch(event.request).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
       }
       return response;
-    }).catch(() => cached))
+    })
   );
 });

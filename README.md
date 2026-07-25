@@ -18,3 +18,11 @@ Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 
 ## Publicación
 Subir a GitHub Pages desde `main` / `/root` con `index.html` en raíz.
+
+## Actualización de precios
+1. Reemplazar `Lista_Precios_Base.xlsx` en la raíz, conservando exactamente ese nombre.
+2. Subir el cambio a la rama `main`.
+3. La acción `Actualizar lista de precios` valida las pestañas y encabezados y genera `data/products.js`.
+4. Si la validación falla, los datos publicados anteriormente no se reemplazan.
+
+El resultado técnico del último procesamiento queda en `data/import-report.json`.
