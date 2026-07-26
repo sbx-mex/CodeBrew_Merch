@@ -1,10 +1,10 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-07-25T06:12:23+00:00",
+  "generatedAtUtc": "2026-07-26T23:37:54+00:00",
   "latestItemCell": "Base_Campaña!D2",
-  "latestItem": "SII26SSCC16Pony",
-  "totalValidProducts": 948,
+  "latestItem": "SII26BTL16Pony",
+  "totalValidProducts": 947,
   "sheets": [
     {
       "sheet": "Base_Campaña",
@@ -17,17 +17,17 @@
         "SKU POS",
         "C2"
       ],
-      "records": 112,
-      "valid": 110,
+      "records": 111,
+      "valid": 109,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 55,
+          "row": 54,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 56,
+          "row": 55,
           "reason": "sin identificador útil o sin precio"
         }
       ],
