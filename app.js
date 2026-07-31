@@ -23,22 +23,31 @@
   function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); const price = p.tier?.[k] || ''; return price ? `${k}: ${price}` : '-'; }
   function priceOnly(p, tier){ return priceFor(p, tier) || '-'; }
   function qrValue(p){ return String(p?.skuPos || p?.botonPos || p?.nombrePos || '').trim(); }
-  function routeText(p){ return `Mercancía → ${p?.botonPos || 'Botón por validar'}`; }
+  function posButtonText(p){
+    const button = p?.botonPos || 'Botón por validar';
+    return p?.campaign ? `${button} / ${p.campaign}` : button;
+  }
+  function routeText(p){ return `Mercancía → ${posButtonText(p)}`; }
   function posStepsHtml(p){
-    const btn = p?.botonPos || 'Botón por validar';
+    const btn = posButtonText(p);
     return `<div class="pos-flow-title">Ayuda visual POS</div>
       <div class="pos-flow-visual">
         <div class="pos-step"><b>1</b><span><strong>Identifica Mercancía</strong><br><span class="pos-chip">Mercancía</span></span></div>
-        <div class="pos-step"><b>2</b><span><strong>Abre el botón correcto</strong><br><span class="pos-chip">${btn}</span></span></div>
+        <div class="pos-step"><b>2</b><span><strong>Abre el botón correcto</strong><br>Campaña / Menciona la campaña, su nombre homologado o Discovery.<br><span class="pos-chip">${btn}</span></span></div>
         <div class="pos-step"><b>3</b><span><strong>Escanea el código</strong><br>Usa el código de esta ficha en el POS.</span></div>
       </div>`;
   }
 
   const numericIndex = new Map();
+  const campaignIndex = new Map();
   products.forEach(p => {
     [p.skuIntl, p.codigoDia, p.skuPos].forEach(v => {
       const key = normalizeSku(v);
       if (key && !numericIndex.has(key)) numericIndex.set(key, p);
+    });
+    (p.campaignAliases || []).forEach(value => {
+      const key = normalizeText(value);
+      if (key && !campaignIndex.has(key)) campaignIndex.set(key, p);
     });
   });
 
@@ -48,6 +57,7 @@
     if (numeric && numericIndex.has(numeric)) return numericIndex.get(numeric);
     const q = normalizeText(input);
     if (!q) return null;
+    if (campaignIndex.has(q)) return campaignIndex.get(q);
     let exact = products.find(p => [p.nombrePos,p.nombreInventario,p.botonPos,p.skuPos].some(v => normalizeText(v) === q));
     if (exact) return exact;
     return products.find(p => normalizeText(`${p.nombrePos} ${p.nombreInventario} ${p.descripcion} ${p.botonPos} ${p.skuPos}`).includes(q)) || null;
@@ -126,7 +136,7 @@
   function renderProduct(p, source){
     currentProduct = p;
     const keys = tierKeys(p); if (!keys.includes(currentTier)) currentTier = keys[0] || 'C1';
-    const boton = p.botonPos || 'Mercancía';
+    const boton = posButtonText(p);
     const skuPos = qrValue(p);
     $('result').className = 'result';
     $('result').innerHTML = `
@@ -144,7 +154,7 @@
             <div class="field"><span>Nombre POS</span><b>${p.nombrePos || '-'}</b></div>
             <div class="field"><span>Precio</span><b class="price">${priceLabel(p, currentTier)}</b></div>
           </div>
-          <div class="pos-help"><b>Flujo POS:</b> Mercancía → ${boton} → escanear código generado.</div>
+          <div class="pos-help"><b>Flujo POS:</b> ${routeText(p)} → escanear código generado.</div>
           <div class="actions" style="margin-top:14px"><button id="addCurrentLabel">Agregar a etiquetado</button></div>
         </div>
         <div class="scanbox">
@@ -186,7 +196,7 @@
     const qr = qrDataUrl(qrValue(p), 160);
     $('labelPreview').className = 'label-preview';
     $('labelPreview').innerHTML = `<div class="preview-card">
-      <div><b>${p.botonPos || 'Mercancía'}</b><small>${p.nombrePos || ''} | ${priceOnly(p, tier)}</small><strong>SKU ${qrValue(p) || '-'}</strong></div>
+      <div><b>${posButtonText(p)}</b><small>${p.nombrePos || ''} | ${priceOnly(p, tier)}</small><strong>SKU ${qrValue(p) || '-'}</strong></div>
       ${qr ? `<img class="mini-qr" src="${qr}" alt="QR">` : ''}
     </div>`;
   }
@@ -205,7 +215,7 @@
     $('labelCart').className = 'cart';
     $('labelCart').innerHTML = labelItems.map((x,i)=>`
       <div class="cart-row">
-        <div><strong>${x.product.botonPos || 'Mercancía'}</strong><small>${x.product.nombrePos || ''} | ${priceOnly(x.product, x.tier)} · ${x.tier}</small></div>
+        <div><strong>${posButtonText(x.product)}</strong><small>${x.product.nombrePos || ''} | ${priceOnly(x.product, x.tier)} · ${x.tier}</small></div>
         <div class="sku-col"><small>SKU</small><b>${qrValue(x.product) || '-'}</b></div>
         <input data-i="${i}" class="qtyEdit" type="number" min="1" max="500" value="${x.qty}">
         <button class="remove" data-remove="${i}">×</button>
@@ -218,23 +228,40 @@
     if (!window.jspdf || !window.jspdf.jsPDF) { alert('No cargó el generador PDF. Revisa internet/CDN.'); return; }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({orientation:'portrait', unit:'in', format:'letter'});
-    const labelW = 2, labelH = 1.5, marginX = 0.25, marginY = 0.25, gapX = 0.08, gapY = 0.08;
-    const cols = 4, rows = 7;
+    const labelW = 2, labelH = 1.5;
+    const marginX = 0.25, marginY = 0.25, gapX = 0.08, gapY = 0.08;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const usableW = pageW - (marginX * 2);
+    const bottomLimit = pageH - marginY;
+    const cols = Math.max(1, Math.floor((usableW + gapX) / (labelW + gapX)));
+    const gridW = (cols * labelW) + ((cols - 1) * gapX);
+    const startX = marginX + Math.max(0, (usableW - gridW) / 2);
     const expanded=[]; labelItems.forEach(item => { for(let i=0;i<item.qty;i++) expanded.push({p:item.product, tier:item.tier}); });
+    let col = 0;
+    let y = marginY;
     expanded.forEach((it,idx) => {
-      if (idx > 0 && idx % (cols*rows) === 0) doc.addPage();
-      const pos = idx % (cols*rows), col = pos % cols, row = Math.floor(pos / cols);
-      const x = marginX + col * (labelW + gapX), y = marginY + row * (labelH + gapY);
+      if (col === cols) {
+        col = 0;
+        y += labelH + gapY;
+      }
+      if (y + labelH > bottomLimit + Number.EPSILON) {
+        doc.addPage();
+        col = 0;
+        y = marginY;
+      }
+      const x = startX + col * (labelW + gapX);
       const p = it.p, tier = it.tier, sku = qrValue(p);
       doc.setDrawColor(190,170,130); doc.setLineWidth(0.01); doc.roundedRect(x,y,labelW,labelH,0.08,0.08);
       doc.setTextColor(0,72,51); doc.setFont('helvetica','bold'); doc.setFontSize(11.5);
-      doc.text(String(p.botonPos || 'Mercancía'), x + labelW/2, y + 0.19, {align:'center', maxWidth:labelW-0.12});
+      doc.text(posButtonText(p), x + labelW/2, y + 0.19, {align:'center', maxWidth:labelW-0.12});
       doc.setTextColor(35,43,38); doc.setFont('helvetica','normal'); doc.setFontSize(6.7);
       const line = `${p.nombrePos || ''} | ${priceOnly(p, tier)}`;
       doc.text(doc.splitTextToSize(line, labelW - 0.14).slice(0,2), x + labelW/2, y + 0.36, {align:'center'});
       doc.setFont('helvetica','bold'); doc.setFontSize(11.5); doc.setTextColor(0,72,51);
       doc.text(`SKU ${sku || '-'}`, x + labelW/2, y + 0.60, {align:'center', maxWidth:labelW-0.14});
       const qr = qrDataUrl(sku, 340); if (qr) doc.addImage(qr, 'PNG', x + 0.58, y + 0.70, 0.84, 0.74);
+      col += 1;
     });
     doc.save(`CodeBrew_Etiquetas_${expanded.length}_pzas.pdf`);
   }
@@ -606,7 +633,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v4-excel'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v5-campaign-pdf'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

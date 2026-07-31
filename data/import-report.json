@@ -1,7 +1,7 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-07-31T22:25:46+00:00",
+  "generatedAtUtc": "2026-07-31T22:41:31+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26BTL20Resort",
   "totalValidProducts": 952,
@@ -31,7 +31,13 @@
           "reason": "sin identificador útil o sin precio"
         }
       ],
-      "duplicateHeaders": []
+      "duplicateHeaders": [],
+      "campaigns": {
+        "Summer": 13,
+        "World Cup": 28,
+        "Spring": 38,
+        "Winter": 34
+      }
     },
     {
       "sheet": "Discovery",
@@ -55,7 +61,8 @@
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [],
-      "duplicateHeaders": []
+      "duplicateHeaders": [],
+      "campaigns": {}
     },
     {
       "sheet": "Homologados",
@@ -91,7 +98,8 @@
           "reason": "sin identificador útil o sin precio"
         }
       ],
-      "duplicateHeaders": []
+      "duplicateHeaders": [],
+      "campaigns": {}
     },
     {
       "sheet": "Essentials",
@@ -109,7 +117,8 @@
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [],
-      "duplicateHeaders": []
+      "duplicateHeaders": [],
+      "campaigns": {}
     }
   ]
 }

@@ -17,6 +17,19 @@ from openpyxl import load_workbook
 
 
 REQUIRED_SHEETS = ("Base_Campaña", "Discovery", "Homologados", "Essentials")
+CAMPAIGN_ALIASES = {
+    "si": ("Summer", ("SI", "SII", "Summer")),
+    "sii": ("Summer", ("SI", "SII", "Summer")),
+    "summer": ("Summer", ("SI", "SII", "Summer")),
+    "wc": ("World Cup", ("WC", "World Cup")),
+    "world cup": ("World Cup", ("WC", "World Cup")),
+    "sp": ("Spring", ("SP", "Spring")),
+    "spring": ("Spring", ("SP", "Spring")),
+    "wt": ("Winter", ("WT", "Winter")),
+    "winter": ("Winter", ("WT", "Winter")),
+    "xm": ("Christmas", ("XM", "Christmas")),
+    "christmas": ("Christmas", ("XM", "Christmas")),
+}
 FIELD_ALIASES = {
     "skuIntl": ("sku intl",),
     "codigoDia": ("codigo dia",),
@@ -44,6 +57,30 @@ def normalize_header(value: object) -> str:
 
 def clean_text(value: object) -> str:
     return re.sub(r"[ \t]+", " ", str(value or "").strip())
+
+
+def homologate_campaign(value: object):
+    """Devuelve campaña homologada sin aplicar coincidencias parciales ambiguas."""
+    original = clean_text(value)
+    if not original:
+        return None
+    normalized = normalize_header(original)
+    match = CAMPAIGN_ALIASES.get(normalized)
+    if not match:
+        return None
+    name, aliases = match
+    return {"original": original, "name": name, "aliases": list(aliases)}
+
+
+def campaign_from_product_name(value: object):
+    """Extrae únicamente un código de campaña completo al inicio del Nombre POS."""
+    original = clean_text(value)
+    match = re.match(
+        r"^(WORLD CUP|CHRISTMAS|SUMMER|SPRING|WINTER|SII|SI|WC|SP|WT|XM)(?=\d|\s|$)",
+        original,
+        flags=re.IGNORECASE,
+    )
+    return homologate_campaign(match.group(1)) if match else homologate_campaign(original)
 
 
 def identifier(cell) -> str:
@@ -124,11 +161,13 @@ def parse_sheet(ws):
             empty_rows += 1
             continue
         try:
+            nombre_pos = clean_text(row[positions["nombrePos"]].value)
+            campaign = campaign_from_product_name(nombre_pos) if ws.title == "Base_Campaña" else None
             product = {
                 "skuIntl": identifier(row[positions["skuIntl"]]),
                 "codigoDia": identifier(row[positions["codigoDia"]]),
                 "descripcion": clean_text(row[positions["descripcion"]].value),
-                "nombrePos": clean_text(row[positions["nombrePos"]].value),
+                "nombrePos": nombre_pos,
                 "nombreInventario": clean_text(row[positions["nombreInventario"]].value),
                 "skuPos": identifier(row[positions["skuPos"]]),
                 "botonPos": sheet_button(ws.title, row, positions),
@@ -141,6 +180,12 @@ def parse_sheet(ws):
                 "sourceSheet": ws.title,
                 "sourceRow": row_number,
             }
+            if campaign:
+                product.update({
+                    "campaignOriginal": campaign["original"],
+                    "campaign": campaign["name"],
+                    "campaignAliases": campaign["aliases"],
+                })
         except (IndexError, ValueError) as error:
             invalid_rows.append({"row": row_number, "reason": str(error)})
             continue
@@ -172,6 +217,9 @@ def parse_sheet(ws):
         "duplicatesIgnored": duplicate_rows,
         "invalidRows": invalid_rows,
         "duplicateHeaders": duplicate_headers,
+        "campaigns": dict(Counter(
+            product["campaign"] for product in products if product.get("campaign")
+        )),
     }
     return products, report
 
