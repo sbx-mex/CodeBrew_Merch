@@ -1,10 +1,10 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-07-31T22:41:31+00:00",
+  "generatedAtUtc": "2026-08-08T22:14:31+00:00",
   "latestItemCell": "Base_Campaña!D2",
-  "latestItem": "SII26BTL20Resort",
-  "totalValidProducts": 952,
+  "latestItem": "SII26BTLSS20",
+  "totalValidProducts": 956,
   "sheets": [
     {
       "sheet": "Base_Campaña",
@@ -17,23 +17,23 @@
         "SKU POS",
         "C2"
       ],
-      "records": 116,
-      "valid": 114,
+      "records": 120,
+      "valid": 118,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 59,
+          "row": 63,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 60,
+          "row": 64,
           "reason": "sin identificador útil o sin precio"
         }
       ],
       "duplicateHeaders": [],
       "campaigns": {
-        "Summer": 13,
+        "Summer": 17,
         "World Cup": 28,
         "Spring": 38,
         "Winter": 34
