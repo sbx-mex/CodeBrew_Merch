@@ -7,7 +7,14 @@ on:
       - Lista_Precios_Base.xlsx
       - scripts/generate_products.py
       - scripts/build_woe_pdf_config.py
+      - scripts/audit_project.py
+      - scripts/build_all.py
       - scripts/requirements.txt
+      - index.html
+      - app.js
+      - styles.css
+      - sw.js
+      - manifest.webmanifest
       - .github/workflows/update-price-list.yml
   workflow_dispatch:
 
@@ -36,19 +43,17 @@ jobs:
       - name: Instalar lector de Excel
         run: pip install --requirement scripts/requirements.txt
 
-      - name: Validar Excel y generar datos
-        run: |
-          python scripts/generate_products.py
-          python scripts/build_woe_pdf_config.py
+      - name: Construir y ejecutar diez controles
+        run: python scripts/build_all.py
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js; then
+          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js data/app-audit.json data/app-audit.js; then
             echo "La lista ya está actualizada."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js
+          git add data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js data/app-audit.json data/app-audit.js
           git commit -m "Actualizar datos desde Lista_Precios_Base.xlsx"
           git push
