@@ -1,8 +1,8 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-09T18:44:00+00:00",
-  "sourceModifiedAtUtc": "2026-08-09T18:28:17+00:00",
+  "generatedAtUtc": "2026-08-09T19:04:25+00:00",
+  "sourceModifiedAtUtc": "2026-08-09T19:04:25+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26BTLSS20",
   "totalValidProducts": 956,
@@ -83,15 +83,15 @@
       ],
       "records": 729,
       "valid": 715,
-      "emptyRows": 0,
-      "duplicatesIgnored": 12,
+      "emptyRows": 12,
+      "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 549,
+          "row": 541,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 550,
+          "row": 542,
           "reason": "sin identificador útil o sin precio"
         }
       ],
@@ -119,16 +119,20 @@
     }
   ],
   "woe": {
-    "sapRows": 1388,
-    "catalogRows": 1388,
+    "sapRows": 1353,
+    "catalogRows": 2244,
+    "sapCatalogRows": 1353,
+    "orphanCatalogRows": 891,
     "uniqueWoe": 1342,
     "uniqueDiaSap": 1350,
-    "duplicateWoeRows": 46,
-    "duplicateDiaRows": 38,
+    "exactSapDuplicatesIgnored": 0,
+    "multiWoeRelations": 11,
+    "multiDiaRelations": 3,
     "microsRows": 1140,
     "uniqueDiaMicros": 1136,
-    "withMicros": 786,
-    "withMerch": 429,
-    "completeTripleMatch": 242
+    "withMicros": 1139,
+    "withMerch": 905,
+    "withoutSap": 891,
+    "completeTripleMatch": 210
   }
 }

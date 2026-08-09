@@ -60,6 +60,11 @@ def clean_text(value: object) -> str:
     return re.sub(r"[ \t]+", " ", str(value or "").strip())
 
 
+def canonical_text(value: object) -> str:
+    """Normaliza espacios sólo para comparar duplicados, sin alterar el dato visible."""
+    return re.sub(r"\s+", " ", str(value or "").strip())
+
+
 def homologate_campaign(value: object):
     """Devuelve campaña homologada sin aplicar coincidencias parciales ambiguas."""
     original = clean_text(value)
@@ -275,6 +280,9 @@ def parse_woe_catalog(workbook, products):
     seen_woe = Counter()
     seen_dia = Counter()
     sap_rows = 0
+    exact_sap_duplicates = 0
+    seen_sap_rows = set()
+    sap_codes = set()
     for row_number, row in enumerate(sap_ws.iter_rows(min_row=2), start=2):
         woe_id = identifier(row[0])
         code = identifier(row[1])
@@ -284,6 +292,12 @@ def parse_woe_catalog(workbook, products):
         sap_rows += 1
         if not woe_id or not code:
             raise ValueError(f"SAP fila {row_number}: ID WOE o Codigo DIA vacío")
+        fingerprint = (woe_id, code, canonical_text(description))
+        if fingerprint in seen_sap_rows:
+            exact_sap_duplicates += 1
+            continue
+        seen_sap_rows.add(fingerprint)
+        sap_codes.add(code)
         seen_woe[woe_id] += 1
         seen_dia[code] += 1
         micros = micros_by_dia.get(code, [])
@@ -300,6 +314,25 @@ def parse_woe_catalog(workbook, products):
                 "merch": bool(merch),
             },
             "sourceRow": row_number,
+            "origin": "SAP",
+        })
+
+    orphan_codes = sorted(
+        (set(micros_by_dia) | set(merch_by_dia)) - sap_codes,
+        key=lambda value: (not value.isdigit(), int(value) if value.isdigit() else value),
+    )
+    for code in orphan_codes:
+        micros = micros_by_dia.get(code, [])
+        merch = merch_by_dia.get(code, [])
+        catalog.append({
+            "idWoe": "",
+            "codigoDia": code,
+            "descripcionSap": "",
+            "micros": micros,
+            "merch": merch,
+            "validation": {"sap": False, "micros": bool(micros), "merch": bool(merch)},
+            "sourceRow": None,
+            "origin": "Micros/MERCH",
         })
 
     if not catalog:
@@ -308,14 +341,18 @@ def parse_woe_catalog(workbook, products):
     report = {
         "sapRows": sap_rows,
         "catalogRows": len(catalog),
+        "sapCatalogRows": len(seen_sap_rows),
+        "orphanCatalogRows": len(orphan_codes),
         "uniqueWoe": len(seen_woe),
         "uniqueDiaSap": len(seen_dia),
-        "duplicateWoeRows": sum(count - 1 for count in seen_woe.values()),
-        "duplicateDiaRows": sum(count - 1 for count in seen_dia.values()),
+        "exactSapDuplicatesIgnored": exact_sap_duplicates,
+        "multiWoeRelations": sum(count - 1 for count in seen_woe.values()),
+        "multiDiaRelations": sum(count - 1 for count in seen_dia.values()),
         "microsRows": micros_rows,
         "uniqueDiaMicros": len(micros_by_dia),
         "withMicros": sum(1 for item in catalog if item["validation"]["micros"]),
         "withMerch": sum(1 for item in catalog if item["validation"]["merch"]),
+        "withoutSap": sum(1 for item in catalog if not item["validation"]["sap"]),
         "completeTripleMatch": sum(1 for item in catalog if item["validation"]["sap"] and item["validation"]["micros"] and item["validation"]["merch"]),
     }
     return catalog, report

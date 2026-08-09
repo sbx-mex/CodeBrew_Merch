@@ -6,7 +6,8 @@ Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 - Busca por ID WOE, Código DIA, descripción SAP, nombre Micros o nombre de inventario.
 - Permite seleccionar y consultar varios artículos en una sola vista.
 - Cruza `SAP` y `Catalogo Micros` con Base_Campaña, Discovery, Homologados y Essentials mediante Código DIA.
-- Conserva las relaciones uno-a-varios y muestra mensajes explícitos cuando no existe coincidencia.
+- Elimina duplicados exactos de forma defensiva, conserva relaciones uno-a-varios y muestra mensajes explícitos cuando no existe coincidencia.
+- También muestra artículos presentes sólo en Micros o MERCH y los identifica como `Sin cruce SAP/WOE`.
 - El Excel `Lista_Precios_Base.xlsx` continúa como único motor; Python genera `data/products.js`, `data/woe.js` y la auditoría.
 
 ## Cambios principales
@@ -31,6 +32,8 @@ Subir a GitHub Pages desde `main` / `/root` con `index.html` en raíz.
 2. Subir el cambio a la rama `main`.
 3. La acción `Actualizar lista de precios` valida las seis pestañas y genera `data/products.js` y `data/woe.js`.
 4. Si la validación falla, los datos publicados anteriormente no se reemplazan.
+
+La búsqueda exacta por ID WOE o Código DIA utiliza un índice en memoria; las sugerencias se procesan con una pausa mínima para evitar trabajo repetido mientras se escribe.
 
 El resultado técnico del último procesamiento queda en `data/import-report.json`.
 
