@@ -394,7 +394,7 @@
 
   function stockConfigValue(){
     return stockConfig.parser?stockConfig:{
-      parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.000001,previewLimit:250},
+      parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.049999,previewLimit:250},
       page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:112,tableBottom:754,footerY:778},
       columns:[{key:'codigoDia',label:'#DIA',width:55},{key:'idWoe',label:'#SAP',width:55},{key:'descripcionSap',label:'DESCRIPCION SAP',width:190},{key:'nombreMicros',label:'NOMBRE MICROS',width:160},{key:'unidad',label:'UNIDAD STOCK',width:60},{key:'qty',label:'QTY',width:44}],
       style:{titleSize:17,metaSize:7.5,headerSize:6.8,bodySize:7,lineHeight:8.2,cellPadding:4,maxLinesPerCell:3,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]},
@@ -519,12 +519,14 @@
     if(meta?.headerMismatches?.length)blocking.push(`El encabezado cambia entre páginas: ${meta.headerMismatches.join(', ')}.`);
     if(!rows.length)blocking.push('No hay artículos con cantidad diferente de cero.');
     if(invalidItems)blocking.push(`${invalidItems} renglón${invalidItems===1?'':'es'} sin artículo.`);
-    if(invalidUnits)blocking.push(`${invalidUnits} renglón${invalidUnits===1?'':'es'} sin unidad.`);
     if(invalidQty)blocking.push(`${invalidQty} cantidad${invalidQty===1?'':'es'} inválida${invalidQty===1?'':'s'}.`);
     if(duplicates.size)blocking.push(`${duplicates.size} artículo${duplicates.size===1?'':'s'} duplicado${duplicates.size===1?'':'s'} por nombre y unidad.`);
     const warnings=[...freshnessWarnings];
+    if(invalidUnits)warnings.push(`${invalidUnits} renglón${invalidUnits===1?'':'es'} sin unidad; se conservará${invalidUnits===1?'':'n'} como N/D.`);
+    const unmatched=rows.filter(row=>row.matchType==='unmatched'||row.matchType==='ambiguous').length;
+    if(unmatched)warnings.push(`${unmatched} artículo${unmatched===1?'':'s'} sin cruce exacto; se conservará${unmatched===1?'':'n'} en el PDF.`);
     if(meta?.reportDate&&meta?.printedDate&&meta.reportDate!==meta.printedDate)warnings.push('Report Date y Printed On corresponden a fechas distintas.');
-    return {valid:blocking.length===0,blocking,warnings,missingHeader,invalidItems,invalidUnits,invalidQty,duplicates:duplicates.size};
+    return {valid:blocking.length===0,blocking,warnings,missingHeader,invalidItems,invalidUnits,invalidQty,duplicates:duplicates.size,unmatched};
   }
 
   function closeStockConfirmation(){
@@ -533,15 +535,14 @@
   }
 
   function updateStockConfirmAction(){
-    const accepted=$('stockConfirmHeader').checked&&$('stockConfirmRows').checked&&Boolean(stockValidation?.valid);
-    $('stockConfirmAccept').disabled=!accepted;
+    $('stockConfirmAccept').disabled=!stockValidation?.valid;
   }
 
   function openStockConfirmation(){
     if(!stockRows.length||!stockMeta)return;
     const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable,dialog=$('stockConfirmDialog');
-    $('stockConfirmHeader').checked=false;$('stockConfirmRows').checked=false;$('stockConfirmAccept').disabled=true;
-    $('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Lectura</span><b>${stockRows.length} no cero · ${exact} exactos · ${probable+review} a revisar</b></div>`;
+    $('stockConfirmAccept').disabled=!stockValidation?.valid;
+    $('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Lectura</span><b>${stockRows.length} no cero · ${exact} exactos · ${probable+review} con aviso</b></div>`;
     const block=$('stockConfirmBlock'),messages=[...(stockValidation?.blocking||[]),...(stockValidation?.warnings||[])];
     block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'Exportación bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
     if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
@@ -549,7 +550,7 @@
 
   function confirmStockReading(){
     updateStockConfirmAction();
-    if($('stockConfirmAccept').disabled||!stockValidation?.valid)return;
+    if(!stockValidation?.valid)return;
     stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='Generar PDF Stock on Hand';
     $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
     $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> tienda, fecha, hora, artículo, unidad y cantidad validados. Ya puedes generar el PDF carta.`;
@@ -567,12 +568,12 @@
     const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable;
     metaBox.hidden=false;
     metaBox.innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
-    const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} probable${probable===1?'':'s'} por variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} requiere${review===1?'':'n'} doble check.`);
+    const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} con variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} sin cruce exacto; se conservará${review===1?'':'n'}.`);
     status.classList.toggle('warning',warnings.length>0);
-    status.innerHTML=warnings.length?`<b>Revisión necesaria:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
+    status.innerHTML=warnings.length?`<b>Lectura completa con avisos:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
     const limit=Number(stockConfigValue().parser.previewLimit)||250,ordered=[...stockRows].sort((a,b)=>({unmatched:0,ambiguous:1,probable:2,exact:3}[a.matchType]-{unmatched:0,ambiguous:1,probable:2,exact:3}[b.matchType])||a.nombreMicros.localeCompare(b.nombreMicros,'es'));
     const visible=ordered.slice(0,limit);
-    target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>cantidades ≠ 0</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>doble check</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Descripción SAP</th><th>Nombre Micros</th><th>Unidad Stock</th><th>Qty</th><th>Estado</th></tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${row.qty.toFixed(1)}</b></td><td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Probable':'! Revisar'}</span></td></tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. El PDF final incluirá los ${stockRows.length} artículos con cantidad diferente de cero.</p>`:''}`;
+    target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>cantidades ≠ 0</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>con aviso</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Descripción SAP</th><th>Nombre Micros</th><th>Unidad Stock</th><th>Qty</th><th>Estado</th></tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${row.qty.toFixed(1)}</b></td><td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Variación':'! Sin cruce'}</span></td></tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. El PDF final incluirá los ${stockRows.length} artículos con cantidad diferente de cero.</p>`:''}`;
   }
 
   async function loadStockPdf(file){
@@ -612,7 +613,7 @@
   async function generateStockPdf(){
     if(!stockRows.length||!stockMeta)return;
     if(!stockConfirmed||!stockValidation?.valid){openStockConfirmation();return;}
-    const finalValidation=validateStockReading(stockMeta,stockRows,stockValidation.warnings||[]);
+    const finalValidation=validateStockReading(stockMeta,stockRows,[]);
     if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='Revisar lectura bloqueada';openStockConfirmation();return;}
     const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Generando PDF...';
     try{
@@ -624,13 +625,13 @@
       function drawHeader(){
         doc.setFillColor(...style.green);doc.roundedRect(page.margin,18,8,44,3,3,'F');doc.setTextColor(...style.dark);doc.setFont('helvetica','bold');doc.setFontSize(style.titleSize);doc.text('Stock on Hand - Referencia operativa',page.margin+16,33);
         doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${stockStoreName(stockMeta.store)} | Report Date ${stockMeta.reportDate||'-'} | Printed On ${`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'-'}`,page.margin+16,47,{maxWidth:pageWidth-page.margin*2-16});
-        doc.setTextColor(...style.warning);doc.setFont('helvetica','bold');doc.text(config.messages.disclaimer,page.margin,70,{maxWidth:pageWidth-page.margin*2});doc.setFont('helvetica','normal');doc.setTextColor(70,82,76);doc.text(`${stockRows.length} cantidades distintas de cero | ${exact} cruces exactos | ${review} por revisar`,page.margin,92);
+        doc.setTextColor(...style.warning);doc.setFont('helvetica','bold');doc.text(config.messages.disclaimer,page.margin,70,{maxWidth:pageWidth-page.margin*2});doc.setFont('helvetica','normal');doc.setTextColor(70,82,76);doc.text(`${stockRows.length} cantidades distintas de cero | ${exact} cruces exactos | ${review} con aviso`,page.margin,92);
         let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-page.margin*2,headerHeight,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);columns.forEach(column=>{doc.text(column.label,x+style.cellPadding,page.tableTop+14,{maxWidth:column.width-style.cellPadding*2});x+=column.width;});return page.tableTop+headerHeight;
       }
       function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo físico',page.margin,page.footerY);doc.text(`Página ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
       doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catálogo Micros',creator:'CodeBrew'});
       let y=drawHeader();stockRows.forEach((row,index)=>{const values={...row,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
-      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} requieren doble check.`:'Todos los cruces fueron exactos.'}`;
+      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
     }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
     finally{button.disabled=false;button.textContent=original;}
   }
@@ -1108,10 +1109,7 @@
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
     $('stockClear').addEventListener('click',clearStockReport);
-    $('stockConfirmHeader').addEventListener('change',updateStockConfirmAction);
-    $('stockConfirmRows').addEventListener('change',updateStockConfirmAction);
     $('stockConfirmAccept').addEventListener('click',confirmStockReading);
-    $('stockConfirmReview').addEventListener('click',closeStockConfirmation);
     $('stockConfirmClose').addEventListener('click',closeStockConfirmation);
     $('stockConfirmDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockConfirmation();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
@@ -1149,7 +1147,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v15-stock-upload-guide'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v16-stock-flexible'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

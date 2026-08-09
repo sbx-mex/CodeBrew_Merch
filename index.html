@@ -232,13 +232,11 @@
             <section class="stock-dialog-content">
               <span class="woe-kicker stock-kicker">Confirmación segura</span>
               <h2 id="stockConfirmTitle">¿Confirmas la lectura?</h2>
-              <p id="stockConfirmIntro">Revisa el encabezado y el detalle antes de habilitar la exportación.</p>
+              <p id="stockConfirmIntro">Confirma el encabezado y genera tu apoyo operativo. Los artículos sin cruce también se conservarán.</p>
               <div id="stockConfirmSummary" class="stock-confirm-summary"></div>
-              <label class="stock-confirm-check"><input id="stockConfirmHeader" type="checkbox"> <span>Confirmo <b>tienda, Report Date y hora de impresión</b>.</span></label>
-              <label class="stock-confirm-check"><input id="stockConfirmRows" type="checkbox"> <span>Confirmo el doble check de <b>artículo, unidad y cantidad</b>.</span></label>
+              <div class="stock-confirm-ready"><b>Listo para continuar</b><span>El PDF incluirá todos los artículos con cantidad diferente de cero, tengan o no cruce.</span></div>
               <p id="stockConfirmBlock" class="stock-confirm-block" hidden></p>
               <div class="stock-dialog-actions">
-                <button id="stockConfirmReview" type="button" class="ghost">Volver a revisar</button>
                 <button id="stockConfirmAccept" type="button" disabled>Confirmar y habilitar PDF</button>
               </div>
             </section>

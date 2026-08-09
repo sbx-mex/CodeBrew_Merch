@@ -33,7 +33,7 @@ def build(report_path: Path) -> dict:
         )
     woe = report.get("woe", {})
     return {
-        "version": "stock-on-hand-v1",
+        "version": "stock-on-hand-v2",
         "parser": {
             "yTolerance": 2.0,
             "itemMaxX": 210,
@@ -41,7 +41,8 @@ def build(report_path: Path) -> dict:
             "unitMaxX": 330,
             "qtyMinX": 330,
             "qtyMaxX": 410,
-            "zeroTolerance": 0.000001,
+            # La salida usa un decimal: valores que se mostrarían como 0.0 no se exportan.
+            "zeroTolerance": 0.049999,
             "previewLimit": 250,
         },
         "page": {

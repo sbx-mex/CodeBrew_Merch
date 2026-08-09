@@ -104,6 +104,7 @@ def audit(root: Path) -> dict:
         and stock_config.get("page", {}).get("format") == "letter"
         and stock_config.get("page", {}).get("orientation") == "portrait"
         and stock_export_keys == ["codigoDia", "idWoe", "descripcionSap", "nombreMicros", "unidad", "qty"]
+        and float(stock_config.get("parser", {}).get("zeroTolerance", 0)) >= 0.049
         and stock_security_ok
     )
     checks.append(check(
@@ -112,7 +113,7 @@ def audit(root: Path) -> dict:
         "WOE 4 columnas + Stock seguro de 6 columnas; ambos en carta vertical",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockAttachGuide", "stockUploadGuideDialog", "stockUploadGuideAccept", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmHeader", "stockConfirmRows", "stockConfirmAccept"}
+    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockAttachGuide", "stockUploadGuideDialog", "stockUploadGuideAccept", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList"}.intersection(parser.ids)
     checks.append(check(
         "Navegación e interfaz",
