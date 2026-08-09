@@ -145,8 +145,28 @@
           <h2>Crea tu listado WOE</h2>
           <p>Busca, agrega y valida varios artículos en una sola vista. Exporta únicamente lo necesario en PDF carta vertical.</p>
         </div>
-        <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos auditados</span></div>
+        <div class="woe-hero-tools">
+          <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos auditados</span></div>
+          <button id="woeGuideOpen" type="button" class="woe-guide-open">Ver guía de comparación</button>
+        </div>
       </section>
+
+      <dialog id="woeGuideDialog" class="stock-dialog woe-guide-dialog" aria-labelledby="woeGuideTitle" aria-describedby="woeGuideIntro">
+        <form method="dialog" class="stock-dialog-card woe-guide-card">
+          <button id="woeGuideClose" class="stock-dialog-close" value="cancel" aria-label="Cerrar guía">×</button>
+          <figure class="woe-guide-visual">
+            <img src="assets/stock_pdf_woe.jpeg" alt="Guía para capturar y comparar Stock on Hand con WOE" loading="lazy" decoding="async">
+          </figure>
+          <section class="woe-guide-footer">
+            <div>
+              <span class="woe-kicker stock-kicker">Antes de comparar</span>
+              <h2 id="woeGuideTitle">Valida tu Stock con confianza.</h2>
+              <p id="woeGuideIntro">Confirma tienda, fecha y hora; después compara artículo, unidad y cantidad antes de generar el PDF.</p>
+            </div>
+            <button id="woeGuideAccept" type="button">Entendido, comenzar</button>
+          </section>
+        </form>
+      </dialog>
 
       <section class="panel woe-search-panel">
         <div class="woe-mini-guide" aria-label="Ayuda rápida">

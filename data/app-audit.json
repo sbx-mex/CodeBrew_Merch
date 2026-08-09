@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-09T21:48:46+00:00",
+  "auditedAtUtc": "2026-08-09T20:04:34+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
   "checksTotal": 10,
@@ -31,7 +31,7 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "85 controles con ID único y sin acciones redundantes"
+      "detail": "91 controles con ID único y sin acciones redundantes"
     },
     {
       "name": "Referencias locales",
@@ -56,14 +56,14 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "1286 KB auditados en archivos críticos"
+      "detail": "1289 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 17416,
-      "styles.css": 26055,
-      "app.js": 81641,
+      "index.html": 18621,
+      "styles.css": 27430,
+      "app.js": 82620,
       "data/products.js": 356315,
       "data/woe.js": 833682,
       "data/stock-config.js": 1262
