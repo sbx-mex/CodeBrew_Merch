@@ -12,12 +12,13 @@ PAGE_WIDTH = 612
 PAGE_HEIGHT = 792
 MARGIN = 24
 COLUMNS = (
-    {"key": "codigoDia", "label": "#DIA", "width": 55},
-    {"key": "idWoe", "label": "#SAP", "width": 55},
-    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 190},
-    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 160},
-    {"key": "unidad", "label": "UNIDAD STOCK", "width": 60},
-    {"key": "qty", "label": "QTY", "width": 44},
+    {"key": "codigoDia", "label": "#DIA", "width": 45},
+    {"key": "idWoe", "label": "#SAP", "width": 45},
+    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 160},
+    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 142},
+    {"key": "unidad", "label": "UNIDAD STOCK", "width": 64},
+    {"key": "qty", "label": "QTY", "width": 40},
+    {"key": "estado", "label": "ESTADO", "width": 68},
 )
 
 
@@ -33,7 +34,7 @@ def build(report_path: Path) -> dict:
         )
     woe = report.get("woe", {})
     return {
-        "version": "stock-on-hand-v2",
+        "version": "stock-on-hand-v3-premium",
         "parser": {
             "yTolerance": 2.0,
             "itemMaxX": 210,

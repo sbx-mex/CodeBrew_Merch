@@ -396,7 +396,7 @@
     return stockConfig.parser?stockConfig:{
       parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.049999,previewLimit:250},
       page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:112,tableBottom:754,footerY:778},
-      columns:[{key:'codigoDia',label:'#DIA',width:55},{key:'idWoe',label:'#SAP',width:55},{key:'descripcionSap',label:'DESCRIPCION SAP',width:190},{key:'nombreMicros',label:'NOMBRE MICROS',width:160},{key:'unidad',label:'UNIDAD STOCK',width:60},{key:'qty',label:'QTY',width:44}],
+      columns:[{key:'codigoDia',label:'#DIA',width:45},{key:'idWoe',label:'#SAP',width:45},{key:'descripcionSap',label:'DESCRIPCION SAP',width:160},{key:'nombreMicros',label:'NOMBRE MICROS',width:142},{key:'unidad',label:'UNIDAD STOCK',width:64},{key:'qty',label:'QTY',width:40},{key:'estado',label:'ESTADO',width:68}],
       style:{titleSize:17,metaSize:7.5,headerSize:6.8,bodySize:7,lineHeight:8.2,cellPadding:4,maxLinesPerCell:3,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]},
       messages:{disclaimer:'Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio.',nameVariation:'El nombre Micros puede variar. Valida por Código DIA cuando el cruce no sea exacto.'}
     };
@@ -551,7 +551,7 @@
   function confirmStockReading(){
     updateStockConfirmAction();
     if(!stockValidation?.valid)return;
-    stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='Generar PDF Stock on Hand';
+    stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 · Exportar PDF cruzado';
     $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
     $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> tienda, fecha, hora, artículo, unidad y cantidad validados. Ya puedes generar el PDF carta.`;
     closeStockConfirmation();
@@ -578,7 +578,7 @@
 
   async function loadStockPdf(file){
     if(!file)return;
-    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockValidation=null;$('stockExport').disabled=true;$('stockExport').textContent='Confirma la lectura para exportar';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockValidation=null;$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
     status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
     let pdf=null;
     try{
@@ -601,21 +601,21 @@
       stockMeta={...(firstMeta||{}),pages:pdf.numPages,headerMismatches:[...headerMismatches]};
       stockRows=rawRows.map(matchStockRow);
       if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
-      const freshness=stockFreshness(stockMeta);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'Confirmar lectura':'Revisar lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
+      const freshness=stockFreshness(stockMeta);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
     }catch(error){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}
     finally{try{await pdf?.destroy?.();}catch(error){}}
   }
 
   function clearStockReport(){
-    stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='Confirma la lectura para exportar';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();
+    stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();
   }
 
   async function generateStockPdf(){
     if(!stockRows.length||!stockMeta)return;
     if(!stockConfirmed||!stockValidation?.valid){openStockConfirmation();return;}
     const finalValidation=validateStockReading(stockMeta,stockRows,[]);
-    if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='Revisar lectura bloqueada';openStockConfirmation();return;}
-    const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Generando PDF...';
+    if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='2 · Lectura bloqueada';openStockConfirmation();return;}
+    const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Creando PDF cruzado...';
     try{
       await ensureJsPdf();
       const config=stockConfigValue(),page=config.page,style=config.style,columns=config.columns,{jsPDF}=window.jspdf;
@@ -630,7 +630,7 @@
       }
       function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo físico',page.margin,page.footerY);doc.text(`Página ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
       doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catálogo Micros',creator:'CodeBrew'});
-      let y=drawHeader();stockRows.forEach((row,index)=>{const values={...row,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
+      let y=drawHeader();stockRows.forEach((row,index)=>{const estado=row.matchType==='exact'?'Exacto':row.matchType==='probable'?'Variación':'Sin cruce',values={...row,estado,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);if(column.key==='estado')doc.setTextColor(...(row.matchType==='exact'?style.green:style.warning));else doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty','estado'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
       const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
     }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
     finally{button.disabled=false;button.textContent=original;}
@@ -1147,7 +1147,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v16-stock-flexible'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v17-stock-premium'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
