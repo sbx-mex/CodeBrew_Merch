@@ -230,9 +230,9 @@
     }));
   }
 
-  function addWoeItem(item){
+  function addWoeItem(item,render=true){
     woeSelection.set(woeKey(item,woeSelection.size),item);
-    renderWoeSelection();
+    if(render)renderWoeSelection();
   }
 
   function addWoeQueries(raw){
@@ -240,8 +240,9 @@
     queries.forEach(query=>{
       const matches=findWoeMatches(query,25);
       if(!matches.length){missing.push(query);return;}
-      matches.forEach(item=>{const before=woeSelection.size;addWoeItem(item);if(woeSelection.size>before)added++;});
+      matches.forEach(item=>{const before=woeSelection.size;addWoeItem(item,false);if(woeSelection.size>before)added++;});
     });
+    renderWoeSelection();
     $('woeSearch').value='';$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');
     $('woeStatus').classList.toggle('warning',missing.length>0);
     if(missing.length)$('woeStatus').innerHTML=`<b>Aviso · sin coincidencia:</b> ${missing.map(escapeHtml).join(', ')}. No existe en SAP, Micros ni MERCH; valida el dato en el Excel motor.`;
@@ -252,42 +253,62 @@
 
   function renderWoeSelection(){
     const target=$('woeSelection'),items=[...woeSelection.entries()];
+    $('woeSelectedCount').textContent=items.length;
+    $('woeCopyList').disabled=!items.length;$('woeExport').disabled=!items.length;
     if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
     target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||item.idWoe||'Sin cruce')}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
-    target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);renderWoeSelection();}));
+    target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
   }
 
-  function woeBadge(ok,label){return `<span class="woe-badge ${ok?'ok':'missing'}">${ok?'✓':'!'} ${escapeHtml(label)}</span>`;}
-  function renderWoeCard(item,index){
-    const micros=(item.micros||[]),merch=(item.merch||[]),validation=item.validation||{};
-    const incomplete=!validation.sap||!validation.micros||!validation.merch;
-    return `<article class="woe-card ${incomplete?'incomplete':''}">
-      <header><div><span>ID WOE</span><strong>${escapeHtml(item.idWoe||'Sin cruce')}</strong></div><div class="woe-dia"><span>Código DIA</span><strong>${escapeHtml(item.codigoDia)}</strong></div><button type="button" class="woe-copy" data-woe-copy="${index}">Copiar</button></header>
-      ${!validation.sap?'<p class="woe-alert"><b>Aviso:</b> el artículo existe en Micros o MERCH, pero no tiene cruce SAP/WOE.</p>':''}
-      <div class="woe-sap"><span>Descripción SAP</span><h3>${escapeHtml(item.descripcionSap||'Sin coincidencia SAP')}</h3></div>
-      <div class="woe-validation">${woeBadge(validation.sap,'SAP')}${woeBadge(validation.micros,'Micros')}${woeBadge(validation.merch,'MERCH')}</div>
-      <div class="woe-cross-grid">
-        <section><span>Catálogo Micros</span>${micros.length?`<ul>${micros.map(name=>`<li>${escapeHtml(name)}</li>`).join('')}</ul>`:'<p class="woe-missing">Sin coincidencia Micros para este Código DIA.</p>'}</section>
-        <section><span>Base MERCH</span>${merch.length?merch.map(row=>`<div class="woe-merch-row"><b>${escapeHtml(row.descripcionSci||row.nombreInventario||row.nombrePos||'Sin descripción SCI')}</b><small>${escapeHtml(row.base||'')} · ${escapeHtml(row.nombreInventario||row.nombrePos||'Sin nombre de apoyo')}</small></div>`).join(''):'<p class="woe-missing">Sin coincidencia MERCH. El artículo puede existir sólo en SAP/Micros.</p>'}</section>
-      </div>
-    </article>`;
+  function selectedWoeItems(){
+    return [...woeSelection.entries()].map(([key,item])=>({key,item})).sort((a,b)=>String(a.item.codigoDia).localeCompare(String(b.item.codigoDia),'es',{numeric:true}));
+  }
+
+  function operationalWoeStatus(item){
+    const sap=Boolean(item.validation?.sap),micros=Boolean(item.validation?.micros);
+    if(sap&&micros)return {kind:'ok',label:'Validado SAP + Micros'};
+    if(sap)return {kind:'warning',label:'Revisar en Micros'};
+    if(micros)return {kind:'warning',label:'Sin cruce SAP / WOE'};
+    return {kind:'missing',label:'Sin cruce operativo'};
+  }
+
+  function merchReferenceHtml(item){
+    const rows=item.merch||[];
+    if(!rows.length)return '<span class="woe-merch-na">No aplica</span>';
+    return `<details class="woe-merch-reference"><summary>MERCH homologado · ${rows.length}</summary>${rows.map(row=>`<div><b>${escapeHtml(row.descripcionSci||row.nombreInventario||row.nombrePos||'Artículo MERCH')}</b><small>SKU lista: ${escapeHtml(row.skuIntl||'N/D')} · SKU POS: ${escapeHtml(row.skuPos||'N/D')}</small></div>`).join('')}<p>Revisa con el SKU si continúa activo en WOE; el nombre puede ser distinto.</p></details>`;
+  }
+
+  function woeExportRows(){
+    return selectedWoeItems().map(({item})=>{
+      const status=operationalWoeStatus(item),merch=item.merch||[];
+      return [item.descripcionSap||'Sin descripción SAP',(item.micros||[]).join(' | ')||'Sin coincidencia Micros',item.codigoDia||'',item.idWoe||'',status.label,merch.map(row=>row.skuIntl||row.skuPos).filter(Boolean).join(' | ')||'No aplica'];
+    });
+  }
+
+  function comparisonText(separator='\t'){
+    const rows=[['Descripción SAP','Nombre Micros','#DIA','#SAP','Validación','SKU MERCH (referencia)'],...woeExportRows()];
+    return rows.map(row=>row.join(separator)).join('\n');
+  }
+
+  async function copyWoeComparison(){
+    try{await navigator.clipboard.writeText(comparisonText());$('woeCopyList').textContent='Tabla copiada';setTimeout(()=>$('woeCopyList').textContent='Copiar tabla',1300);}catch(e){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No se pudo copiar. Usa Descargar para Excel.';}
+  }
+
+  function exportWoeComparison(){
+    const csv='\ufeff'+[['Descripción SAP','Nombre Micros','#DIA','#SAP','Validación','SKU MERCH (referencia)'],...woeExportRows()].map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(',')).join('\r\n');
+    const link=document.createElement('a'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    link.href=url;link.download=`WOE_Doble_Check_${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
   }
 
   function renderWoeResults(){
     if(!woeSelection.size&&$('woeSearch').value.trim())addWoeQueries($('woeSearch').value);
-    const items=[...woeSelection.values()],target=$('woeResults');
+    const rows=selectedWoeItems(),items=rows.map(row=>row.item),target=$('woeResults');
     if(!items.length){target.innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='No hay registros seleccionados. Busca por WOE, Código DIA o nombre.';return;}
-    target.innerHTML=items.map(renderWoeCard).join('');
-    const incomplete=items.filter(item=>!item.validation?.sap||!item.validation?.micros||!item.validation?.merch);
-    $('woeStatus').classList.toggle('warning',incomplete.length>0);
-    $('woeStatus').innerHTML=incomplete.length
-      ? `<b>Aviso:</b> ${incomplete.length} de ${items.length} resultado${items.length===1?'':'s'} no tiene cruce completo. Revisa los indicadores SAP, Micros y MERCH antes de usarlo.`
-      : `<b>Validación completa:</b> ${items.length} resultado${items.length===1?'':'s'} coincide en SAP, Micros y MERCH.`;
-    target.querySelectorAll('[data-woe-copy]').forEach(button=>button.addEventListener('click',async()=>{
-      const item=items[Number(button.dataset.woeCopy)];
-      const text=`ID WOE: ${item.idWoe||'Sin cruce'}\nCódigo DIA: ${item.codigoDia}\nSAP: ${item.descripcionSap||'Sin coincidencia SAP'}\nMicros: ${(item.micros||[]).join(' | ')||'Sin coincidencia Micros'}`;
-      try{await navigator.clipboard.writeText(text);button.textContent='Copiado';setTimeout(()=>button.textContent='Copiar',1200);}catch(e){button.textContent='No disponible';}
-    }));
+    const reviewed=items.filter(item=>operationalWoeStatus(item).kind==='ok').length,needsReview=items.length-reviewed;
+    target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artículos</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Descripción SAP</th><th>Nombre Micros</th><th>#DIA</th><th>#SAP</th><th>Validación</th><th>Referencia opcional</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item);return `<tr><td data-label="Descripción SAP"><strong>${escapeHtml(item.descripcionSap||'Sin descripción SAP')}</strong></td><td data-label="Nombre Micros">${(item.micros||[]).length?(item.micros||[]).map(escapeHtml).join('<br>'):'<span class="woe-missing">Sin coincidencia</span>'}</td><td data-label="#DIA"><b class="woe-code">${escapeHtml(item.codigoDia||'—')}</b></td><td data-label="#SAP"><b>${escapeHtml(item.idWoe||'—')}</b></td><td data-label="Validación"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'✓':'!'} ${escapeHtml(status.label)}</span></td><td data-label="Referencia opcional">${merchReferenceHtml(item)}</td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar Código DIA ${escapeHtml(item.codigoDia)}">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
+    $('woeStatus').classList.toggle('warning',needsReview>0);
+    $('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados en SAP + Micros y ${needsReview} por revisar. MERCH no afecta este resultado.`:`<b>Listo:</b> los ${reviewed} artículos tienen cruce SAP + Micros. MERCH se muestra sólo cuando existe como referencia por SKU.`;
+    target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);renderWoeSelection();renderWoeResults();}));
   }
 
   function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
@@ -719,6 +740,8 @@
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>addWoeQueries($('woeSearch').value));
     $('woeRun').addEventListener('click',renderWoeResults);
+    $('woeCopyList').addEventListener('click',copyWoeComparison);
+    $('woeExport').addEventListener('click',exportWoeComparison);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
@@ -755,7 +778,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v7-woe'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v8-woe'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

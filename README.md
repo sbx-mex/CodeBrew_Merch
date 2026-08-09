@@ -3,9 +3,10 @@
 Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 
 ## Buscador WOE independiente
-- Busca por ID WOE, Código DIA, descripción SAP, nombre Micros o nombre de inventario.
-- Permite seleccionar y consultar varios artículos en una sola vista.
-- Cruza `SAP` y `Catalogo Micros` con Base_Campaña, Discovery, Homologados y Essentials mediante Código DIA.
+- Busca por ID WOE, Código DIA, descripción SAP, nombre Micros, nombre de inventario o SKU MERCH.
+- Permite agregar múltiples artículos, compararlos en una tabla, copiar el resultado y descargarlo como CSV compatible con Excel.
+- La validación operativa cruza únicamente `SAP` con `Catalogo Micros` mediante Código DIA.
+- MERCH no es requisito ni genera error: aparece como referencia opcional con SKU cuando existe una homologación.
 - Elimina duplicados exactos de forma defensiva, conserva relaciones uno-a-varios y muestra mensajes explícitos cuando no existe coincidencia.
 - También muestra artículos presentes sólo en Micros o MERCH y los identifica como `Sin cruce SAP/WOE`.
 - El Excel `Lista_Precios_Base.xlsx` continúa como único motor; Python genera `data/products.js`, `data/woe.js` y la auditoría.

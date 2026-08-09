@@ -1,8 +1,8 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-09T19:07:30+00:00",
-  "sourceModifiedAtUtc": "2026-08-09T19:07:30+00:00",
+  "generatedAtUtc": "2026-08-09T19:24:06+00:00",
+  "sourceModifiedAtUtc": "2026-08-09T19:24:06+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26BTLSS20",
   "totalValidProducts": 956,
@@ -133,6 +133,8 @@
     "withMicros": 1139,
     "withMerch": 905,
     "withoutSap": 891,
+    "operationalSapMicrosMatch": 751,
+    "operationalNeedsReview": 1493,
     "completeTripleMatch": 210
   }
 }

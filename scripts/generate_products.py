@@ -313,6 +313,10 @@ def parse_woe_catalog(workbook, products):
                 "micros": bool(micros),
                 "merch": bool(merch),
             },
+            "operationalValidation": {
+                "sapMicros": bool(description and micros),
+                "merchRequired": False,
+            },
             "sourceRow": row_number,
             "origin": "SAP",
         })
@@ -331,6 +335,7 @@ def parse_woe_catalog(workbook, products):
             "micros": micros,
             "merch": merch,
             "validation": {"sap": False, "micros": bool(micros), "merch": bool(merch)},
+            "operationalValidation": {"sapMicros": False, "merchRequired": False},
             "sourceRow": None,
             "origin": "Micros/MERCH",
         })
@@ -353,6 +358,8 @@ def parse_woe_catalog(workbook, products):
         "withMicros": sum(1 for item in catalog if item["validation"]["micros"]),
         "withMerch": sum(1 for item in catalog if item["validation"]["merch"]),
         "withoutSap": sum(1 for item in catalog if not item["validation"]["sap"]),
+        "operationalSapMicrosMatch": sum(1 for item in catalog if item["operationalValidation"]["sapMicros"]),
+        "operationalNeedsReview": sum(1 for item in catalog if not item["operationalValidation"]["sapMicros"]),
         "completeTripleMatch": sum(1 for item in catalog if item["validation"]["sap"] and item["validation"]["micros"] and item["validation"]["merch"]),
     }
     return catalog, report
