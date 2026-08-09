@@ -185,12 +185,11 @@
           <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
         <div class="stock-flow" aria-label="Flujo Stock on Hand">
-          <div><b>1</b><span>Genera el reporte al finalizar el servicio.</span></div>
-          <div><b>2</b><span>Adjunta el PDF más actual y valida tienda y fecha.</span></div>
-          <div><b>3</b><span>Revisa cruces y genera tu referencia operativa.</span></div>
+          <div><b>1</b><span>Adjunta el PDF Stock on Hand más actual.</span></div>
+          <div><b>2</b><span>Confirma la lectura y exporta el PDF cruzado.</span></div>
         </div>
         <div class="stock-upload-row">
-          <button id="stockAttachGuide" type="button" class="stock-file stock-attach">1 · Adjuntar reporte Stock</button>
+          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar y validar PDF</button>
           <input id="stockPdfInput" class="visually-hidden" type="file" accept="application/pdf,.pdf">
           <button id="stockExport" type="button" class="stock-export" disabled>2 · Exportar PDF cruzado</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
@@ -200,26 +199,6 @@
         <div id="stockMeta" class="stock-meta" hidden></div>
         <div id="stockResults" class="stock-results"></div>
       </section>
-
-      <dialog id="stockUploadGuideDialog" class="stock-dialog stock-upload-guide-dialog" aria-labelledby="stockUploadGuideTitle" aria-describedby="stockUploadGuideIntro">
-        <form method="dialog" class="stock-dialog-card stock-upload-guide-card">
-          <button id="stockUploadGuideClose" class="stock-dialog-close" value="cancel" aria-label="Cerrar guía">×</button>
-          <figure class="stock-upload-guide-visual">
-            <img src="assets/stock_pdf_woe.jpeg" alt="Guía para capturar y comparar Stock on Hand con WOE" loading="lazy" decoding="async">
-          </figure>
-          <section class="stock-upload-guide-footer">
-            <div>
-              <span class="woe-kicker stock-kicker">Antes de adjuntar</span>
-              <h2 id="stockUploadGuideTitle">¿Confirmas que revisarás la información?</h2>
-              <p id="stockUploadGuideIntro">Utiliza el reporte más actual y valida tienda, fecha, hora, artículo, unidad y cantidad antes de exportar.</p>
-            </div>
-            <div class="stock-upload-guide-actions">
-              <button id="stockUploadGuideCancel" type="button" class="ghost">Cancelar</button>
-              <button id="stockUploadGuideAccept" type="button">Confirmar y elegir PDF</button>
-            </div>
-          </section>
-        </form>
-      </dialog>
 
       <dialog id="stockConfirmDialog" class="stock-dialog" aria-labelledby="stockConfirmTitle" aria-describedby="stockConfirmIntro">
         <form method="dialog" class="stock-dialog-card">
@@ -231,13 +210,13 @@
             </figure>
             <section class="stock-dialog-content">
               <span class="woe-kicker stock-kicker">Confirmación segura</span>
-              <h2 id="stockConfirmTitle">¿Confirmas la lectura?</h2>
-              <p id="stockConfirmIntro">Confirma el encabezado y genera tu apoyo operativo. Los artículos sin cruce también se conservarán.</p>
+              <h2 id="stockConfirmTitle">Confirma y exporta.</h2>
+              <p id="stockConfirmIntro">Valida tienda, fecha y hora. Los artículos sin cruce se conservarán como aviso.</p>
               <div id="stockConfirmSummary" class="stock-confirm-summary"></div>
               <div class="stock-confirm-ready"><b>Listo para continuar</b><span>El PDF incluirá todos los artículos con cantidad diferente de cero, tengan o no cruce.</span></div>
               <p id="stockConfirmBlock" class="stock-confirm-block" hidden></p>
               <div class="stock-dialog-actions">
-                <button id="stockConfirmAccept" type="button" disabled>Confirmar y habilitar PDF</button>
+                <button id="stockConfirmAccept" type="button" disabled>Confirmar y exportar PDF cruzado</button>
               </div>
             </section>
           </div>

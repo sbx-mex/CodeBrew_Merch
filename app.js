@@ -548,13 +548,14 @@
     if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
   }
 
-  function confirmStockReading(){
+  async function confirmStockReading(){
     updateStockConfirmAction();
     if(!stockValidation?.valid)return;
     stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 · Exportar PDF cruzado';
     $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
-    $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> tienda, fecha, hora, artículo, unidad y cantidad validados. Ya puedes generar el PDF carta.`;
+    $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> preparando el PDF cruzado en Carta vertical.`;
     closeStockConfirmation();
+    await generateStockPdf();
   }
 
   function stockStoreName(value){
@@ -644,21 +645,6 @@
     document.querySelectorAll('.tabpage').forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
     try{sessionStorage.setItem('codebrew-tab',target);}catch(error){}
     if(updateHistory&&location.hash!==`#${target}`)history.pushState({tab:target},'',`#${target}`);
-  }
-
-  function closeStockUploadGuide(){
-    const dialog=$('stockUploadGuideDialog');
-    if(typeof dialog.close==='function'&&dialog.open)dialog.close();else dialog.classList.remove('open');
-  }
-
-  function openStockUploadGuide(){
-    const dialog=$('stockUploadGuideDialog');
-    if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
-  }
-
-  function confirmStockUploadGuide(){
-    closeStockUploadGuide();
-    requestAnimationFrame(()=>$('stockPdfInput').click());
   }
 
   function renderAuditHealth(){
@@ -1101,11 +1087,7 @@
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
-    $('stockAttachGuide').addEventListener('click',openStockUploadGuide);
-    $('stockUploadGuideAccept').addEventListener('click',confirmStockUploadGuide);
-    $('stockUploadGuideCancel').addEventListener('click',closeStockUploadGuide);
-    $('stockUploadGuideClose').addEventListener('click',closeStockUploadGuide);
-    $('stockUploadGuideDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockUploadGuide();});
+    $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
     $('stockClear').addEventListener('click',clearStockReport);
@@ -1147,7 +1129,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v17-stock-premium'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v18-stock-direct'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
