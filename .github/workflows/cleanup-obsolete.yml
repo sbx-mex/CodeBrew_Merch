@@ -1,0 +1,49 @@
+name: Auditar y limpiar obsoletos
+
+on:
+  workflow_dispatch:
+    inputs:
+      aplicar:
+        description: "Eliminar únicamente candidatos seguros no referenciados"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: codebrew-cleanup
+  cancel-in-progress: false
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v5
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Auditar sin borrar
+        if: ${{ !inputs.aplicar }}
+        run: python scripts/cleanup_obsolete.py --report "$RUNNER_TEMP/cleanup-report.json"
+      - name: Eliminar sólo candidatos validados
+        if: ${{ inputs.aplicar }}
+        run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
+      - name: Mostrar resultado
+        run: cat "$RUNNER_TEMP/cleanup-report.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publicar limpieza
+        if: ${{ inputs.aplicar }}
+        run: |
+          if git diff --quiet; then
+            echo "No hay archivos seguros por eliminar."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "Eliminar archivos obsoletos validados"
+          git push
