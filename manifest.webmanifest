@@ -1,7 +1,7 @@
 {
-  "name": "CodeBrew Merch POS v2",
+  "name": "CodeBrew Merch POS · WOE",
   "short_name": "CodeBrew",
-  "description": "Buscador Merch POS con OCR móvil optimizado, cámara, etiquetado y funcionamiento PWA.",
+  "description": "Buscador operativo de Merch POS y catálogo WOE con validación SAP, Micros y MERCH.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

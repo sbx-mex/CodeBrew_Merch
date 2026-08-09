@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v5-campaign-pdf-2026-07-31';
+const CACHE_NAME = 'codebrew-merch-v6-woe-2026-08-09';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './app.js',
   './manifest.webmanifest',
   './data/products.js',
+  './data/woe.js',
   './data/import-report.json',
   './Lista_Precios_Base.xlsx',
   './assets/icon-192.png',
@@ -34,7 +35,8 @@ self.addEventListener('fetch', event => {
     event.respondWith(fetch(event.request).catch(() => caches.match('./index.html')));
     return;
   }
-  const isGeneratedData = new URL(event.request.url).pathname.endsWith('/data/products.js');
+  const path = new URL(event.request.url).pathname;
+  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/import-report.json');
   event.respondWith(
     (isGeneratedData ? fetch(event.request).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {

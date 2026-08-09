@@ -1,6 +1,13 @@
-# CodeBrew Merch POS v3
+# CodeBrew Merch POS · WOE
 
 Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
+
+## Buscador WOE independiente
+- Busca por ID WOE, Código DIA, descripción SAP, nombre Micros o nombre de inventario.
+- Permite seleccionar y consultar varios artículos en una sola vista.
+- Cruza `SAP` y `Catalogo Micros` con Base_Campaña, Discovery, Homologados y Essentials mediante Código DIA.
+- Conserva las relaciones uno-a-varios y muestra mensajes explícitos cuando no existe coincidencia.
+- El Excel `Lista_Precios_Base.xlsx` continúa como único motor; Python genera `data/products.js`, `data/woe.js` y la auditoría.
 
 ## Cambios principales
 - Restricciones progresivas sin mínimos obligatorios que bloqueen cámaras limitadas.
@@ -22,7 +29,10 @@ Subir a GitHub Pages desde `main` / `/root` con `index.html` en raíz.
 ## Actualización de precios
 1. Reemplazar `Lista_Precios_Base.xlsx` en la raíz, conservando exactamente ese nombre.
 2. Subir el cambio a la rama `main`.
-3. La acción `Actualizar lista de precios` valida las pestañas y encabezados y genera `data/products.js`.
+3. La acción `Actualizar lista de precios` valida las seis pestañas y genera `data/products.js` y `data/woe.js`.
 4. Si la validación falla, los datos publicados anteriormente no se reemplazan.
 
 El resultado técnico del último procesamiento queda en `data/import-report.json`.
+
+## Limpieza segura
+El workflow `Auditar y limpiar obsoletos` inicia en modo auditoría. Sólo con la opción `aplicar` elimina archivos incluidos en una lista segura y que no tengan referencias activas dentro del proyecto.

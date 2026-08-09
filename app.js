@@ -1,6 +1,8 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const products = window.PRODUCTS || [];
+  const woeCatalog = window.WOE_CATALOG || [];
+  const woeSelection = new Map();
   let stream = null;
   let labelStream = null;
   let currentProduct = null;
@@ -17,6 +19,7 @@
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
   function normalizeText(value){ return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+  function escapeHtml(value){ return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
   function moneyClean(v){ return String(v || '').trim(); }
   function tierKeys(p){ return Object.keys(p.tier || {}).filter(k => moneyClean(p.tier[k])); }
   function priceFor(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); return p.tier?.[k] || ''; }
@@ -172,6 +175,102 @@
     currentProduct = null;
     $('result').className = 'result notfound';
     $('result').innerHTML = `<div class="not-card"><div class="title">Artículo no encontrado</div><p>Se buscó: <b>${q || 'sin lectura'}</b></p><p class="desc">Verifica SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.</p></div>`;
+  }
+
+  const woeSearchRows = woeCatalog.map((item,index) => ({
+    item,index,
+    text:normalizeText([
+      item.idWoe,item.codigoDia,item.descripcionSap,
+      ...(item.micros||[]),
+      ...(item.merch||[]).flatMap(row => [row.descripcionSci,row.nombrePos,row.nombreInventario,row.skuIntl,row.skuPos,row.base])
+    ].join(' '))
+  }));
+
+  function woeKey(item,index=''){ return `${item.idWoe}|${item.codigoDia}|${item.sourceRow || index}`; }
+  function splitWoeQueries(raw){ return String(raw||'').split(/[\n,;]+/).map(value=>value.trim()).filter(Boolean); }
+  function findWoeMatches(raw,limit=12){
+    const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input);
+    if(!query)return [];
+    const exact=woeSearchRows.filter(row => normalizeSku(row.item.idWoe)===numeric || normalizeSku(row.item.codigoDia)===numeric);
+    if(exact.length)return exact.slice(0,limit).map(row=>row.item);
+    const tokens=query.split(' ').filter(Boolean);
+    return woeSearchRows
+      .map(row=>{
+        if(!tokens.every(token=>row.text.includes(token)))return null;
+        const sap=normalizeText(row.item.descripcionSap),micros=normalizeText((row.item.micros||[]).join(' '));
+        let score=tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
+        if(sap===query||micros===query)score+=30;
+        return {item:row.item,score};
+      })
+      .filter(Boolean).sort((a,b)=>b.score-a.score||String(a.item.codigoDia).localeCompare(String(b.item.codigoDia)))
+      .slice(0,limit).map(row=>row.item);
+  }
+
+  function renderWoeSuggestions(raw){
+    const box=$('woeSuggestions'),input=$('woeSearch'),query=String(raw||'').trim();
+    if(!query){box.hidden=true;input.setAttribute('aria-expanded','false');return;}
+    const matches=findWoeMatches(query,8);
+    box.innerHTML=matches.length?matches.map((item,index)=>`
+      <button type="button" class="woe-suggestion" role="option" data-woe-suggestion="${index}">
+        <b>${escapeHtml(item.codigoDia)}</b><span>${escapeHtml(item.descripcionSap||'Sin descripción SAP')}</span><small>WOE ${escapeHtml(item.idWoe)}</small>
+      </button>`).join(''):`<div class="woe-no-suggestion">Sin coincidencia para “${escapeHtml(query)}”.</div>`;
+    box.hidden=false;input.setAttribute('aria-expanded','true');
+    box.querySelectorAll('[data-woe-suggestion]').forEach((button,index)=>button.addEventListener('click',()=>{
+      addWoeItem(matches[index]);input.value='';box.hidden=true;input.setAttribute('aria-expanded','false');input.focus();
+    }));
+  }
+
+  function addWoeItem(item){
+    woeSelection.set(woeKey(item,woeSelection.size),item);
+    renderWoeSelection();
+  }
+
+  function addWoeQueries(raw){
+    const queries=splitWoeQueries(raw),missing=[];let added=0;
+    queries.forEach(query=>{
+      const matches=findWoeMatches(query,25);
+      if(!matches.length){missing.push(query);return;}
+      matches.forEach(item=>{const before=woeSelection.size;addWoeItem(item);if(woeSelection.size>before)added++;});
+    });
+    $('woeSearch').value='';$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');
+    if(missing.length)$('woeStatus').innerHTML=`<b>Sin coincidencia:</b> ${missing.map(escapeHtml).join(', ')}. Verifica ID WOE, Código DIA o nombre.`;
+    else if(added)$('woeStatus').textContent=`${added} coincidencia${added===1?'':'s'} agregada${added===1?'':'s'} a la selección.`;
+    else $('woeStatus').textContent='No se agregaron registros nuevos.';
+    return {added,missing};
+  }
+
+  function renderWoeSelection(){
+    const target=$('woeSelection'),items=[...woeSelection.entries()];
+    if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
+    target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(item.descripcionSap||item.idWoe)}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
+    target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);renderWoeSelection();}));
+  }
+
+  function woeBadge(ok,label){return `<span class="woe-badge ${ok?'ok':'missing'}">${ok?'✓':'!'} ${escapeHtml(label)}</span>`;}
+  function renderWoeCard(item,index){
+    const micros=(item.micros||[]),merch=(item.merch||[]),validation=item.validation||{};
+    return `<article class="woe-card">
+      <header><div><span>ID WOE</span><strong>${escapeHtml(item.idWoe)}</strong></div><div class="woe-dia"><span>Código DIA</span><strong>${escapeHtml(item.codigoDia)}</strong></div><button type="button" class="woe-copy" data-woe-copy="${index}">Copiar</button></header>
+      <div class="woe-sap"><span>Descripción SAP</span><h3>${escapeHtml(item.descripcionSap||'Sin coincidencia SAP')}</h3></div>
+      <div class="woe-validation">${woeBadge(validation.sap,'SAP')}${woeBadge(validation.micros,'Micros')}${woeBadge(validation.merch,'MERCH')}</div>
+      <div class="woe-cross-grid">
+        <section><span>Catálogo Micros</span>${micros.length?`<ul>${micros.map(name=>`<li>${escapeHtml(name)}</li>`).join('')}</ul>`:'<p class="woe-missing">Sin coincidencia Micros para este Código DIA.</p>'}</section>
+        <section><span>Base MERCH</span>${merch.length?merch.map(row=>`<div class="woe-merch-row"><b>${escapeHtml(row.descripcionSci||row.nombreInventario||row.nombrePos||'Sin descripción SCI')}</b><small>${escapeHtml(row.base||'')} · ${escapeHtml(row.nombreInventario||row.nombrePos||'Sin nombre de apoyo')}</small></div>`).join(''):'<p class="woe-missing">Sin coincidencia MERCH. El artículo puede existir sólo en SAP/Micros.</p>'}</section>
+      </div>
+    </article>`;
+  }
+
+  function renderWoeResults(){
+    if(!woeSelection.size&&$('woeSearch').value.trim())addWoeQueries($('woeSearch').value);
+    const items=[...woeSelection.values()],target=$('woeResults');
+    if(!items.length){target.innerHTML='';$('woeStatus').textContent='No hay registros seleccionados. Busca por WOE, Código DIA o nombre.';return;}
+    target.innerHTML=items.map(renderWoeCard).join('');
+    $('woeStatus').textContent=`${items.length} resultado${items.length===1?'':'s'} · se conservan todas las coincidencias por Código DIA.`;
+    target.querySelectorAll('[data-woe-copy]').forEach(button=>button.addEventListener('click',async()=>{
+      const item=items[Number(button.dataset.woeCopy)];
+      const text=`ID WOE: ${item.idWoe}\nCódigo DIA: ${item.codigoDia}\nSAP: ${item.descripcionSap||'Sin coincidencia SAP'}\nMicros: ${(item.micros||[]).join(' | ')||'Sin coincidencia Micros'}`;
+      try{await navigator.clipboard.writeText(text);button.textContent='Copiado';setTimeout(()=>button.textContent='Copiar',1200);}catch(e){button.textContent='No disponible';}
+    }));
   }
 
   function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
@@ -598,6 +697,12 @@
       ? `Último artículo actualizado: ${latestItem}`
       : 'Último artículo actualizado: información no disponible';
     document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
+    $('woeTotal').textContent=Number(window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
+    $('woeSearch').addEventListener('input',e=>renderWoeSuggestions(e.target.value));
+    $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
+    $('woeAdd').addEventListener('click',()=>addWoeQueries($('woeSearch').value));
+    $('woeRun').addEventListener('click',renderWoeResults);
+    $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
     $('labelAddBtn').addEventListener('click', () => addLabel($('labelSku').value, $('labelQty').value));
@@ -633,7 +738,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v5-campaign-pdf'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v6-woe'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

@@ -17,6 +17,7 @@ from openpyxl import load_workbook
 
 
 REQUIRED_SHEETS = ("Base_Campaña", "Discovery", "Homologados", "Essentials")
+WOE_SHEETS = ("SAP", "Catalogo Micros")
 CAMPAIGN_ALIASES = {
     "si": ("Summer", ("SI", "SII", "Summer")),
     "sii": ("Summer", ("SI", "SII", "Summer")),
@@ -224,7 +225,103 @@ def parse_sheet(ws):
     return products, report
 
 
-def generate(excel_path: Path, js_path: Path, report_path: Path):
+def parse_woe_catalog(workbook, products):
+    """Construye el catálogo WOE sin perder relaciones uno-a-varios."""
+    missing = [name for name in WOE_SHEETS if name not in workbook.sheetnames]
+    if missing:
+        raise ValueError(f"faltan pestañas WOE: {', '.join(missing)}")
+
+    sap_ws = workbook["SAP"]
+    micros_ws = workbook["Catalogo Micros"]
+    sap_headers = [normalize_header(cell.value) for cell in sap_ws[1]]
+    micros_headers = [normalize_header(cell.value) for cell in micros_ws[1]]
+    if sap_headers[:3] != ["id woe", "codigo dia", "descripcion sap"]:
+        raise ValueError("SAP requiere: ID WOE, Codigo DIA y Descripcion SAP")
+    if micros_headers[:2] != ["codigo dia", "nombre micros"]:
+        raise ValueError("Catalogo Micros requiere: Codigo DIA y Nombre Micros")
+
+    micros_by_dia = {}
+    micros_rows = 0
+    for row_number, row in enumerate(micros_ws.iter_rows(min_row=2), start=2):
+        code = identifier(row[0])
+        name = clean_text(row[1].value if len(row) > 1 else "")
+        if not code and not name:
+            continue
+        micros_rows += 1
+        if not code:
+            raise ValueError(f"Catalogo Micros fila {row_number}: falta Codigo DIA")
+        values = micros_by_dia.setdefault(code, [])
+        if name and name not in values:
+            values.append(name)
+
+    merch_by_dia = {}
+    for product in products:
+        code = clean_text(product.get("codigoDia"))
+        if not code:
+            continue
+        compact = {
+            "base": product.get("base", ""),
+            "descripcionSci": product.get("descripcion", ""),
+            "nombrePos": product.get("nombrePos", ""),
+            "nombreInventario": product.get("nombreInventario", ""),
+            "skuIntl": product.get("skuIntl", ""),
+            "skuPos": product.get("skuPos", ""),
+        }
+        rows = merch_by_dia.setdefault(code, [])
+        if compact not in rows:
+            rows.append(compact)
+
+    catalog = []
+    seen_woe = Counter()
+    seen_dia = Counter()
+    sap_rows = 0
+    for row_number, row in enumerate(sap_ws.iter_rows(min_row=2), start=2):
+        woe_id = identifier(row[0])
+        code = identifier(row[1])
+        description = clean_text(row[2].value if len(row) > 2 else "")
+        if not woe_id and not code and not description:
+            continue
+        sap_rows += 1
+        if not woe_id or not code:
+            raise ValueError(f"SAP fila {row_number}: ID WOE o Codigo DIA vacío")
+        seen_woe[woe_id] += 1
+        seen_dia[code] += 1
+        micros = micros_by_dia.get(code, [])
+        merch = merch_by_dia.get(code, [])
+        catalog.append({
+            "idWoe": woe_id,
+            "codigoDia": code,
+            "descripcionSap": description,
+            "micros": micros,
+            "merch": merch,
+            "validation": {
+                "sap": bool(description),
+                "micros": bool(micros),
+                "merch": bool(merch),
+            },
+            "sourceRow": row_number,
+        })
+
+    if not catalog:
+        raise ValueError("SAP no contiene registros válidos")
+
+    report = {
+        "sapRows": sap_rows,
+        "catalogRows": len(catalog),
+        "uniqueWoe": len(seen_woe),
+        "uniqueDiaSap": len(seen_dia),
+        "duplicateWoeRows": sum(count - 1 for count in seen_woe.values()),
+        "duplicateDiaRows": sum(count - 1 for count in seen_dia.values()),
+        "microsRows": micros_rows,
+        "uniqueDiaMicros": len(micros_by_dia),
+        "withMicros": sum(1 for item in catalog if item["validation"]["micros"]),
+        "withMerch": sum(1 for item in catalog if item["validation"]["merch"]),
+        "completeTripleMatch": sum(1 for item in catalog if item["validation"]["sap"] and item["validation"]["micros"] and item["validation"]["merch"]),
+    }
+    return catalog, report
+
+
+def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path):
     workbook = load_workbook(excel_path, data_only=True, read_only=False)
     missing_sheets = [name for name in REQUIRED_SHEETS if name not in workbook.sheetnames]
     if missing_sheets:
@@ -237,6 +334,8 @@ def generate(excel_path: Path, js_path: Path, report_path: Path):
         products.extend(parsed)
         reports.append(report)
 
+    woe_catalog, woe_report = parse_woe_catalog(workbook, products)
+
     campaign = workbook["Base_Campaña"]
     if normalize_header(campaign["D1"].value) != "nombre pos":
         raise ValueError("Base_Campaña!D1 no corresponde al encabezado NOMBRE POS")
@@ -247,31 +346,50 @@ def generate(excel_path: Path, js_path: Path, report_path: Path):
     ):
         raise ValueError("Base_Campaña!D2 no coincide con un artículo válido procesado")
 
-    generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    processed_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    source_modified = workbook.properties.modified
+    if source_modified:
+        if source_modified.tzinfo is None:
+            source_modified = source_modified.replace(tzinfo=timezone.utc)
+        generated_at = source_modified.astimezone(timezone.utc).isoformat(timespec="seconds")
+    else:
+        generated_at = "unknown"
     meta = {
         "sourceFile": excel_path.name,
         "generatedAtUtc": generated_at,
         "latestItem": latest_item,
         "totalProducts": len(products),
         "sheets": {item["sheet"]: item["valid"] for item in reports},
+        "woeRecords": len(woe_catalog),
     }
     report = {
         "status": "ok",
         "sourceFile": excel_path.name,
-        "generatedAtUtc": generated_at,
+        "generatedAtUtc": processed_at,
+        "sourceModifiedAtUtc": generated_at,
         "latestItemCell": "Base_Campaña!D2",
         "latestItem": latest_item,
         "totalValidProducts": len(products),
         "sheets": reports,
+        "woe": woe_report,
     }
 
     js_path.parent.mkdir(parents=True, exist_ok=True)
+    woe_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.parent.mkdir(parents=True, exist_ok=True)
     js_path.write_text(
         "window.PRODUCTS = "
         + json.dumps(products, ensure_ascii=False, separators=(",", ":"))
         + ";\nwindow.PRODUCT_META = "
         + json.dumps(meta, ensure_ascii=False, separators=(",", ":"))
+        + ";\n",
+        encoding="utf-8",
+    )
+    woe_path.write_text(
+        "window.WOE_CATALOG = "
+        + json.dumps(woe_catalog, ensure_ascii=False, separators=(",", ":"))
+        + ";\nwindow.WOE_META = "
+        + json.dumps(woe_report, ensure_ascii=False, separators=(",", ":"))
         + ";\n",
         encoding="utf-8",
     )
@@ -283,10 +401,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--excel", default="Lista_Precios_Base.xlsx")
     parser.add_argument("--output", default="data/products.js")
+    parser.add_argument("--woe-output", default="data/woe.js")
     parser.add_argument("--report", default="data/import-report.json")
     args = parser.parse_args()
     try:
-        generate(Path(args.excel), Path(args.output), Path(args.report))
+        generate(Path(args.excel), Path(args.output), Path(args.woe_output), Path(args.report))
     except Exception as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1

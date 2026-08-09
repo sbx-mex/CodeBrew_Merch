@@ -11,6 +11,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="data/products.js" defer></script>
+  <script src="data/woe.js" defer></script>
   <script src="app.js" defer></script>
 
   <style>
@@ -66,6 +67,7 @@
 
   <nav class="tabs" aria-label="Pestañas">
     <button class="tab active" data-tab="consulta">Consulta</button>
+    <button class="tab" data-tab="woe">WOE</button>
     <button class="tab" data-tab="etiquetado">Etiquetado</button>
   </nav>
 
@@ -130,6 +132,35 @@
       <section id="result" class="result empty">
         <div class="empty-card">Escanea o escribe un SKU para ver Botón POS, precio y código para escanear en POS.</div>
       </section>
+    </section>
+
+    <section id="woe" class="tabpage">
+      <section class="panel woe-hero">
+        <div>
+          <span class="woe-kicker">Catálogo operativo</span>
+          <h2>Buscador WOE</h2>
+          <p>Encuentra ID WOE, Código DIA y descripciones SAP. Valida el mismo código contra Micros y las bases MERCH, sin alterar las demás funciones.</p>
+        </div>
+        <div class="woe-counter"><strong id="woeTotal">0</strong><span>registros SAP</span></div>
+      </section>
+
+      <section class="panel woe-search-panel">
+        <label for="woeSearch">Buscar por ID WOE, Código DIA, SAP, Micros o nombre de inventario</label>
+        <div class="woe-search-row">
+          <div class="woe-search-box">
+            <input id="woeSearch" placeholder="Ej. 149213, 730 o Cafe Espresso" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
+          </div>
+          <button id="woeAdd" type="button">Agregar</button>
+          <button id="woeRun" type="button">Consultar selección</button>
+        </div>
+        <p id="woeHelp" class="hint">Puedes pegar varios valores separados por coma o por renglón. Selecciona nombres y consulta todo en una sola vista.</p>
+        <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
+        <div class="woe-actions"><button id="woeClear" type="button" class="ghost">Limpiar selección</button></div>
+      </section>
+
+      <section id="woeStatus" class="woe-status" aria-live="polite">Escribe un dato para comenzar.</section>
+      <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
     </section>
 
     <section id="etiquetado" class="tabpage">
