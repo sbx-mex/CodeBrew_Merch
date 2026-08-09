@@ -1,6 +1,14 @@
 name: Auditar y limpiar obsoletos
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - products.js
+      - icon-512.png
+      - scripts/cleanup_obsolete.py
+      - scripts/audit_project.py
+      - .github/workflows/cleanup-obsolete.yml
   workflow_dispatch:
     inputs:
       aplicar:
@@ -30,18 +38,18 @@ jobs:
       - name: Validar proyecto antes de limpiar
         run: python scripts/audit_project.py --output "$RUNNER_TEMP/audit-before.json" --js-output "$RUNNER_TEMP/audit-before.js"
       - name: Auditar sin borrar
-        if: ${{ !inputs.aplicar }}
+        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.aplicar }}
         run: python scripts/cleanup_obsolete.py --report "$RUNNER_TEMP/cleanup-report.json"
       - name: Eliminar sólo candidatos validados
-        if: ${{ inputs.aplicar }}
+        if: ${{ github.event_name == 'push' || inputs.aplicar }}
         run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
       - name: Validar proyecto después de limpiar
-        if: ${{ inputs.aplicar }}
+        if: ${{ github.event_name == 'push' || inputs.aplicar }}
         run: python scripts/audit_project.py --output "$RUNNER_TEMP/audit-after.json" --js-output "$RUNNER_TEMP/audit-after.js"
       - name: Mostrar resultado
         run: cat "$RUNNER_TEMP/cleanup-report.json" >> "$GITHUB_STEP_SUMMARY"
       - name: Publicar limpieza
-        if: ${{ inputs.aplicar }}
+        if: ${{ github.event_name == 'push' || inputs.aplicar }}
         run: |
           if git diff --quiet; then
             echo "No hay archivos seguros por eliminar."
