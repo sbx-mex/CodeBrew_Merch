@@ -11,10 +11,29 @@
   const OCR_MIN_FOCUS = 18;
   const OCR_TARGET_MAX_SIDE = 1600;
   const OCR_VARIANTS = ['normal','contrast','binary'];
+  const externalLoads = new Map();
+  const TAB_NAMES = ['consulta','woe','etiquetado'];
   const cameraState = {
     consulta:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' },
     label:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' }
   };
+
+  function loadExternalScript(url,test){
+    if(test())return Promise.resolve();
+    if(externalLoads.has(url))return externalLoads.get(url);
+    const promise=new Promise((resolve,reject)=>{
+      const script=document.createElement('script');let settled=false;
+      const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve();};
+      script.src=url;script.async=true;script.crossOrigin='anonymous';
+      script.onload=()=>test()?finish():finish(new Error('La librería no quedó disponible'));
+      script.onerror=()=>finish(new Error('No se pudo cargar la librería operativa'));
+      const timer=setTimeout(()=>finish(new Error('La carga tardó demasiado')),20000);
+      document.head.appendChild(script);
+    }).catch(error=>{externalLoads.delete(url);throw error;});
+    externalLoads.set(url,promise);return promise;
+  }
+  function ensureTesseract(){return loadExternalScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',()=>Boolean(window.Tesseract));}
+  function ensureJsPdf(){return loadExternalScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',()=>Boolean(window.jspdf?.jsPDF));}
 
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
@@ -223,10 +242,10 @@
     box.innerHTML=matches.length?matches.map((item,index)=>`
       <button type="button" class="woe-suggestion" role="option" data-woe-suggestion="${index}">
         <b>${escapeHtml(item.codigoDia)}</b><span>${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Sin descripción disponible')}</span><small>${item.idWoe?`WOE ${escapeHtml(item.idWoe)}`:'Sin cruce WOE'}</small>
-      </button>`).join(''):`<div class="woe-no-suggestion">Sin coincidencia para “${escapeHtml(query)}”.</div>`;
+      </button>`).join(''):`<div class="woe-no-suggestion"><b>Sin coincidencia exacta.</b><br>Si es MERCH, intenta con SKU, Código DIA o una variante del nombre.</div>`;
     box.hidden=false;input.setAttribute('aria-expanded','true');
     box.querySelectorAll('[data-woe-suggestion]').forEach((button,index)=>button.addEventListener('click',()=>{
-      addWoeItem(matches[index]);input.value='';box.hidden=true;input.setAttribute('aria-expanded','false');input.focus();
+      addWoeItem(matches[index]);renderWoeResults();input.value='';box.hidden=true;input.setAttribute('aria-expanded','false');input.focus();
     }));
   }
 
@@ -245,7 +264,7 @@
     renderWoeSelection();
     $('woeSearch').value='';$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');
     $('woeStatus').classList.toggle('warning',missing.length>0);
-    if(missing.length)$('woeStatus').innerHTML=`<b>Aviso · sin coincidencia:</b> ${missing.map(escapeHtml).join(', ')}. No existe en SAP, Micros ni MERCH; valida el dato en el Excel motor.`;
+    if(missing.length)$('woeStatus').innerHTML=`<b>Aviso · sin coincidencia exacta:</b> ${missing.map(escapeHtml).join(', ')}. Si es MERCH, considera que el nombre puede variar: prueba con SKU de lista, SKU POS o Código DIA.`;
     else if(added)$('woeStatus').textContent=`${added} coincidencia${added===1?'':'s'} agregada${added===1?'':'s'} a la selección.`;
     else $('woeStatus').textContent='No se agregaron registros nuevos.';
     return {added,missing};
@@ -254,7 +273,7 @@
   function renderWoeSelection(){
     const target=$('woeSelection'),items=[...woeSelection.entries()];
     $('woeSelectedCount').textContent=items.length;
-    $('woeCopyList').disabled=!items.length;$('woeExport').disabled=!items.length;
+    $('woeExport').disabled=!items.length;
     if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
     target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||item.idWoe||'Sin cruce')}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
     target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
@@ -278,36 +297,20 @@
     return `<details class="woe-merch-reference"><summary>MERCH homologado · ${rows.length}</summary>${rows.map(row=>`<div><b>${escapeHtml(row.descripcionSci||row.nombreInventario||row.nombrePos||'Artículo MERCH')}</b><small>SKU lista: ${escapeHtml(row.skuIntl||'N/D')} · SKU POS: ${escapeHtml(row.skuPos||'N/D')}</small></div>`).join('')}<p>Revisa con el SKU si continúa activo en WOE; el nombre puede ser distinto.</p></details>`;
   }
 
-  function woeExportRows(){
-    return selectedWoeItems().map(({item})=>{
-      const status=operationalWoeStatus(item),merch=item.merch||[];
-      return [item.descripcionSap||'Sin descripción SAP',(item.micros||[]).join(' | ')||'Sin coincidencia Micros',item.codigoDia||'',item.idWoe||'',status.label,merch.map(row=>row.skuIntl||row.skuPos).filter(Boolean).join(' | ')||'No aplica'];
-    });
-  }
-
-  function comparisonText(separator='\t'){
-    const rows=[['Descripción SAP','Nombre Micros','#DIA','#SAP','Validación','SKU MERCH (referencia)'],...woeExportRows()];
-    return rows.map(row=>row.join(separator)).join('\n');
-  }
-
-  async function copyWoeComparison(){
-    try{await navigator.clipboard.writeText(comparisonText());$('woeCopyList').textContent='Tabla copiada';setTimeout(()=>$('woeCopyList').textContent='Copiar tabla',1300);}catch(e){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No se pudo copiar. Genera el PDF para conservar el listado.';}
-  }
-
   function woePdfConfig(){
-    return window.WOE_PDF_CONFIG||{page:{orientation:'landscape',format:'letter',unit:'pt',width:792,height:612,margin:24,tableTop:78,tableBottom:574,footerY:598},columns:[{key:'descripcionSap',label:'DESCRIPCION SAP',width:240},{key:'nombreMicros',label:'NOMBRE MICROS',width:165},{key:'codigoDia',label:'#DIA',width:50},{key:'idWoe',label:'#SAP',width:60},{key:'validacion',label:'VALIDACION',width:105},{key:'skuMerch',label:'SKU MERCH - APOYO',width:124}],style:{titleSize:18,metaSize:8,headerSize:7.2,bodySize:7.4,lineHeight:8.6,cellPadding:5,maxLinesPerCell:4,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]}};
+    return window.WOE_PDF_CONFIG||{page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:82,tableBottom:754,footerY:778},columns:[{key:'descripcionSap',label:'DESCRIPCION SAP',width:270},{key:'nombreMicros',label:'NOMBRE MICROS',width:170},{key:'codigoDia',label:'#DIA',width:62},{key:'idWoe',label:'#SAP',width:62}],style:{titleSize:18,metaSize:8,headerSize:7.5,bodySize:7.8,lineHeight:9.2,cellPadding:5,maxLinesPerCell:4,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]}};
   }
 
   function pdfWoeRows(){
-    return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item),merch=item.merch||[];return {descripcionSap:item.descripcionSap||'Sin descripcion SAP',nombreMicros:(item.micros||[]).join(' | ')||'Sin coincidencia Micros',codigoDia:item.codigoDia||'-',idWoe:item.idWoe||'-',validacion:status.label,skuMerch:merch.map(row=>row.skuIntl||row.skuPos).filter(Boolean).join(' | ')||'No aplica',statusKind:status.kind};});
+    return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item);return {descripcionSap:item.descripcionSap||'Sin descripcion SAP',nombreMicros:(item.micros||[]).join(' | ')||'Sin coincidencia Micros',codigoDia:item.codigoDia||'-',idWoe:item.idWoe||'-',statusKind:status.kind};});
   }
 
-  function generateWoePdf(){
+  async function generateWoePdf(){
     const rows=pdfWoeRows();
     if(!rows.length){$('woeStatus').classList.add('warning');$('woeStatus').textContent='Agrega al menos un artículo antes de generar el PDF.';return;}
-    if(!window.jspdf?.jsPDF){$('woeStatus').classList.add('warning');$('woeStatus').textContent='El generador PDF no está disponible. Revisa tu conexión e intenta nuevamente.';return;}
     const exportButton=$('woeExport'),originalLabel=exportButton.textContent;exportButton.disabled=true;exportButton.textContent='Generando PDF...';
     try{
+    await ensureJsPdf();
     const config=woePdfConfig(),page=config.page,style=config.style,columns=config.columns,{jsPDF}=window.jspdf;
     const doc=new jsPDF({orientation:page.orientation,unit:page.unit,format:page.format,compress:true,putOnlyUsedFonts:true});
     const selected=rows.length,valid=rows.filter(row=>row.statusKind==='ok').length,review=selected-valid,date=new Intl.DateTimeFormat('es-MX',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
@@ -322,7 +325,7 @@
       doc.setFillColor(...style.green);doc.roundedRect(page.margin,18,8,42,3,3,'F');
       doc.setTextColor(...style.dark);doc.setFont('helvetica','bold');doc.setFontSize(style.titleSize);doc.text('WOE - Lista de doble check',page.margin+16,33);
       doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${selected} articulos | ${valid} validados | ${review} por revisar | ${date}`,page.margin+16,47);
-      doc.setTextColor(70,82,76);doc.text('Validacion operativa: SAP + Micros. MERCH se muestra solo como referencia opcional por SKU.',page.margin+16,59);
+      doc.setTextColor(70,82,76);doc.text('Consulta operativa SAP + Micros. En MERCH el nombre puede variar; valida por SKU cuando aplique.',page.margin+16,59);
       let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-(page.margin*2),headerHeight,'F');
       doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);
       columns.forEach(column=>{doc.text(column.label,x+style.cellPadding,page.tableTop+14,{maxWidth:column.width-(style.cellPadding*2)});x+=column.width;});
@@ -344,14 +347,14 @@
       let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);
       columns.forEach((column,index)=>{
         doc.rect(x,y,column.width,rowHeight);
-        const isStatus=column.key==='validacion';doc.setTextColor(...(isStatus&&row.statusKind!=='ok'?style.warning:style.dark));doc.setFont('helvetica',isStatus||column.key==='codigoDia'||column.key==='idWoe'?'bold':'normal');
+        doc.setTextColor(...style.dark);doc.setFont('helvetica',column.key==='codigoDia'||column.key==='idWoe'?'bold':'normal');
         doc.text(cells[index],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-(style.cellPadding*2)});x+=column.width;
       });
       y+=rowHeight;
     });
     const totalPages=doc.getNumberOfPages();for(let number=1;number<=totalPages;number++){doc.setPage(number);drawFooter(number,totalPages);}
     doc.save(`WOE_Lista_Doble_Check_${new Date().toISOString().slice(0,10)}.pdf`);
-    $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos acomodados en tamaño carta con ${totalPages} página${totalPages===1?'':'s'}.`;
+    $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos en carta vertical, con Descripción SAP, Nombre Micros, #DIA y #SAP.`;
     }catch(error){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No fue posible generar el PDF. Conservamos tu listado para que puedas intentarlo nuevamente.';}
     finally{exportButton.disabled=false;exportButton.textContent=originalLabel;}
   }
@@ -369,9 +372,21 @@
 
   function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
 
-  function showTab(name){
-    document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-    document.querySelectorAll('.tabpage').forEach(p => p.classList.toggle('active', p.id === name));
+  function showTab(name,{updateHistory=true,focus=false}={}){
+    const target=TAB_NAMES.includes(name)?name:'consulta';
+    document.querySelectorAll('.tab').forEach(button=>{const active=button.dataset.tab===target;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;if(active&&focus)button.focus();});
+    document.querySelectorAll('.tabpage').forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
+    try{sessionStorage.setItem('codebrew-tab',target);}catch(error){}
+    if(updateHistory&&location.hash!==`#${target}`)history.pushState({tab:target},'',`#${target}`);
+  }
+
+  function renderAuditHealth(){
+    const target=$('appHealth'),audit=window.APP_AUDIT;
+    if(!target)return;
+    if(!audit){target.className='app-health warning';target.textContent='Auditoría no disponible';return;}
+    target.className=`app-health ${audit.errors?'error':audit.warnings?'warning':'ok'}`;
+    target.textContent=audit.errors?`${audit.errors} errores de control`:audit.warnings?`${audit.checksTotal} controles · ${audit.warnings} oportunidades`:`Motor validado · ${audit.checksTotal} controles`;
+    target.title=(audit.checks||[]).map(item=>`${item.name}: ${item.detail}`).join('\n');
   }
 
   function updateLabelTier(p){
@@ -417,8 +432,8 @@
     document.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', e => { labelItems.splice(Number(e.target.dataset.remove),1); renderCart(); }));
   }
 
-  function generatePdf(){
-    if (!window.jspdf || !window.jspdf.jsPDF) { alert('No cargó el generador PDF. Revisa internet/CDN.'); return; }
+  async function generatePdf(){
+    try{await ensureJsPdf();}catch(error){alert('No se pudo cargar el generador PDF. Revisa tu conexión e intenta nuevamente.');return;}
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({orientation:'portrait', unit:'in', format:'letter'});
     const labelW = 2, labelH = 1.5;
@@ -663,7 +678,7 @@
       tessedit_char_whitelist: 'SKUsku#0123456789OIl|SsBb:- ',
       preserve_interword_spaces: '1'
     };
-    const { data:{ text, confidence } } = await Tesseract.recognize(canvas, 'eng', {
+    const { data:{ text, confidence } } = await window.Tesseract.recognize(canvas, 'eng', {
       logger:m => { if(m.status) $(statusId).textContent = `${Math.round((m.progress || 0) * 100)}% OCR · ${variant}`; },
       ...options
     });
@@ -715,7 +730,8 @@
   }
 
   async function scanSource(source,canvas,statusId,targetInputId,mode,token,validateLive){
-    if(!window.Tesseract)throw new Error('OCR no cargó; revisa la conexión inicial.');
+    $(statusId).textContent='Preparando lector OCR';
+    await ensureTesseract();
     const votes=new Map(),results=[];
     for(let frame=0;frame<3;frame++){
       if(token!==cameraState[mode].token)throw new Error('Lectura cancelada');
@@ -786,17 +802,22 @@
   }
 
   function init(){
+    renderAuditHealth();
     const latestItem = String(window.PRODUCT_META?.latestItem || '').trim();
     $('latestItem').textContent = latestItem
       ? `Último artículo actualizado: ${latestItem}`
       : 'Último artículo actualizado: información no disponible';
-    document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
+    const tabButtons=[...document.querySelectorAll('.tab')];
+    tabButtons.forEach((button,index)=>{
+      button.addEventListener('click',()=>showTab(button.dataset.tab));
+      button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();let next=index;if(event.key==='ArrowLeft')next=(index-1+tabButtons.length)%tabButtons.length;if(event.key==='ArrowRight')next=(index+1)%tabButtons.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabButtons.length-1;showTab(tabButtons[next].dataset.tab,{focus:true});});
+    });
+    let initialTab=location.hash.slice(1);try{if(!TAB_NAMES.includes(initialTab))initialTab=sessionStorage.getItem('codebrew-tab')||'consulta';}catch(error){initialTab='consulta';}showTab(initialTab,{updateHistory:false});
+    window.addEventListener('hashchange',()=>showTab(location.hash.slice(1),{updateHistory:false}));
     $('woeTotal').textContent=Number(window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
     $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
-    $('woeAdd').addEventListener('click',()=>addWoeQueries($('woeSearch').value));
-    $('woeRun').addEventListener('click',()=>{renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'start'}));});
-    $('woeCopyList').addEventListener('click',copyWoeComparison);
+    $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
@@ -834,7 +855,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v9-woe-pdf'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v11-portrait'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

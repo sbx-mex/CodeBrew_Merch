@@ -1,13 +1,20 @@
 {
   "name": "CodeBrew Merch POS · WOE",
   "short_name": "CodeBrew",
-  "description": "Buscador operativo de Merch POS y catálogo WOE con validación SAP, Micros y MERCH.",
+  "description": "Consulta operativa de MERCH POS y catálogo WOE con validación SAP y Micros.",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
+  "categories": ["business", "productivity", "utilities"],
   "background_color": "#fbf7ef",
   "theme_color": "#006241",
+  "shortcuts": [
+    { "name": "Consulta MERCH", "short_name": "Consulta", "url": "./#consulta" },
+    { "name": "Buscador WOE", "short_name": "WOE", "url": "./#woe" },
+    { "name": "Etiquetado POS", "short_name": "Etiquetas", "url": "./#etiquetado" }
+  ],
   "icons": [
     { "src": "./assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "./assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }

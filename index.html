@@ -4,15 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#006241" />
+  <meta name="description" content="Herramienta operativa para consultar MERCH, validar WOE y preparar etiquetas POS." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>CodeBrew 2.0 · Merch POS</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="data/products.js" defer></script>
   <script src="data/woe.js" defer></script>
   <script src="data/woe-pdf-config.js" defer></script>
+  <script src="data/app-audit.js" defer></script>
   <script src="app.js" defer></script>
 
   <style>
@@ -64,16 +65,17 @@
       <p>Buscador de códigos · Merch POS</p>
     </div>
     <div class="release-badge" aria-label="Versión actualizada">OCR móvil optimizado · v2</div>
+    <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
   </header>
 
-  <nav class="tabs" aria-label="Pestañas">
-    <button class="tab active" data-tab="consulta">Consulta</button>
-    <button class="tab" data-tab="woe">WOE</button>
-    <button class="tab" data-tab="etiquetado">Etiquetado</button>
+  <nav class="tabs" aria-label="Pestañas" role="tablist">
+    <button class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true">Consulta</button>
+    <button class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false">WOE</button>
+    <button class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false">Etiquetado</button>
   </nav>
 
   <main>
-    <section id="consulta" class="tabpage active">
+    <section id="consulta" class="tabpage active" role="tabpanel">
       <section class="panel quick-guide">
         <div class="guide-title">Guía rápida de consulta POS</div>
         <div class="quick-steps">
@@ -135,12 +137,12 @@
       </section>
     </section>
 
-    <section id="woe" class="tabpage">
+    <section id="woe" class="tabpage" role="tabpanel">
       <section class="panel woe-hero">
         <div>
           <span class="woe-kicker">Catálogo operativo</span>
           <h2>Crea tu listado WOE</h2>
-          <p>Busca, agrega y valida varios artículos en una sola tabla. Al terminar, genera un PDF ejecutivo tamaño carta.</p>
+          <p>Busca, agrega y valida varios artículos en una sola vista. Exporta únicamente lo necesario en PDF carta vertical.</p>
         </div>
         <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos auditados</span></div>
       </section>
@@ -148,8 +150,8 @@
       <section class="panel woe-search-panel">
         <div class="woe-mini-guide" aria-label="Ayuda rápida">
           <div><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
-          <div><b>2</b><span>Agrega cada artículo a tu listado.</span></div>
-          <div><b>3</b><span>Revisa y genera tu PDF tamaño carta.</span></div>
+          <div><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
+          <div><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
         </div>
         <label for="woeSearch">Buscar por ID WOE, Código DIA, descripción SAP, nombre Micros o SKU MERCH</label>
         <div class="woe-search-row">
@@ -157,17 +159,15 @@
             <input id="woeSearch" placeholder="Ej. 149213, 730 o Cafe Espresso" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
-          <button id="woeAdd" type="button">Agregar al listado</button>
-          <button id="woeRun" type="button">Crear listado</button>
+          <button id="woeAdd" type="button">Agregar</button>
         </div>
-        <p id="woeHelp" class="hint">Pega varios valores separados por coma o renglón. MERCH es sólo una referencia homologada: no forma parte de la validación SAP–Micros.</p>
+        <p id="woeHelp" class="hint">Pega varios valores separados por coma o renglón. Si es MERCH, prueba también por SKU o una variante del nombre: puede aparecer distinto entre catálogos.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
-          <span class="woe-pdf-note">Carta horizontal · tabla al ancho completo</span>
-          <button id="woeCopyList" type="button" class="ghost" disabled>Copiar tabla</button>
-          <button id="woeExport" type="button" disabled>Generar PDF carta</button>
-          <button id="woeClear" type="button" class="ghost">Limpiar</button>
+          <span class="woe-pdf-note">PDF carta vertical · 4 datos operativos</span>
+          <button id="woeExport" type="button" disabled>Generar PDF</button>
+          <button id="woeClear" type="button" class="ghost">Limpiar listado</button>
         </div>
       </section>
 
@@ -175,7 +175,7 @@
       <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
     </section>
 
-    <section id="etiquetado" class="tabpage">
+    <section id="etiquetado" class="tabpage" role="tabpanel">
       <section class="panel label-panel">
         <h2>Generador de etiquetas POS</h2>
         <p class="label-intro"><b>Flujo recomendado:</b> abre cámara, lee SKU, valida producto, captura piezas y agrega. Repite por cada modelo; al final genera PDF listo para imprimir.</p>

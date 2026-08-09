@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -11,6 +12,12 @@ from pathlib import Path
 ALLOWLIST = (Path("products.js"), Path("icon-512.png"))
 TEXT_SUFFIXES = {".html", ".js", ".css", ".json", ".webmanifest", ".md", ".yml", ".yaml", ".py"}
 SKIP_PARTS = {".git", "__pycache__"}
+METADATA_FILES = {
+    "data/app-audit.js",
+    "data/app-audit.json",
+    "scripts/audit_project.py",
+    "scripts/build_all.py",
+}
 
 
 def references(root: Path, candidate: Path) -> list[str]:
@@ -19,7 +26,8 @@ def references(root: Path, candidate: Path) -> list[str]:
     pattern = re.compile(rf"(?<![A-Za-z0-9_./-])(?:\./)?{escaped}(?![A-Za-z0-9_./-])")
     found = []
     for path in root.rglob("*"):
-        if not path.is_file() or path == root / candidate or path.name == "cleanup_obsolete.py" or "cleanup" in path.stem or any(part in SKIP_PARTS for part in path.parts):
+        relative = path.relative_to(root).as_posix()
+        if not path.is_file() or path == root / candidate or relative in METADATA_FILES or path.name == "cleanup_obsolete.py" or "cleanup" in path.stem or any(part in SKIP_PARTS for part in path.parts):
             continue
         if path.suffix.lower() not in TEXT_SUFFIXES:
             continue
@@ -30,6 +38,14 @@ def references(root: Path, candidate: Path) -> list[str]:
         if pattern.search(text):
             found.append(path.relative_to(root).as_posix())
     return sorted(found)
+
+
+def fingerprint(path: Path) -> dict:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return {"bytes": path.stat().st_size, "sha256": digest.hexdigest()}
 
 
 def main() -> None:
@@ -45,10 +61,11 @@ def main() -> None:
             report["missing"].append(candidate.as_posix())
             continue
         refs = references(root, candidate)
+        metadata = fingerprint(path)
         if refs:
-            report["protected"].append({"file": candidate.as_posix(), "references": refs})
+            report["protected"].append({"file": candidate.as_posix(), "references": refs, **metadata})
             continue
-        report["safeCandidates"].append(candidate.as_posix())
+        report["safeCandidates"].append({"file": candidate.as_posix(), **metadata})
         if args.apply:
             path.unlink()
             report["deleted"].append(candidate.as_posix())

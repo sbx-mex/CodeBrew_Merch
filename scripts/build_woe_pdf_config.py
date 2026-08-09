@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera y audita la configuración del PDF WOE tamaño carta."""
+"""Genera y audita el PDF WOE ejecutivo en carta vertical."""
 
 from __future__ import annotations
 
@@ -8,16 +8,14 @@ import json
 from pathlib import Path
 
 
-PAGE_WIDTH = 792
-PAGE_HEIGHT = 612
+PAGE_WIDTH = 612
+PAGE_HEIGHT = 792
 MARGIN = 24
 COLUMNS = (
-    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 240},
-    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 165},
-    {"key": "codigoDia", "label": "#DIA", "width": 50},
-    {"key": "idWoe", "label": "#SAP", "width": 60},
-    {"key": "validacion", "label": "VALIDACION", "width": 105},
-    {"key": "skuMerch", "label": "SKU MERCH - APOYO", "width": 124},
+    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 270},
+    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 170},
+    {"key": "codigoDia", "label": "#DIA", "width": 62},
+    {"key": "idWoe", "label": "#SAP", "width": 62},
 )
 
 
@@ -33,25 +31,25 @@ def build(report_path: Path) -> dict:
         )
     woe = report.get("woe", {})
     return {
-        "version": "letter-v1",
+        "version": "letter-portrait-v2",
         "page": {
-            "orientation": "landscape",
+            "orientation": "portrait",
             "format": "letter",
             "unit": "pt",
             "width": PAGE_WIDTH,
             "height": PAGE_HEIGHT,
             "margin": MARGIN,
-            "tableTop": 78,
-            "tableBottom": 574,
-            "footerY": 598,
+            "tableTop": 82,
+            "tableBottom": 754,
+            "footerY": 778,
         },
         "columns": list(COLUMNS),
         "style": {
             "titleSize": 18,
             "metaSize": 8,
-            "headerSize": 7.2,
-            "bodySize": 7.4,
-            "lineHeight": 8.6,
+            "headerSize": 7.5,
+            "bodySize": 7.8,
+            "lineHeight": 9.2,
             "cellPadding": 5,
             "maxLinesPerCell": 4,
             "green": [0, 98, 65],

@@ -390,14 +390,13 @@ def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path)
     ):
         raise ValueError("Base_Campaña!D2 no coincide con un artículo válido procesado")
 
-    processed_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    source_modified = workbook.properties.modified
-    if source_modified:
-        if source_modified.tzinfo is None:
-            source_modified = source_modified.replace(tzinfo=timezone.utc)
-        generated_at = source_modified.astimezone(timezone.utc).isoformat(timespec="seconds")
-    else:
-        generated_at = "unknown"
+    # Algunos libros no incluyen docProps/core.xml. En ese caso openpyxl crea
+    # fechas con la hora actual al abrirlos, lo que vuelve distinto cada build.
+    # El mtime del archivo motor es estable y permite salidas reproducibles.
+    generated_at = datetime.fromtimestamp(
+        excel_path.stat().st_mtime,
+        tz=timezone.utc,
+    ).isoformat(timespec="seconds")
     meta = {
         "sourceFile": excel_path.name,
         "generatedAtUtc": generated_at,
@@ -409,7 +408,7 @@ def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path)
     report = {
         "status": "ok",
         "sourceFile": excel_path.name,
-        "generatedAtUtc": processed_at,
+        "generatedAtUtc": generated_at,
         "sourceModifiedAtUtc": generated_at,
         "latestItemCell": "Base_Campaña!D2",
         "latestItem": latest_item,

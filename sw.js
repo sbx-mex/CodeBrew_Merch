@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v9-woe-pdf-letter-2026-08-09';
+const CACHE_NAME = 'codebrew-merch-v11-portrait-2026-08-09';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,8 +8,7 @@ const APP_SHELL = [
   './data/products.js',
   './data/woe.js',
   './data/woe-pdf-config.js',
-  './data/import-report.json',
-  './Lista_Precios_Base.xlsx',
+  './data/app-audit.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
@@ -32,14 +31,16 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match('./index.html')));
+    event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));return response;}).catch(() => caches.match('./index.html')));
     return;
   }
-  const path = new URL(event.request.url).pathname;
-  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/import-report.json');
+  const path = requestUrl.pathname;
+  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/app-audit.js');
   event.respondWith(
-    (isGeneratedData ? fetch(event.request).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
+    (isGeneratedData ? Promise.race([fetch(event.request),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),2500))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
