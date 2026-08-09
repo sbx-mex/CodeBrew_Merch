@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v8-woe-comparativo-2026-08-09';
+const CACHE_NAME = 'codebrew-merch-v9-woe-pdf-letter-2026-08-09';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './data/products.js',
   './data/woe.js',
+  './data/woe-pdf-config.js',
   './data/import-report.json',
   './Lista_Precios_Base.xlsx',
   './assets/icon-192.png',

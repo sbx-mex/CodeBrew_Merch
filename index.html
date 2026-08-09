@@ -12,6 +12,7 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
   <script src="data/products.js" defer></script>
   <script src="data/woe.js" defer></script>
+  <script src="data/woe-pdf-config.js" defer></script>
   <script src="app.js" defer></script>
 
   <style>
@@ -138,8 +139,8 @@
       <section class="panel woe-hero">
         <div>
           <span class="woe-kicker">Catálogo operativo</span>
-          <h2>Consulta y doble check WOE</h2>
-          <p>Relaciona SAP con Micros por Código DIA. Agrega varios artículos y obtén un comparativo listo para copiar o descargar.</p>
+          <h2>Crea tu listado WOE</h2>
+          <p>Busca, agrega y valida varios artículos en una sola tabla. Al terminar, genera un PDF ejecutivo tamaño carta.</p>
         </div>
         <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos auditados</span></div>
       </section>
@@ -147,8 +148,8 @@
       <section class="panel woe-search-panel">
         <div class="woe-mini-guide" aria-label="Ayuda rápida">
           <div><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
-          <div><b>2</b><span>Agrega todos los artículos que necesites.</span></div>
-          <div><b>3</b><span>Compara, copia o descarga para Excel.</span></div>
+          <div><b>2</b><span>Agrega cada artículo a tu listado.</span></div>
+          <div><b>3</b><span>Revisa y genera tu PDF tamaño carta.</span></div>
         </div>
         <label for="woeSearch">Buscar por ID WOE, Código DIA, descripción SAP, nombre Micros o SKU MERCH</label>
         <div class="woe-search-row">
@@ -156,15 +157,16 @@
             <input id="woeSearch" placeholder="Ej. 149213, 730 o Cafe Espresso" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
-          <button id="woeAdd" type="button">Agregar</button>
-          <button id="woeRun" type="button">Ver comparativo</button>
+          <button id="woeAdd" type="button">Agregar al listado</button>
+          <button id="woeRun" type="button">Crear listado</button>
         </div>
         <p id="woeHelp" class="hint">Pega varios valores separados por coma o renglón. MERCH es sólo una referencia homologada: no forma parte de la validación SAP–Micros.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
+          <span class="woe-pdf-note">Carta horizontal · tabla al ancho completo</span>
           <button id="woeCopyList" type="button" class="ghost" disabled>Copiar tabla</button>
-          <button id="woeExport" type="button" disabled>Descargar para Excel</button>
+          <button id="woeExport" type="button" disabled>Generar PDF carta</button>
           <button id="woeClear" type="button" class="ghost">Limpiar</button>
         </div>
       </section>

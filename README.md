@@ -4,7 +4,8 @@ Versión estable enfocada en mejora de OCR móvil para lectura de SKU.
 
 ## Buscador WOE independiente
 - Busca por ID WOE, Código DIA, descripción SAP, nombre Micros, nombre de inventario o SKU MERCH.
-- Permite agregar múltiples artículos, compararlos en una tabla, copiar el resultado y descargarlo como CSV compatible con Excel.
+- Permite agregar múltiples artículos, construir un listado, copiar la tabla y generar un PDF ejecutivo tamaño carta.
+- Python audita que los anchos de las seis columnas ocupen exactamente el área imprimible y regenera `data/woe-pdf-config.js` con cada actualización.
 - La validación operativa cruza únicamente `SAP` con `Catalogo Micros` mediante Código DIA.
 - MERCH no es requisito ni genera error: aparece como referencia opcional con SKU cuando existe una homologación.
 - Elimina duplicados exactos de forma defensiva, conserva relaciones uno-a-varios y muestra mensajes explícitos cuando no existe coincidencia.

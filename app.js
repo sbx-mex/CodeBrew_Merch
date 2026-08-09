@@ -291,13 +291,69 @@
   }
 
   async function copyWoeComparison(){
-    try{await navigator.clipboard.writeText(comparisonText());$('woeCopyList').textContent='Tabla copiada';setTimeout(()=>$('woeCopyList').textContent='Copiar tabla',1300);}catch(e){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No se pudo copiar. Usa Descargar para Excel.';}
+    try{await navigator.clipboard.writeText(comparisonText());$('woeCopyList').textContent='Tabla copiada';setTimeout(()=>$('woeCopyList').textContent='Copiar tabla',1300);}catch(e){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No se pudo copiar. Genera el PDF para conservar el listado.';}
   }
 
-  function exportWoeComparison(){
-    const csv='\ufeff'+[['Descripción SAP','Nombre Micros','#DIA','#SAP','Validación','SKU MERCH (referencia)'],...woeExportRows()].map(row=>row.map(value=>`"${String(value).replaceAll('"','""')}"`).join(',')).join('\r\n');
-    const link=document.createElement('a'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-    link.href=url;link.download=`WOE_Doble_Check_${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+  function woePdfConfig(){
+    return window.WOE_PDF_CONFIG||{page:{orientation:'landscape',format:'letter',unit:'pt',width:792,height:612,margin:24,tableTop:78,tableBottom:574,footerY:598},columns:[{key:'descripcionSap',label:'DESCRIPCION SAP',width:240},{key:'nombreMicros',label:'NOMBRE MICROS',width:165},{key:'codigoDia',label:'#DIA',width:50},{key:'idWoe',label:'#SAP',width:60},{key:'validacion',label:'VALIDACION',width:105},{key:'skuMerch',label:'SKU MERCH - APOYO',width:124}],style:{titleSize:18,metaSize:8,headerSize:7.2,bodySize:7.4,lineHeight:8.6,cellPadding:5,maxLinesPerCell:4,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]}};
+  }
+
+  function pdfWoeRows(){
+    return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item),merch=item.merch||[];return {descripcionSap:item.descripcionSap||'Sin descripcion SAP',nombreMicros:(item.micros||[]).join(' | ')||'Sin coincidencia Micros',codigoDia:item.codigoDia||'-',idWoe:item.idWoe||'-',validacion:status.label,skuMerch:merch.map(row=>row.skuIntl||row.skuPos).filter(Boolean).join(' | ')||'No aplica',statusKind:status.kind};});
+  }
+
+  function generateWoePdf(){
+    const rows=pdfWoeRows();
+    if(!rows.length){$('woeStatus').classList.add('warning');$('woeStatus').textContent='Agrega al menos un artículo antes de generar el PDF.';return;}
+    if(!window.jspdf?.jsPDF){$('woeStatus').classList.add('warning');$('woeStatus').textContent='El generador PDF no está disponible. Revisa tu conexión e intenta nuevamente.';return;}
+    const exportButton=$('woeExport'),originalLabel=exportButton.textContent;exportButton.disabled=true;exportButton.textContent='Generando PDF...';
+    try{
+    const config=woePdfConfig(),page=config.page,style=config.style,columns=config.columns,{jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:page.orientation,unit:page.unit,format:page.format,compress:true,putOnlyUsedFonts:true});
+    const selected=rows.length,valid=rows.filter(row=>row.statusKind==='ok').length,review=selected-valid,date=new Intl.DateTimeFormat('es-MX',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
+    const pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),tableLeft=page.margin,headerHeight=22;
+
+    function safeLines(value,width){
+      const lines=doc.splitTextToSize(String(value||'-'),Math.max(20,width-(style.cellPadding*2)));
+      if(lines.length<=style.maxLinesPerCell)return lines;
+      const clipped=lines.slice(0,style.maxLinesPerCell);clipped[clipped.length-1]=`${clipped[clipped.length-1].replace(/\s+$/,'')}...`;return clipped;
+    }
+    function drawHeader(){
+      doc.setFillColor(...style.green);doc.roundedRect(page.margin,18,8,42,3,3,'F');
+      doc.setTextColor(...style.dark);doc.setFont('helvetica','bold');doc.setFontSize(style.titleSize);doc.text('WOE - Lista de doble check',page.margin+16,33);
+      doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${selected} articulos | ${valid} validados | ${review} por revisar | ${date}`,page.margin+16,47);
+      doc.setTextColor(70,82,76);doc.text('Validacion operativa: SAP + Micros. MERCH se muestra solo como referencia opcional por SKU.',page.margin+16,59);
+      let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-(page.margin*2),headerHeight,'F');
+      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);
+      columns.forEach(column=>{doc.text(column.label,x+style.cellPadding,page.tableTop+14,{maxWidth:column.width-(style.cellPadding*2)});x+=column.width;});
+      return page.tableTop+headerHeight;
+    }
+    function drawFooter(pageNumber,totalPages){
+      doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);
+      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Uso operativo interno',page.margin,page.footerY);doc.text(`Pagina ${pageNumber} de ${totalPages}`,pageWidth-page.margin,page.footerY,{align:'right'});
+    }
+
+    doc.setProperties({title:'WOE - Lista de doble check',subject:'Comparativo operativo SAP y Micros',creator:'CodeBrew'});
+    let y=drawHeader();
+    rows.forEach((row,rowIndex)=>{
+      doc.setFont('helvetica','normal');doc.setFontSize(style.bodySize);
+      const cells=columns.map(column=>safeLines(row[column.key],column.width));
+      const rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+(style.cellPadding*2));
+      if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}
+      if(rowIndex%2===1){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-(page.margin*2),rowHeight,'F');}
+      let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);
+      columns.forEach((column,index)=>{
+        doc.rect(x,y,column.width,rowHeight);
+        const isStatus=column.key==='validacion';doc.setTextColor(...(isStatus&&row.statusKind!=='ok'?style.warning:style.dark));doc.setFont('helvetica',isStatus||column.key==='codigoDia'||column.key==='idWoe'?'bold':'normal');
+        doc.text(cells[index],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-(style.cellPadding*2)});x+=column.width;
+      });
+      y+=rowHeight;
+    });
+    const totalPages=doc.getNumberOfPages();for(let number=1;number<=totalPages;number++){doc.setPage(number);drawFooter(number,totalPages);}
+    doc.save(`WOE_Lista_Doble_Check_${new Date().toISOString().slice(0,10)}.pdf`);
+    $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos acomodados en tamaño carta con ${totalPages} página${totalPages===1?'':'s'}.`;
+    }catch(error){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No fue posible generar el PDF. Conservamos tu listado para que puedas intentarlo nuevamente.';}
+    finally{exportButton.disabled=false;exportButton.textContent=originalLabel;}
   }
 
   function renderWoeResults(){
@@ -739,9 +795,9 @@
     $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>addWoeQueries($('woeSearch').value));
-    $('woeRun').addEventListener('click',renderWoeResults);
+    $('woeRun').addEventListener('click',()=>{renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'start'}));});
     $('woeCopyList').addEventListener('click',copyWoeComparison);
-    $('woeExport').addEventListener('click',exportWoeComparison);
+    $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
@@ -778,7 +834,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v8-woe'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v9-woe-pdf'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
