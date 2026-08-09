@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v12-stock-2026-08-09';
+const CACHE_NAME = 'codebrew-merch-v13-stock-safe-2026-08-09';
 const APP_SHELL = [
   './',
   './index.html',

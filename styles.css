@@ -98,3 +98,21 @@ button:focus-visible,.file-action:focus-within,.tab:focus-visible,input:focus-vi
 .stock-table{min-width:1120px}.stock-table td:first-child,.stock-table td:nth-child(2){min-width:80px}.stock-table td:nth-child(3){min-width:260px}.stock-table td:nth-child(4){min-width:230px}.stock-table td:nth-child(5){min-width:120px}.stock-table td:nth-child(6){min-width:70px}.stock-probable td,.stock-ambiguous td,.stock-unmatched td{background:#fffaf0}.stock-table-wrap{max-height:560px}
 @media(max-width:760px){.stock-head{display:block}.stock-private{display:inline-flex;margin-top:12px}.stock-flow{grid-template-columns:1fr}.stock-upload-row>*{width:100%;text-align:center}.stock-meta{grid-template-columns:1fr 1fr}.stock-summary{grid-template-columns:1fr 1fr 1fr}}
 @media(max-width:520px){.stock-meta,.stock-summary{grid-template-columns:1fr}.stock-summary div{justify-content:space-between}.stock-head h2{font-size:27px}}
+
+/* Confirmación Stock · imagen completa, validación explícita y foco accesible */
+.stock-dialog{width:min(1120px,calc(100% - 24px));max-height:92vh;padding:0;border:0;border-radius:26px;background:transparent;color:#1f2b26;box-shadow:0 26px 80px rgba(7,45,34,.34)}
+.stock-dialog::backdrop{background:rgba(6,29,22,.72);backdrop-filter:blur(5px)}
+.stock-dialog-card{position:relative;margin:0;background:#fffaf2;border:1px solid rgba(234,220,200,.9);border-radius:26px;overflow:auto;max-height:92vh}
+.stock-dialog-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(340px,.82fr)}
+.stock-dialog-visual{display:grid;align-content:center;gap:9px;margin:0;padding:20px;background:linear-gradient(145deg,#f3eadb,#fffdf8);min-width:0}
+.stock-dialog-visual img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;object-position:center;border-radius:16px;box-shadow:0 12px 34px rgba(54,38,16,.12)}
+.stock-dialog-visual figcaption{text-align:center;color:var(--muted);font-size:12px;font-weight:800}
+.stock-dialog-content{padding:38px 32px;min-width:0}.stock-dialog-content h2{margin:3px 0 8px;color:var(--dark);font-size:31px;line-height:1.08}.stock-dialog-content>p{color:var(--muted);line-height:1.45}
+.stock-dialog-close{position:absolute;z-index:2;top:12px;right:12px;display:grid;place-items:center;width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;background:rgba(255,255,255,.94);color:var(--dark);border:1px solid var(--line);font-size:26px;line-height:1}
+.stock-confirm-summary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}.stock-confirm-summary div{min-width:0;padding:11px 12px;background:#fff;border:1px solid var(--line);border-radius:13px}.stock-confirm-summary span{display:block;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-size:10px;font-weight:900}.stock-confirm-summary b{display:block;margin-top:4px;color:var(--dark);font-size:14px;overflow-wrap:anywhere}
+.stock-confirm-check{display:flex;align-items:flex-start;gap:11px;margin:11px 0;padding:13px;background:#fff;border:1px solid var(--line);border-radius:14px;color:#314239;font-size:14px;line-height:1.35;cursor:pointer}.stock-confirm-check:has(input:checked){border-color:#8ac2aa;background:#eef7f2}.stock-confirm-check input{flex:0 0 auto;width:20px;height:20px;margin:0;accent-color:var(--green)}
+.stock-confirm-block{padding:12px 14px!important;background:#fff3db;border-left:4px solid #b45309;border-radius:10px;color:#713f12!important;font-size:13px;line-height:1.4}
+.stock-dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.stock-dialog-actions button{padding:12px 15px;font-size:14px}
+.stock-dialog.open{display:block;position:fixed;z-index:100;inset:4vh auto auto 50%;transform:translateX(-50%)}
+@media(max-width:820px){.stock-dialog-grid{grid-template-columns:1fr}.stock-dialog-visual{padding:14px}.stock-dialog-visual img{max-height:38vh}.stock-dialog-content{padding:24px 18px 22px}.stock-dialog-content h2{font-size:27px}}
+@media(max-width:520px){.stock-dialog{width:calc(100% - 12px);max-height:96vh}.stock-dialog-card{max-height:96vh;border-radius:20px}.stock-confirm-summary{grid-template-columns:1fr}.stock-dialog-actions{display:grid;grid-template-columns:1fr}.stock-dialog-visual img{max-height:31vh}.stock-dialog-close{top:8px;right:8px}}

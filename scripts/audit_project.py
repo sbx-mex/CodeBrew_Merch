@@ -92,6 +92,9 @@ def audit(root: Path) -> dict:
     stock_config = json.loads(stock_config_text.split("=", 1)[1].strip().rstrip(";"))
     export_keys = [column.get("key") for column in pdf_config.get("columns", [])]
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
+    stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
+        "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock",
+    )) and (root / "assets/stock_pdf_woe.jpeg").exists()
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
         and pdf_config.get("page", {}).get("format") == "letter"
@@ -101,14 +104,15 @@ def audit(root: Path) -> dict:
         and stock_config.get("page", {}).get("format") == "letter"
         and stock_config.get("page", {}).get("orientation") == "portrait"
         and stock_export_keys == ["codigoDia", "idWoe", "descripcionSap", "nombreMicros", "unidad", "qty"]
+        and stock_security_ok
     )
     checks.append(check(
         "Exportación PDF",
         export_ok,
-        f"WOE 4 columnas + Stock 6 columnas; ambos en carta vertical",
+        "WOE 4 columnas + Stock seguro de 6 columnas; ambos en carta vertical",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockPdfInput", "stockExport", "stockResults"}
+    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmHeader", "stockConfirmRows", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList"}.intersection(parser.ids)
     checks.append(check(
         "Navegación e interfaz",
@@ -187,6 +191,10 @@ def main() -> int:
     js_output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     js_output.write_text("window.APP_AUDIT = " + json.dumps(result, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+    for item in result["checks"]:
+        if item["status"] in {"error", "warning"}:
+            level = "error" if item["status"] == "error" else "warning"
+            print(f"::{level} title={item['name']}::{item['detail']}")
     print(json.dumps({key: result[key] for key in ("status", "checksTotal", "checksOk", "warnings", "errors")}, ensure_ascii=False))
     return 0 if result["status"] == "ok" else 1
 

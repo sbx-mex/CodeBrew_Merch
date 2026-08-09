@@ -7,6 +7,8 @@
   let stockRows = [];
   let stockMeta = null;
   let stockPdfName = '';
+  let stockConfirmed = false;
+  let stockValidation = null;
   let stream = null;
   let labelStream = null;
   let currentProduct = null;
@@ -26,9 +28,11 @@
     if(test())return Promise.resolve();
     if(externalLoads.has(url))return externalLoads.get(url);
     const promise=new Promise((resolve,reject)=>{
+      const source=new URL(url,location.href);
+      if(source.protocol!=='https:'||source.hostname!=='cdn.jsdelivr.net'){reject(new Error('Origen externo no autorizado'));return;}
       const script=document.createElement('script');let settled=false;
       const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve();};
-      script.src=url;script.async=true;script.crossOrigin='anonymous';
+      script.src=source.href;script.async=true;script.crossOrigin='anonymous';script.referrerPolicy='no-referrer';
       script.onload=()=>test()?finish():finish(new Error('La librería no quedó disponible'));
       script.onerror=()=>finish(new Error('No se pudo cargar la librería operativa'));
       const timer=setTimeout(()=>finish(new Error('La carga tardó demasiado')),20000);
@@ -489,9 +493,67 @@
     try{
       const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);
       if(timestamp&&previous&&timestamp<previous)warnings.push('Este PDF es anterior al último reporte leído para la tienda.');
-      if(timestamp&&timestamp>=previous)localStorage.setItem(key,String(timestamp));
     }catch(error){/* La validación por fecha actual continúa aunque el almacenamiento esté bloqueado. */}
     return warnings;
+  }
+
+  function rememberConfirmedStock(meta){
+    const timestamp=stockTimestamp(meta);if(!timestamp)return;
+    try{const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);if(timestamp>=previous)localStorage.setItem(key,String(timestamp));}catch(error){/* La confirmación funciona aun con almacenamiento bloqueado. */}
+  }
+
+  function validateStockReading(meta,rows,freshnessWarnings=[]){
+    const missingHeader=[];
+    if(!meta?.titleFound)missingHeader.push('título Stock on Hand');
+    if(!meta?.store||meta.store==='Tienda no identificada')missingHeader.push('tienda');
+    if(!meta?.reportDate)missingHeader.push('Report Date');
+    if(!meta?.printedDate)missingHeader.push('fecha de impresión');
+    if(!meta?.printedTime)missingHeader.push('hora de impresión');
+    const invalidItems=rows.filter(row=>!String(row.sourceName||'').trim()).length;
+    const invalidUnits=rows.filter(row=>!String(row.pdfUnit||'').trim()||row.pdfUnit==='N/D').length;
+    const invalidQty=rows.filter(row=>!Number.isFinite(row.qty)||Math.abs(row.qty)<=Number(stockConfigValue().parser.zeroTolerance||.000001)).length;
+    const duplicateKeys=new Set(),duplicates=new Set();
+    rows.forEach(row=>{const key=`${normalizeText(row.sourceName)}|${normalizeText(row.pdfUnit)}`;if(duplicateKeys.has(key))duplicates.add(key);else duplicateKeys.add(key);});
+    const blocking=[];
+    if(missingHeader.length)blocking.push(`Falta validar: ${missingHeader.join(', ')}.`);
+    if(meta?.headerMismatches?.length)blocking.push(`El encabezado cambia entre páginas: ${meta.headerMismatches.join(', ')}.`);
+    if(!rows.length)blocking.push('No hay artículos con cantidad diferente de cero.');
+    if(invalidItems)blocking.push(`${invalidItems} renglón${invalidItems===1?'':'es'} sin artículo.`);
+    if(invalidUnits)blocking.push(`${invalidUnits} renglón${invalidUnits===1?'':'es'} sin unidad.`);
+    if(invalidQty)blocking.push(`${invalidQty} cantidad${invalidQty===1?'':'es'} inválida${invalidQty===1?'':'s'}.`);
+    if(duplicates.size)blocking.push(`${duplicates.size} artículo${duplicates.size===1?'':'s'} duplicado${duplicates.size===1?'':'s'} por nombre y unidad.`);
+    const warnings=[...freshnessWarnings];
+    if(meta?.reportDate&&meta?.printedDate&&meta.reportDate!==meta.printedDate)warnings.push('Report Date y Printed On corresponden a fechas distintas.');
+    return {valid:blocking.length===0,blocking,warnings,missingHeader,invalidItems,invalidUnits,invalidQty,duplicates:duplicates.size};
+  }
+
+  function closeStockConfirmation(){
+    const dialog=$('stockConfirmDialog');
+    if(typeof dialog.close==='function'&&dialog.open)dialog.close();else dialog.classList.remove('open');
+  }
+
+  function updateStockConfirmAction(){
+    const accepted=$('stockConfirmHeader').checked&&$('stockConfirmRows').checked&&Boolean(stockValidation?.valid);
+    $('stockConfirmAccept').disabled=!accepted;
+  }
+
+  function openStockConfirmation(){
+    if(!stockRows.length||!stockMeta)return;
+    const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable,dialog=$('stockConfirmDialog');
+    $('stockConfirmHeader').checked=false;$('stockConfirmRows').checked=false;$('stockConfirmAccept').disabled=true;
+    $('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Lectura</span><b>${stockRows.length} no cero · ${exact} exactos · ${probable+review} a revisar</b></div>`;
+    const block=$('stockConfirmBlock'),messages=[...(stockValidation?.blocking||[]),...(stockValidation?.warnings||[])];
+    block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'Exportación bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
+    if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
+  }
+
+  function confirmStockReading(){
+    updateStockConfirmAction();
+    if($('stockConfirmAccept').disabled||!stockValidation?.valid)return;
+    stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='Generar PDF Stock on Hand';
+    $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
+    $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> tienda, fecha, hora, artículo, unidad y cantidad validados. Ya puedes generar el PDF carta.`;
+    closeStockConfirmation();
   }
 
   function stockStoreName(value){
@@ -515,31 +577,43 @@
 
   async function loadStockPdf(file){
     if(!file)return;
-    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;$('stockExport').disabled=true;$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockValidation=null;$('stockExport').disabled=true;$('stockExport').textContent='Confirma la lectura para exportar';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
     status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
+    let pdf=null;
     try{
+      if(file.size>25*1024*1024)throw new Error('El PDF supera 25 MB. Genera un reporte optimizado directamente desde Micros.');
+      const signature=new TextDecoder('ascii').decode(await file.slice(0,5).arrayBuffer());
+      if(signature!=='%PDF-')throw new Error('El archivo no tiene una firma PDF válida.');
       await ensurePdfJs();
-      const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)}),pdf=await task.promise,rawRows=[];let firstMeta=null;
+      const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)});pdf=await task.promise;
+      if(!pdf.numPages||pdf.numPages>250)throw new Error('El reporte debe contener entre 1 y 250 páginas.');
+      const rawRows=[];let firstMeta=null;const headerMismatches=new Set();
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
         const page=await pdf.getPage(pageNumber),content=await page.getTextContent(),lines=groupStockPdfLines(content.items);
-        if(pageNumber===1)firstMeta=readStockMeta(lines,content.items,file.name);
+        const pageMeta=readStockMeta(lines,content.items,file.name);
+        if(pageNumber===1)firstMeta=pageMeta;
+        else for(const field of ['store','reportDate','printedDate','printedTime'])if(pageMeta[field]&&firstMeta?.[field]&&pageMeta[field]!==firstMeta[field])headerMismatches.add(field);
         lines.forEach(line=>{const row=parseStockRow(line,pageNumber);if(row)rawRows.push(row);});
         if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo Stock on Hand · página ${pageNumber} de ${pdf.numPages}...`;
       }
-      stockMeta={...(firstMeta||{}),pages:pdf.numPages};
+      if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
+      stockMeta={...(firstMeta||{}),pages:pdf.numPages,headerMismatches:[...headerMismatches]};
       stockRows=rawRows.map(matchStockRow);
       if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
-      const freshness=stockFreshness(stockMeta);renderStockResults(freshness);$('stockExport').disabled=false;$('stockClear').disabled=false;
-      await pdf.destroy();
+      const freshness=stockFreshness(stockMeta);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'Confirmar lectura':'Revisar lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
     }catch(error){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}
+    finally{try{await pdf?.destroy?.();}catch(error){}}
   }
 
   function clearStockReport(){
-    stockRows=[];stockMeta=null;stockPdfName='';$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';
+    stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='Confirma la lectura para exportar';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();
   }
 
   async function generateStockPdf(){
     if(!stockRows.length||!stockMeta)return;
+    if(!stockConfirmed||!stockValidation?.valid){openStockConfirmation();return;}
+    const finalValidation=validateStockReading(stockMeta,stockRows,stockValidation.warnings||[]);
+    if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='Revisar lectura bloqueada';openStockConfirmation();return;}
     const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Generando PDF...';
     try{
       await ensureJsPdf();
@@ -1014,6 +1088,12 @@
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
     $('stockClear').addEventListener('click',clearStockReport);
+    $('stockConfirmHeader').addEventListener('change',updateStockConfirmAction);
+    $('stockConfirmRows').addEventListener('change',updateStockConfirmAction);
+    $('stockConfirmAccept').addEventListener('click',confirmStockReading);
+    $('stockConfirmReview').addEventListener('click',closeStockConfirmation);
+    $('stockConfirmClose').addEventListener('click',closeStockConfirmation);
+    $('stockConfirmDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockConfirmation();});
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
     $('labelAddBtn').addEventListener('click', () => addLabel($('labelSku').value, $('labelQty').value));
@@ -1049,7 +1129,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v12-stock'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v13-stock-safe'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

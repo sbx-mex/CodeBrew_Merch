@@ -191,7 +191,7 @@
         </div>
         <div class="stock-upload-row">
           <label class="file-action stock-file">Adjuntar Stock on Hand PDF<input id="stockPdfInput" type="file" accept="application/pdf,.pdf"></label>
-          <button id="stockExport" type="button" disabled>Generar PDF Stock on Hand</button>
+          <button id="stockExport" type="button" disabled>Confirma la lectura para exportar</button>
           <button id="stockClear" type="button" class="ghost" disabled>Limpiar reporte</button>
         </div>
         <p class="stock-disclaimer"><b>Importante:</b> Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio. El PDF sirve como referencia y apoyo.</p>
@@ -199,6 +199,31 @@
         <div id="stockMeta" class="stock-meta" hidden></div>
         <div id="stockResults" class="stock-results"></div>
       </section>
+
+      <dialog id="stockConfirmDialog" class="stock-dialog" aria-labelledby="stockConfirmTitle" aria-describedby="stockConfirmIntro">
+        <form method="dialog" class="stock-dialog-card">
+          <button id="stockConfirmClose" class="stock-dialog-close" value="cancel" aria-label="Cerrar confirmación">×</button>
+          <div class="stock-dialog-grid">
+            <figure class="stock-dialog-visual">
+              <img src="assets/stock_pdf_woe.jpeg" alt="Guía visual para capturar, revisar y comparar el Stock on Hand" loading="lazy" decoding="async">
+              <figcaption>Guía operativa · revisa antes de generar.</figcaption>
+            </figure>
+            <section class="stock-dialog-content">
+              <span class="woe-kicker stock-kicker">Confirmación segura</span>
+              <h2 id="stockConfirmTitle">¿Confirmas la lectura?</h2>
+              <p id="stockConfirmIntro">Revisa el encabezado y el detalle antes de habilitar la exportación.</p>
+              <div id="stockConfirmSummary" class="stock-confirm-summary"></div>
+              <label class="stock-confirm-check"><input id="stockConfirmHeader" type="checkbox"> <span>Confirmo <b>tienda, Report Date y hora de impresión</b>.</span></label>
+              <label class="stock-confirm-check"><input id="stockConfirmRows" type="checkbox"> <span>Confirmo el doble check de <b>artículo, unidad y cantidad</b>.</span></label>
+              <p id="stockConfirmBlock" class="stock-confirm-block" hidden></p>
+              <div class="stock-dialog-actions">
+                <button id="stockConfirmReview" type="button" class="ghost">Volver a revisar</button>
+                <button id="stockConfirmAccept" type="button" disabled>Confirmar y habilitar PDF</button>
+              </div>
+            </section>
+          </div>
+        </form>
+      </dialog>
     </section>
 
     <section id="etiquetado" class="tabpage" role="tabpanel">
