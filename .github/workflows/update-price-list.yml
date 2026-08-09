@@ -20,6 +20,7 @@ concurrency:
 jobs:
   validate-and-generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
@@ -39,7 +40,7 @@ jobs:
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data/products.js data/woe.js; then
+          if git diff --quiet -- data/products.js data/woe.js data/import-report.json; then
             echo "La lista ya está actualizada."
             exit 0
           fi
