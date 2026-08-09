@@ -1,7 +1,7 @@
 {
   "name": "CodeBrew Merch POS · WOE",
   "short_name": "CodeBrew",
-  "description": "Consulta operativa de MERCH POS y catálogo WOE con validación SAP y Micros.",
+  "description": "Consulta MERCH, valida SAP con Micros y revisa Stock on Hand como apoyo al conteo físico.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

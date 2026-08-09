@@ -242,15 +242,18 @@ def parse_woe_catalog(workbook, products):
     micros_headers = [normalize_header(cell.value) for cell in micros_ws[1]]
     if sap_headers[:3] != ["id woe", "codigo dia", "descripcion sap"]:
         raise ValueError("SAP requiere: ID WOE, Codigo DIA y Descripcion SAP")
-    if micros_headers[:2] != ["codigo dia", "nombre micros"]:
-        raise ValueError("Catalogo Micros requiere: Codigo DIA y Nombre Micros")
+    if len(micros_headers) < 2 or micros_headers[0] not in {"codigo", "codigo dia"} or micros_headers[1] != "nombre micros":
+        raise ValueError("Catalogo Micros requiere: Codigo DIA (o Codigo) y Nombre Micros")
 
     micros_by_dia = {}
+    micros_unit_by_dia = {}
     micros_rows = 0
+    micros_units_populated = 0
     for row_number, row in enumerate(micros_ws.iter_rows(min_row=2), start=2):
         code = identifier(row[0])
         name = clean_text(row[1].value if len(row) > 1 else "")
-        if not code and not name:
+        unit = clean_text(row[2].value if len(row) > 2 else "")
+        if not code and not name and not unit:
             continue
         micros_rows += 1
         if not code:
@@ -258,6 +261,9 @@ def parse_woe_catalog(workbook, products):
         values = micros_by_dia.setdefault(code, [])
         if name and name not in values:
             values.append(name)
+        if unit and code not in micros_unit_by_dia:
+            micros_unit_by_dia[code] = unit
+            micros_units_populated += 1
 
     merch_by_dia = {}
     for product in products:
@@ -307,6 +313,7 @@ def parse_woe_catalog(workbook, products):
             "codigoDia": code,
             "descripcionSap": description,
             "micros": micros,
+            "unidadMicros": micros_unit_by_dia.get(code, ""),
             "merch": merch,
             "validation": {
                 "sap": bool(description),
@@ -333,6 +340,7 @@ def parse_woe_catalog(workbook, products):
             "codigoDia": code,
             "descripcionSap": "",
             "micros": micros,
+            "unidadMicros": micros_unit_by_dia.get(code, ""),
             "merch": merch,
             "validation": {"sap": False, "micros": bool(micros), "merch": bool(merch)},
             "operationalValidation": {"sapMicros": False, "merchRequired": False},
@@ -355,6 +363,7 @@ def parse_woe_catalog(workbook, products):
         "multiDiaRelations": sum(count - 1 for count in seen_dia.values()),
         "microsRows": micros_rows,
         "uniqueDiaMicros": len(micros_by_dia),
+        "microsUnitsPopulated": micros_units_populated,
         "withMicros": sum(1 for item in catalog if item["validation"]["micros"]),
         "withMerch": sum(1 for item in catalog if item["validation"]["merch"]),
         "withoutSap": sum(1 for item in catalog if not item["validation"]["sap"]),

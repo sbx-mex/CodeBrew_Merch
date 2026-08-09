@@ -13,6 +13,7 @@
   <script src="data/products.js" defer></script>
   <script src="data/woe.js" defer></script>
   <script src="data/woe-pdf-config.js" defer></script>
+  <script src="data/stock-config.js" defer></script>
   <script src="data/app-audit.js" defer></script>
   <script src="app.js" defer></script>
 
@@ -173,6 +174,31 @@
 
       <section id="woeStatus" class="woe-status" aria-live="polite">Escribe un dato para comenzar.</section>
       <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
+
+      <section class="panel stock-panel" aria-labelledby="stockTitle">
+        <div class="stock-head">
+          <div>
+            <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
+            <h2 id="stockTitle">Stock on Hand</h2>
+            <p>Adjunta el reporte completo de Micros. La app leerá todas las páginas, conservará sólo cantidades diferentes de cero y cruzará cada nombre con el catálogo.</p>
+          </div>
+          <span class="stock-private">Lectura local · el PDF no se envía</span>
+        </div>
+        <div class="stock-flow" aria-label="Flujo Stock on Hand">
+          <div><b>1</b><span>Genera el reporte al finalizar el servicio.</span></div>
+          <div><b>2</b><span>Adjunta el PDF más actual y valida tienda y fecha.</span></div>
+          <div><b>3</b><span>Revisa cruces y genera tu referencia operativa.</span></div>
+        </div>
+        <div class="stock-upload-row">
+          <label class="file-action stock-file">Adjuntar Stock on Hand PDF<input id="stockPdfInput" type="file" accept="application/pdf,.pdf"></label>
+          <button id="stockExport" type="button" disabled>Generar PDF Stock on Hand</button>
+          <button id="stockClear" type="button" class="ghost" disabled>Limpiar reporte</button>
+        </div>
+        <p class="stock-disclaimer"><b>Importante:</b> Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio. El PDF sirve como referencia y apoyo.</p>
+        <div id="stockStatus" class="woe-status" aria-live="polite">Adjunta un PDF cuando necesites esta validación opcional.</div>
+        <div id="stockMeta" class="stock-meta" hidden></div>
+        <div id="stockResults" class="stock-results"></div>
+      </section>
     </section>
 
     <section id="etiquetado" class="tabpage" role="tabpanel">

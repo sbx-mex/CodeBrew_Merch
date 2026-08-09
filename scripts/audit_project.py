@@ -18,10 +18,11 @@ PERFORMANCE_BUDGETS = {
     "app.js": 90_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
+    "data/stock-config.js": 15_000,
 }
 REQUIRED_SHEETS = {"Base_Campaña", "Discovery", "Homologados", "Essentials"}
 OBSOLETE_ALLOWLIST = (Path("products.js"), Path("icon-512.png"))
-GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json"}
+GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js"}
 
 
 class HtmlAuditParser(HTMLParser):
@@ -79,7 +80,7 @@ def audit(root: Path) -> dict:
         "4 pestañas operativas localizadas" if REQUIRED_SHEETS.issubset(present_sheets) else f"Faltan: {', '.join(sorted(REQUIRED_SHEETS - present_sheets))}",
     ))
     woe = report.get("woe", {})
-    woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
+    woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
     checks.append(check(
         "Integridad WOE",
         woe_ok,
@@ -87,20 +88,27 @@ def audit(root: Path) -> dict:
     ))
     pdf_config_text = (root / "data/woe-pdf-config.js").read_text(encoding="utf-8")
     pdf_config = json.loads(pdf_config_text.split("=", 1)[1].strip().rstrip(";"))
+    stock_config_text = (root / "data/stock-config.js").read_text(encoding="utf-8")
+    stock_config = json.loads(stock_config_text.split("=", 1)[1].strip().rstrip(";"))
     export_keys = [column.get("key") for column in pdf_config.get("columns", [])]
+    stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
         and pdf_config.get("page", {}).get("format") == "letter"
         and pdf_config.get("page", {}).get("orientation") == "portrait"
         and export_keys == ["descripcionSap", "nombreMicros", "codigoDia", "idWoe"]
+        and stock_config.get("audit", {}).get("fit") is True
+        and stock_config.get("page", {}).get("format") == "letter"
+        and stock_config.get("page", {}).get("orientation") == "portrait"
+        and stock_export_keys == ["codigoDia", "idWoe", "descripcionSap", "nombreMicros", "unidad", "qty"]
     )
     checks.append(check(
         "Exportación PDF",
         export_ok,
-        f"Carta vertical; 4 columnas; {pdf_config.get('audit', {}).get('tableWidth', 0)} pt utilizados",
+        f"WOE 4 columnas + Stock 6 columnas; ambos en carta vertical",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults"}
+    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockPdfInput", "stockExport", "stockResults"}
     redundant_controls = {"woeRun", "woeCopyList"}.intersection(parser.ids)
     checks.append(check(
         "Navegación e interfaz",
@@ -132,7 +140,7 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup
+    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "data/stock-config.js" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",

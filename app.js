@@ -2,7 +2,11 @@
   const $ = (id) => document.getElementById(id);
   const products = window.PRODUCTS || [];
   const woeCatalog = window.WOE_CATALOG || [];
+  const stockConfig = window.STOCK_CONFIG || {};
   const woeSelection = new Map();
+  let stockRows = [];
+  let stockMeta = null;
+  let stockPdfName = '';
   let stream = null;
   let labelStream = null;
   let currentProduct = null;
@@ -34,6 +38,10 @@
   }
   function ensureTesseract(){return loadExternalScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',()=>Boolean(window.Tesseract));}
   function ensureJsPdf(){return loadExternalScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',()=>Boolean(window.jspdf?.jsPDF));}
+  async function ensurePdfJs(){
+    await loadExternalScript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',()=>Boolean(window.pdfjsLib?.getDocument));
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  }
 
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
@@ -368,6 +376,189 @@
     $('woeStatus').classList.toggle('warning',needsReview>0);
     $('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados en SAP + Micros y ${needsReview} por revisar. MERCH no afecta este resultado.`:`<b>Listo:</b> los ${reviewed} artículos tienen cruce SAP + Micros. MERCH se muestra sólo cuando existe como referencia por SKU.`;
     target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);renderWoeSelection();renderWoeResults();}));
+  }
+
+  const stockAliasRows=[];
+  const stockExactIndex=new Map();
+  woeCatalog.forEach(item=>(item.micros||[]).forEach(name=>{
+    const normalized=normalizeText(name).replace(/^\d+\s+/,''),key=`${item.codigoDia}|${item.idWoe}|${normalized}`;
+    if(!normalized||stockAliasRows.some(row=>row.key===key))return;
+    const row={key,normalized,name,item,tokens:new Set(normalized.split(' ').filter(Boolean))};
+    stockAliasRows.push(row);
+    const exact=stockExactIndex.get(normalized)||[];exact.push(row);stockExactIndex.set(normalized,exact);
+  }));
+
+  function stockConfigValue(){
+    return stockConfig.parser?stockConfig:{
+      parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.000001,previewLimit:250},
+      page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:112,tableBottom:754,footerY:778},
+      columns:[{key:'codigoDia',label:'#DIA',width:55},{key:'idWoe',label:'#SAP',width:55},{key:'descripcionSap',label:'DESCRIPCION SAP',width:190},{key:'nombreMicros',label:'NOMBRE MICROS',width:160},{key:'unidad',label:'UNIDAD STOCK',width:60},{key:'qty',label:'QTY',width:44}],
+      style:{titleSize:17,metaSize:7.5,headerSize:6.8,bodySize:7,lineHeight:8.2,cellPadding:4,maxLinesPerCell:3,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]},
+      messages:{disclaimer:'Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio.',nameVariation:'El nombre Micros puede variar. Valida por Código DIA cuando el cruce no sea exacto.'}
+    };
+  }
+
+  function groupStockPdfLines(items){
+    const tolerance=Number(stockConfigValue().parser.yTolerance)||2;
+    const parts=items.filter(item=>String(item.str||'').trim()).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0),y:Number(item.transform?.[5]||0)})).sort((a,b)=>b.y-a.y||a.x-b.x);
+    const lines=[];
+    parts.forEach(part=>{
+      let line=lines.find(candidate=>Math.abs(candidate.y-part.y)<=tolerance);
+      if(!line){line={y:part.y,parts:[]};lines.push(line);}
+      line.parts.push(part);
+    });
+    return lines.sort((a,b)=>b.y-a.y).map(line=>{line.parts.sort((a,b)=>a.x-b.x);line.text=line.parts.map(part=>part.text).join(' ').replace(/\s+/g,' ').trim();return line;});
+  }
+
+  function parseStockNumber(value){
+    const clean=String(value||'').replace(/,/g,'').trim();
+    return /^-?\d+(?:\.\d+)?$/.test(clean)?Number(clean):null;
+  }
+
+  function parseStockRow(line,pageNumber){
+    const parser=stockConfigValue().parser;
+    const qtyPart=line.parts.find(part=>part.x>=parser.qtyMinX&&part.x<parser.qtyMaxX&&parseStockNumber(part.text)!==null);
+    if(!qtyPart)return null;
+    const qty=parseStockNumber(qtyPart.text);
+    if(qty===null||Math.abs(qty)<=parser.zeroTolerance)return null;
+    let name=line.parts.filter(part=>part.x<parser.itemMaxX).map(part=>part.text).join(' ').replace(/\s+/g,' ').trim();
+    let unit=line.parts.filter(part=>part.x>=parser.unitMinX&&part.x<parser.unitMaxX).map(part=>part.text).join(' ').replace(/\s+/g,' ').trim();
+    if(!unit){
+      const merged=name.match(/(PZA|BTE|PAQ|BOL|BLI|LTA|CJ|KG|LT|MIL|CAJ|BOT|BUL|GAL|GR|ML):\s*(.*)$/i);
+      if(merged){name=name.slice(0,merged.index).trim();unit=merged[1]+(merged[2].trim()?`: ${merged[2].trim()}`:'');}
+    }
+    unit=unit.replace(/^([A-Z]{2,4}):\s*$/i,'$1').trim();
+    const normalized=normalizeText(name);
+    if(!name||['item name','name','qty','cost','value'].includes(normalized)||/^page \d+ of \d+$/.test(normalized))return null;
+    return {sourceName:name,pdfUnit:unit||'N/D',qty,page:pageNumber};
+  }
+
+  function tokenScore(left,right){
+    if(left===right)return 1;
+    if((left.includes(right)||right.includes(left))&&Math.min(left.length,right.length)>=8)return .9+(Math.min(left.length,right.length)/Math.max(left.length,right.length))*.09;
+    const a=new Set(left.split(' ').filter(Boolean)),b=new Set(right.split(' ').filter(Boolean));
+    const shared=[...a].filter(token=>b.has(token)).length;
+    return a.size&&b.size?(2*shared)/(a.size+b.size):0;
+  }
+
+  function chooseStockAlias(rows,type,score){
+    const unique=[];
+    rows.forEach(row=>{if(!unique.some(item=>item.item.codigoDia===row.item.codigoDia&&item.item.idWoe===row.item.idWoe))unique.push(row);});
+    unique.sort((a,b)=>Number(Boolean(b.item.descripcionSap))-Number(Boolean(a.item.descripcionSap))||String(a.item.codigoDia).localeCompare(String(b.item.codigoDia),'es',{numeric:true}));
+    const selected=unique[0];
+    if(!selected)return null;
+    return {alias:selected,matchType:unique.length>1?'ambiguous':type,matchScore:score,alternatives:unique.length};
+  }
+
+  function matchStockRow(row){
+    const query=normalizeText(row.sourceName).replace(/^\d+\s+/,'');
+    let chosen=chooseStockAlias(stockExactIndex.get(query)||[],'exact',1);
+    if(!chosen){
+      const ranked=stockAliasRows.map(alias=>({alias,score:tokenScore(query,alias.normalized)})).filter(result=>result.score>=.76).sort((a,b)=>b.score-a.score);
+      if(ranked.length&&ranked[0].score-(ranked[1]?.score||0)>=.05)chosen=chooseStockAlias([ranked[0].alias],'probable',ranked[0].score);
+    }
+    if(!chosen)return {...row,codigoDia:'',idWoe:'',descripcionSap:'Sin cruce SAP',nombreMicros:row.sourceName,unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
+    const item=chosen.alias.item;
+    return {...row,codigoDia:item.codigoDia||'',idWoe:item.idWoe||'',descripcionSap:item.descripcionSap||'Sin descripción SAP',nombreMicros:chosen.alias.name,unidad:row.pdfUnit||item.unidadMicros||'N/D',matchType:chosen.matchType,matchScore:chosen.matchScore,alternatives:chosen.alternatives};
+  }
+
+  function readStockMeta(lines,items,fileName){
+    const titleIndex=lines.findIndex(line=>normalizeText(line.text)==='stock on hand');
+    const storeLine=titleIndex>=0?lines[titleIndex+1]?.text:'';
+    const dateItems=items.filter(item=>/^\d{2}\/\d{2}\/\d{4}$/.test(String(item.str||'').trim())).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0)})).sort((a,b)=>a.x-b.x);
+    const timeItems=items.filter(item=>/\d{1,2}:\d{2}:\d{2}/.test(String(item.str||''))||/^[ap]\.\s*m\.$/i.test(String(item.str||'').trim())).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0)})).sort((a,b)=>a.x-b.x);
+    return {titleFound:titleIndex>=0,store:storeLine||'Tienda no identificada',reportDate:dateItems[0]?.text||'',printedDate:dateItems[dateItems.length-1]?.text||dateItems[0]?.text||'',printedTime:timeItems.map(item=>item.text).join(' ').replace(/\s+/g,' ').trim(),fileName};
+  }
+
+  function stockTimestamp(meta){
+    const match=String(meta.printedDate||meta.reportDate).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if(!match)return 0;
+    let hour=0,minute=0,second=0;
+    const time=String(meta.printedTime||'').toLowerCase().replace(/\s|\./g,'');
+    const clock=time.match(/(\d{1,2}):(\d{2}):(\d{2})(am|pm)?/);
+    if(clock){hour=Number(clock[1]);minute=Number(clock[2]);second=Number(clock[3]);if(clock[4]==='pm'&&hour<12)hour+=12;if(clock[4]==='am'&&hour===12)hour=0;}
+    return new Date(Number(match[3]),Number(match[2])-1,Number(match[1]),hour,minute,second).getTime();
+  }
+
+  function stockFreshness(meta){
+    const warnings=[];
+    const timestamp=stockTimestamp(meta),today=new Date(),dateMatch=String(meta.reportDate).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if(!meta.titleFound)warnings.push('El archivo no se identifica como Stock on Hand.');
+    if(!timestamp)warnings.push('No fue posible validar la fecha de impresión.');
+    if(dateMatch){const reportDay=new Date(Number(dateMatch[3]),Number(dateMatch[2])-1,Number(dateMatch[1]));if(reportDay.toDateString()!==today.toDateString())warnings.push(`El Report Date es ${meta.reportDate}; confirma que sea el reporte más actual.`);}
+    try{
+      const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);
+      if(timestamp&&previous&&timestamp<previous)warnings.push('Este PDF es anterior al último reporte leído para la tienda.');
+      if(timestamp&&timestamp>=previous)localStorage.setItem(key,String(timestamp));
+    }catch(error){/* La validación por fecha actual continúa aunque el almacenamiento esté bloqueado. */}
+    return warnings;
+  }
+
+  function stockStoreName(value){
+    const parts=String(value||'').split(' - ').map(part=>part.trim()).filter(Boolean);
+    return parts.length>1&&parts[0]===parts[1]?parts[0]:(parts[0]||'Tienda no identificada');
+  }
+
+  function renderStockResults(extraWarnings=[]){
+    const target=$('stockResults'),metaBox=$('stockMeta'),status=$('stockStatus');
+    if(!stockRows.length){target.innerHTML='';metaBox.hidden=true;return;}
+    const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable;
+    metaBox.hidden=false;
+    metaBox.innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
+    const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} probable${probable===1?'':'s'} por variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} requiere${review===1?'':'n'} doble check.`);
+    status.classList.toggle('warning',warnings.length>0);
+    status.innerHTML=warnings.length?`<b>Revisión necesaria:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
+    const limit=Number(stockConfigValue().parser.previewLimit)||250,ordered=[...stockRows].sort((a,b)=>({unmatched:0,ambiguous:1,probable:2,exact:3}[a.matchType]-{unmatched:0,ambiguous:1,probable:2,exact:3}[b.matchType])||a.nombreMicros.localeCompare(b.nombreMicros,'es'));
+    const visible=ordered.slice(0,limit);
+    target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>cantidades ≠ 0</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>doble check</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Descripción SAP</th><th>Nombre Micros</th><th>Unidad Stock</th><th>Qty</th><th>Estado</th></tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${row.qty.toFixed(1)}</b></td><td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Probable':'! Revisar'}</span></td></tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. El PDF final incluirá los ${stockRows.length} artículos con cantidad diferente de cero.</p>`:''}`;
+  }
+
+  async function loadStockPdf(file){
+    if(!file)return;
+    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;$('stockExport').disabled=true;$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+    status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
+    try{
+      await ensurePdfJs();
+      const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)}),pdf=await task.promise,rawRows=[];let firstMeta=null;
+      for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+        const page=await pdf.getPage(pageNumber),content=await page.getTextContent(),lines=groupStockPdfLines(content.items);
+        if(pageNumber===1)firstMeta=readStockMeta(lines,content.items,file.name);
+        lines.forEach(line=>{const row=parseStockRow(line,pageNumber);if(row)rawRows.push(row);});
+        if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo Stock on Hand · página ${pageNumber} de ${pdf.numPages}...`;
+      }
+      stockMeta={...(firstMeta||{}),pages:pdf.numPages};
+      stockRows=rawRows.map(matchStockRow);
+      if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
+      const freshness=stockFreshness(stockMeta);renderStockResults(freshness);$('stockExport').disabled=false;$('stockClear').disabled=false;
+      await pdf.destroy();
+    }catch(error){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}
+  }
+
+  function clearStockReport(){
+    stockRows=[];stockMeta=null;stockPdfName='';$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';
+  }
+
+  async function generateStockPdf(){
+    if(!stockRows.length||!stockMeta)return;
+    const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Generando PDF...';
+    try{
+      await ensureJsPdf();
+      const config=stockConfigValue(),page=config.page,style=config.style,columns=config.columns,{jsPDF}=window.jspdf;
+      const doc=new jsPDF({orientation:page.orientation,unit:page.unit,format:page.format,compress:true,putOnlyUsedFonts:true}),pageWidth=doc.internal.pageSize.getWidth(),tableLeft=page.margin,headerHeight=22;
+      const exact=stockRows.filter(row=>row.matchType==='exact').length,review=stockRows.length-exact;
+      function safeLines(value,width){const lines=doc.splitTextToSize(String(value||'-'),Math.max(18,width-(style.cellPadding*2)));if(lines.length<=style.maxLinesPerCell)return lines;const clipped=lines.slice(0,style.maxLinesPerCell);clipped[clipped.length-1]=`${clipped[clipped.length-1].replace(/\s+$/,'')}...`;return clipped;}
+      function drawHeader(){
+        doc.setFillColor(...style.green);doc.roundedRect(page.margin,18,8,44,3,3,'F');doc.setTextColor(...style.dark);doc.setFont('helvetica','bold');doc.setFontSize(style.titleSize);doc.text('Stock on Hand - Referencia operativa',page.margin+16,33);
+        doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${stockStoreName(stockMeta.store)} | Report Date ${stockMeta.reportDate||'-'} | Printed On ${`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'-'}`,page.margin+16,47,{maxWidth:pageWidth-page.margin*2-16});
+        doc.setTextColor(...style.warning);doc.setFont('helvetica','bold');doc.text(config.messages.disclaimer,page.margin,70,{maxWidth:pageWidth-page.margin*2});doc.setFont('helvetica','normal');doc.setTextColor(70,82,76);doc.text(`${stockRows.length} cantidades distintas de cero | ${exact} cruces exactos | ${review} por revisar`,page.margin,92);
+        let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-page.margin*2,headerHeight,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);columns.forEach(column=>{doc.text(column.label,x+style.cellPadding,page.tableTop+14,{maxWidth:column.width-style.cellPadding*2});x+=column.width;});return page.tableTop+headerHeight;
+      }
+      function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo físico',page.margin,page.footerY);doc.text(`Página ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
+      doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catálogo Micros',creator:'CodeBrew'});
+      let y=drawHeader();stockRows.forEach((row,index)=>{const values={...row,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
+      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} requieren doble check.`:'Todos los cruces fueron exactos.'}`;
+    }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
+    finally{button.disabled=false;button.textContent=original;}
   }
 
   function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
@@ -820,6 +1011,9 @@
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
+    $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
+    $('stockExport').addEventListener('click',generateStockPdf);
+    $('stockClear').addEventListener('click',clearStockReport);
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
     $('labelAddBtn').addEventListener('click', () => addLabel($('labelSku').value, $('labelQty').value));
@@ -855,7 +1049,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v11-portrait'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v12-stock'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
