@@ -112,7 +112,7 @@ def audit(root: Path) -> dict:
         "WOE 4 columnas + Stock seguro de 6 columnas; ambos en carta vertical",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "woeGuideDialog", "woeGuideOpen", "woeGuideAccept", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmHeader", "stockConfirmRows", "stockConfirmAccept"}
+    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockAttachGuide", "stockUploadGuideDialog", "stockUploadGuideAccept", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmHeader", "stockConfirmRows", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList"}.intersection(parser.ids)
     checks.append(check(
         "Navegación e interfaz",

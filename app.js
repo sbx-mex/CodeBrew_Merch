@@ -643,20 +643,21 @@
     document.querySelectorAll('.tabpage').forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
     try{sessionStorage.setItem('codebrew-tab',target);}catch(error){}
     if(updateHistory&&location.hash!==`#${target}`)history.pushState({tab:target},'',`#${target}`);
-    if(target==='woe')requestAnimationFrame(()=>openWoeGuide());
   }
 
-  function closeWoeGuide(){
-    const dialog=$('woeGuideDialog');
+  function closeStockUploadGuide(){
+    const dialog=$('stockUploadGuideDialog');
     if(typeof dialog.close==='function'&&dialog.open)dialog.close();else dialog.classList.remove('open');
   }
 
-  function openWoeGuide(force=false){
-    let shown=false;try{shown=sessionStorage.getItem('codebrew-woe-guide')==='shown';}catch(error){}
-    if(shown&&!force)return;
-    const dialog=$('woeGuideDialog');
-    try{sessionStorage.setItem('codebrew-woe-guide','shown');}catch(error){}
+  function openStockUploadGuide(){
+    const dialog=$('stockUploadGuideDialog');
     if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
+  }
+
+  function confirmStockUploadGuide(){
+    closeStockUploadGuide();
+    requestAnimationFrame(()=>$('stockPdfInput').click());
   }
 
   function renderAuditHealth(){
@@ -1099,10 +1100,11 @@
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
-    $('woeGuideOpen').addEventListener('click',()=>openWoeGuide(true));
-    $('woeGuideAccept').addEventListener('click',()=>{closeWoeGuide();$('woeSearch').focus();});
-    $('woeGuideClose').addEventListener('click',closeWoeGuide);
-    $('woeGuideDialog').addEventListener('cancel',event=>{event.preventDefault();closeWoeGuide();});
+    $('stockAttachGuide').addEventListener('click',openStockUploadGuide);
+    $('stockUploadGuideAccept').addEventListener('click',confirmStockUploadGuide);
+    $('stockUploadGuideCancel').addEventListener('click',closeStockUploadGuide);
+    $('stockUploadGuideClose').addEventListener('click',closeStockUploadGuide);
+    $('stockUploadGuideDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockUploadGuide();});
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
     $('stockClear').addEventListener('click',clearStockReport);
@@ -1147,7 +1149,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v14-woe-guide'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v15-stock-upload-guide'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
