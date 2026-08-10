@@ -34,7 +34,7 @@ def build(report_path: Path) -> dict:
         )
     woe = report.get("woe", {})
     return {
-        "version": "stock-on-hand-v3-premium",
+        "version": "stock-on-hand-v4-adaptive",
         "parser": {
             "yTolerance": 2.0,
             "itemMaxX": 210,
@@ -45,6 +45,9 @@ def build(report_path: Path) -> dict:
             # La salida usa un decimal: valores que se mostrarían como 0.0 no se exportan.
             "zeroTolerance": 0.049999,
             "previewLimit": 250,
+            "titleAliases": ["stock on hand", "stock onhand"],
+            "adaptiveLayout": True,
+            "minimumHeaderFields": 4,
         },
         "page": {
             "orientation": "portrait",

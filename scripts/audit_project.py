@@ -93,7 +93,7 @@ def audit(root: Path) -> dict:
     export_keys = [column.get("key") for column in pdf_config.get("columns", [])]
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
-        "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()",
+        "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()", "detectStockLayout", "stockTokenIndex",
     )) and (root / "assets/stock_pdf_woe.jpeg").exists()
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
@@ -103,7 +103,8 @@ def audit(root: Path) -> dict:
         and stock_config.get("audit", {}).get("fit") is True
         and stock_config.get("page", {}).get("format") == "letter"
         and stock_config.get("page", {}).get("orientation") == "portrait"
-        and stock_config.get("version") == "stock-on-hand-v3-premium"
+        and stock_config.get("version") == "stock-on-hand-v4-adaptive"
+        and stock_config.get("parser", {}).get("adaptiveLayout") is True
         and stock_export_keys == ["codigoDia", "idWoe", "descripcionSap", "nombreMicros", "unidad", "qty", "estado"]
         and float(stock_config.get("parser", {}).get("zeroTolerance", 0)) >= 0.049
         and stock_security_ok

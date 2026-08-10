@@ -384,17 +384,19 @@
 
   const stockAliasRows=[];
   const stockExactIndex=new Map();
+  const stockTokenIndex=new Map();
   woeCatalog.forEach(item=>(item.micros||[]).forEach(name=>{
     const normalized=normalizeText(name).replace(/^\d+\s+/,''),key=`${item.codigoDia}|${item.idWoe}|${normalized}`;
     if(!normalized||stockAliasRows.some(row=>row.key===key))return;
     const row={key,normalized,name,item,tokens:new Set(normalized.split(' ').filter(Boolean))};
     stockAliasRows.push(row);
     const exact=stockExactIndex.get(normalized)||[];exact.push(row);stockExactIndex.set(normalized,exact);
+    row.tokens.forEach(token=>{if(token.length<3)return;const matches=stockTokenIndex.get(token)||[];matches.push(row);stockTokenIndex.set(token,matches);});
   }));
 
   function stockConfigValue(){
     return stockConfig.parser?stockConfig:{
-      parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.049999,previewLimit:250},
+      parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:410,zeroTolerance:.049999,previewLimit:250,titleAliases:['stock on hand','stock onhand'],adaptiveLayout:true,minimumHeaderFields:4},
       page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:112,tableBottom:754,footerY:778},
       columns:[{key:'codigoDia',label:'#DIA',width:45},{key:'idWoe',label:'#SAP',width:45},{key:'descripcionSap',label:'DESCRIPCION SAP',width:160},{key:'nombreMicros',label:'NOMBRE MICROS',width:142},{key:'unidad',label:'UNIDAD STOCK',width:64},{key:'qty',label:'QTY',width:40},{key:'estado',label:'ESTADO',width:68}],
       style:{titleSize:17,metaSize:7.5,headerSize:6.8,bodySize:7,lineHeight:8.2,cellPadding:4,maxLinesPerCell:3,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]},
@@ -415,12 +417,28 @@
   }
 
   function parseStockNumber(value){
-    const clean=String(value||'').replace(/,/g,'').trim();
-    return /^-?\d+(?:\.\d+)?$/.test(clean)?Number(clean):null;
+    let clean=String(value||'').replace(/[−–—]/g,'-').replace(/\s/g,'').trim(),negative=false;
+    if(/^\(.+\)$/.test(clean)){negative=true;clean=clean.slice(1,-1);}
+    if(/^[-+]?\d{1,3}(?:,\d{3})+(?:\.\d+)?$/.test(clean))clean=clean.replace(/,/g,'');
+    else if(/^[-+]?\d+,\d+$/.test(clean))clean=clean.replace(',','.');
+    if(!/^[-+]?\d+(?:\.\d+)?$/.test(clean))return null;
+    const number=Number(clean);return Number.isFinite(number)?(negative?-Math.abs(number):number):null;
   }
 
-  function parseStockRow(line,pageNumber){
-    const parser=stockConfigValue().parser;
+  function detectStockLayout(lines){
+    const base=stockConfigValue().parser;
+    if(!base.adaptiveLayout)return {...base,detected:false};
+    const header=lines.find(line=>{const text=normalizeText(line.text);return text.includes('name')&&text.includes('unit')&&text.includes('qty')&&text.includes('cost');});
+    if(!header)return {...base,detected:false};
+    const field=(pattern)=>header.parts.find(part=>pattern.test(normalizeText(part.text)));
+    const name=field(/^(?:item )?name$/),unit=field(/^(?:standard )?unit$/),qty=field(/^(?:qty|quantity)$/),cost=field(/^cost$/);
+    const ordered=[name,unit,qty,cost].every(Boolean)&&name.x<unit.x&&unit.x<qty.x&&qty.x<cost.x;
+    if(!ordered)return {...base,detected:false};
+    const itemUnit=(name.x+unit.x)/2,unitQty=(unit.x+qty.x)/2,qtyCost=(qty.x+cost.x)/2;
+    return {...base,itemMaxX:itemUnit,unitMinX:itemUnit,unitMaxX:unitQty,qtyMinX:unitQty,qtyMaxX:qtyCost,detected:true};
+  }
+
+  function parseStockRow(line,pageNumber,parser=stockConfigValue().parser){
     const qtyPart=line.parts.find(part=>part.x>=parser.qtyMinX&&part.x<parser.qtyMaxX&&parseStockNumber(part.text)!==null);
     if(!qtyPart)return null;
     const qty=parseStockNumber(qtyPart.text);
@@ -458,7 +476,9 @@
     const query=normalizeText(row.sourceName).replace(/^\d+\s+/,'');
     let chosen=chooseStockAlias(stockExactIndex.get(query)||[],'exact',1);
     if(!chosen){
-      const ranked=stockAliasRows.map(alias=>({alias,score:tokenScore(query,alias.normalized)})).filter(result=>result.score>=.76).sort((a,b)=>b.score-a.score);
+      const candidates=new Set();query.split(' ').filter(token=>token.length>=3).forEach(token=>(stockTokenIndex.get(token)||[]).forEach(alias=>candidates.add(alias)));
+      const pool=candidates.size?[...candidates]:stockAliasRows;
+      const ranked=pool.map(alias=>({alias,score:tokenScore(query,alias.normalized)})).filter(result=>result.score>=.76).sort((a,b)=>b.score-a.score);
       if(ranked.length&&ranked[0].score-(ranked[1]?.score||0)>=.05)chosen=chooseStockAlias([ranked[0].alias],'probable',ranked[0].score);
     }
     if(!chosen)return {...row,codigoDia:'',idWoe:'',descripcionSap:'Sin cruce SAP',nombreMicros:row.sourceName,unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
@@ -467,9 +487,10 @@
   }
 
   function readStockMeta(lines,items,fileName){
-    const titleIndex=lines.findIndex(line=>normalizeText(line.text)==='stock on hand');
+    const aliases=stockConfigValue().parser.titleAliases||['stock on hand'],titleIndex=lines.findIndex(line=>aliases.includes(normalizeText(line.text)));
     const storeLine=titleIndex>=0?lines[titleIndex+1]?.text:'';
-    const dateItems=items.filter(item=>/^\d{2}\/\d{2}\/\d{4}$/.test(String(item.str||'').trim())).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0)})).sort((a,b)=>a.x-b.x);
+    const normalizeDate=value=>{const match=String(value||'').trim().match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2}|\d{4})$/);if(!match)return'';const year=match[3].length===2?`20${match[3]}`:match[3];return `${match[1].padStart(2,'0')}/${match[2].padStart(2,'0')}/${year}`;};
+    const dateItems=items.map(item=>({text:normalizeDate(item.str),x:Number(item.transform?.[4]||0)})).filter(item=>item.text).sort((a,b)=>a.x-b.x);
     const timeItems=items.filter(item=>/\d{1,2}:\d{2}:\d{2}/.test(String(item.str||''))||/^[ap]\.\s*m\.$/i.test(String(item.str||'').trim())).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0)})).sort((a,b)=>a.x-b.x);
     return {titleFound:titleIndex>=0,store:storeLine||'Tienda no identificada',reportDate:dateItems[0]?.text||'',printedDate:dateItems[dateItems.length-1]?.text||dateItems[0]?.text||'',printedTime:timeItems.map(item=>item.text).join(' ').replace(/\s+/g,' ').trim(),fileName};
   }
@@ -589,20 +610,20 @@
       await ensurePdfJs();
       const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)});pdf=await task.promise;
       if(!pdf.numPages||pdf.numPages>250)throw new Error('El reporte debe contener entre 1 y 250 páginas.');
-      const rawRows=[];let firstMeta=null;const headerMismatches=new Set();
+      const rawRows=[];let firstMeta=null,adaptivePages=0,fallbackPages=0;const headerMismatches=new Set();
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
         const page=await pdf.getPage(pageNumber),content=await page.getTextContent(),lines=groupStockPdfLines(content.items);
-        const pageMeta=readStockMeta(lines,content.items,file.name);
+        const pageMeta=readStockMeta(lines,content.items,file.name),layout=detectStockLayout(lines);layout.detected?adaptivePages++:fallbackPages++;
         if(pageNumber===1)firstMeta=pageMeta;
         else for(const field of ['store','reportDate','printedDate','printedTime'])if(pageMeta[field]&&firstMeta?.[field]&&pageMeta[field]!==firstMeta[field])headerMismatches.add(field);
-        lines.forEach(line=>{const row=parseStockRow(line,pageNumber);if(row)rawRows.push(row);});
+        lines.forEach(line=>{const row=parseStockRow(line,pageNumber,layout);if(row)rawRows.push(row);});
         if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo Stock on Hand · página ${pageNumber} de ${pdf.numPages}...`;
       }
       if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
-      stockMeta={...(firstMeta||{}),pages:pdf.numPages,headerMismatches:[...headerMismatches]};
+      stockMeta={...(firstMeta||{}),pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
       stockRows=rawRows.map(matchStockRow);
       if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
-      const freshness=stockFreshness(stockMeta);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
+      const freshness=stockFreshness(stockMeta);if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
     }catch(error){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}
     finally{try{await pdf?.destroy?.();}catch(error){}}
   }
@@ -1129,7 +1150,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v18-stock-direct'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v19-stock-adaptive'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
