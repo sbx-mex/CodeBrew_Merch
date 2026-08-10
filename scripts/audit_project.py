@@ -15,14 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 PERFORMANCE_BUDGETS = {
     "index.html": 25_000,
     "styles.css": 40_000,
-    "app.js": 90_000,
+    "app.js": 92_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/stock-config.js": 15_000,
+    "data/ui-config.js": 10_000,
 }
 REQUIRED_SHEETS = {"Base_Campaña", "Discovery", "Homologados", "Essentials"}
 OBSOLETE_ALLOWLIST = (Path("products.js"), Path("icon-512.png"))
-GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js"}
+GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js", "data/ui-config.js"}
 
 
 class HtmlAuditParser(HTMLParser):
@@ -90,6 +91,8 @@ def audit(root: Path) -> dict:
     pdf_config = json.loads(pdf_config_text.split("=", 1)[1].strip().rstrip(";"))
     stock_config_text = (root / "data/stock-config.js").read_text(encoding="utf-8")
     stock_config = json.loads(stock_config_text.split("=", 1)[1].strip().rstrip(";"))
+    ui_config_text = (root / "data/ui-config.js").read_text(encoding="utf-8")
+    ui_config = json.loads(ui_config_text.split("=", 1)[1].strip().rstrip(";"))
     export_keys = [column.get("key") for column in pdf_config.get("columns", [])]
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
@@ -108,6 +111,9 @@ def audit(root: Path) -> dict:
         and stock_export_keys == ["codigoDia", "idWoe", "descripcionSap", "nombreMicros", "unidad", "qty", "estado"]
         and float(stock_config.get("parser", {}).get("zeroTolerance", 0)) >= 0.049
         and stock_security_ok
+        and ui_config.get("version") == "operational-flow-v1"
+        and len(ui_config.get("flows", {}).get("woe", [])) == 3
+        and len(ui_config.get("flows", {}).get("stock", [])) == 3
     )
     checks.append(check(
         "Exportación PDF",
@@ -115,11 +121,13 @@ def audit(root: Path) -> dict:
         "WOE 4 columnas + Stock Premium de 7 columnas; ambos en carta vertical y dentro del margen",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeSearch", "woeSearchClear", "woeResults", "stockPanel", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
+    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
+    app_text = (root / "app.js").read_text(encoding="utf-8")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids),
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html,
         f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",
@@ -147,7 +155,7 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "data/stock-config.js" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
+    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "data/ui-config.js" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",

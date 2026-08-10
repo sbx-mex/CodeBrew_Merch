@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-10T00:13:00+00:00",
+  "auditedAtUtc": "2026-08-10T00:29:55+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
   "checksTotal": 10,
@@ -31,7 +31,7 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "93 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "97 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -46,7 +46,7 @@
     {
       "name": "Caché y modo offline",
       "status": "ok",
-      "detail": "11 recursos esenciales; Excel excluido del arranque"
+      "detail": "12 recursos esenciales; Excel excluido del arranque"
     },
     {
       "name": "Workflows y obsoletos",
@@ -56,25 +56,27 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "1294 KB auditados en archivos críticos"
+      "detail": "1299 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 17961,
-      "styles.css": 28534,
-      "app.js": 87205,
+      "index.html": 18408,
+      "styles.css": 29204,
+      "app.js": 90531,
       "data/products.js": 356315,
       "data/woe.js": 833682,
-      "data/stock-config.js": 1413
+      "data/stock-config.js": 1413,
+      "data/ui-config.js": 546
     },
     "budgets": {
       "index.html": 25000,
       "styles.css": 40000,
-      "app.js": 90000,
+      "app.js": 92000,
       "data/products.js": 500000,
       "data/woe.js": 1200000,
-      "data/stock-config.js": 15000
+      "data/stock-config.js": 15000,
+      "data/ui-config.js": 10000
     }
   },
   "cleanupCandidates": []

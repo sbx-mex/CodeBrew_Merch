@@ -3,11 +3,14 @@
   const products = window.PRODUCTS || [];
   const woeCatalog = window.WOE_CATALOG || [];
   const stockConfig = window.STOCK_CONFIG || {};
+  const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Empieza con WOE, DIA, nombre o SKU.',woeReady:'Listado listo para validar y exportar.',stockEmpty:'Adjunta el Stock on Hand más actual.',stockReady:'Lectura lista para confirmar y exportar.'}};
   const woeSelection = new Map();
+  let woePdfExported = false;
   let stockRows = [];
   let stockMeta = null;
   let stockPdfName = '';
   let stockConfirmed = false;
+  let stockPdfExported = false;
   let stockValidation = null;
   let stockLoadToken = 0;
   let stockLoadingTask = null;
@@ -16,6 +19,7 @@
   let labelStream = null;
   let currentProduct = null;
   let currentTier = 'C2';
+  let labelPreviewToken = 0;
   const labelItems = [];
   const OCR_MIN_FOCUS = 18;
   const OCR_TARGET_MAX_SIDE = 1600;
@@ -44,6 +48,7 @@
     externalLoads.set(url,promise);return promise;
   }
   function ensureTesseract(){return loadExternalScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',()=>Boolean(window.Tesseract));}
+  function ensureQrious(){return loadExternalScript('https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js',()=>Boolean(window.QRious));}
   function ensureJsPdf(){return loadExternalScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',()=>Boolean(window.jspdf?.jsPDF));}
   async function ensurePdfJs(){
     await loadExternalScript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',()=>Boolean(window.pdfjsLib?.getDocument));
@@ -274,8 +279,34 @@
     }));
   }
 
+  function setOperationalFlow(flowId,states,messageId,message,ready=false){
+    const flow=$(flowId);if(!flow)return;flow.querySelectorAll('[data-step]').forEach(step=>{const state=states[step.dataset.step]||'pending';step.dataset.state=state;step.setAttribute('aria-current',state==='active'?'step':'false');});const target=$(messageId);target.textContent=message;target.classList.toggle('ready',ready);
+  }
+
+  function updateWoeFlow(){
+    const count=woeSelection.size,query=Boolean($('woeSearch')?.value.trim());
+    const states=count?{search:'done',select:'done',export:woePdfExported?'done':'active'}:query?{search:'done',select:'active',export:'pending'}:{search:'active',select:'pending',export:'pending'};
+    const message=count?(woePdfExported?'PDF generado; puedes conservar o ajustar el listado.':uiConfig.messages?.woeReady):uiConfig.messages?.woeEmpty;
+    setOperationalFlow('woeFlow',states,'woeNextAction',message||'Continúa con el siguiente paso.',count>0);
+  }
+
+  function updateStockFlow(){
+    const loaded=stockRows.length>0,confirmed=stockConfirmed;
+    const states=stockPdfExported?{attach:'done',review:'done',export:'done'}:confirmed?{attach:'done',review:'done',export:'active'}:loaded?{attach:'done',review:'active',export:'pending'}:{attach:'active',review:'pending',export:'pending'};
+    const message=loaded?(stockPdfExported?'PDF cruzado generado; conserva el reporte como referencia.':confirmed?'Lectura confirmada; genera tu PDF cruzado.':uiConfig.messages?.stockReady):uiConfig.messages?.stockEmpty;
+    setOperationalFlow('stockFlow',states,'stockNextAction',message||'Continúa con el siguiente paso.',loaded);
+  }
+
+  function persistWoeSelection(){
+    try{sessionStorage.setItem('codebrew-woe-indices',JSON.stringify(selectedWoeItems().map(({item})=>woeCatalog.indexOf(item)).filter(index=>index>=0)));}catch(error){}
+  }
+
+  function restoreWoeSelection(){
+    try{const indices=JSON.parse(sessionStorage.getItem('codebrew-woe-indices')||'[]');if(Array.isArray(indices))indices.slice(0,100).forEach(index=>{const item=woeCatalog[Number(index)];if(item)addWoeItem(item,false);});}catch(error){}
+  }
+
   function addWoeItem(item,render=true){
-    woeSelection.set(woeKey(item,woeSelection.size),item);
+    woePdfExported=false;woeSelection.set(woeKey(item,woeSelection.size),item);
     if(render)renderWoeSelection();
   }
 
@@ -299,9 +330,10 @@
     const target=$('woeSelection'),items=[...woeSelection.entries()];
     $('woeSelectedCount').textContent=items.length;
     $('woeExport').disabled=!items.length;
+    persistWoeSelection();updateWoeFlow();
     if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
     target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||item.idWoe||'Sin cruce')}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
-    target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
+    target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);woePdfExported=false;renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
   }
 
   function selectedWoeItems(){
@@ -379,6 +411,7 @@
     });
     const totalPages=doc.getNumberOfPages();for(let number=1;number<=totalPages;number++){doc.setPage(number);drawFooter(number,totalPages);}
     doc.save(`WOE_Lista_Doble_Check_${new Date().toISOString().slice(0,10)}.pdf`);
+    woePdfExported=true;updateWoeFlow();
     $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos en carta vertical, con Descripción SAP, Nombre Micros, #DIA y #SAP.`;
     }catch(error){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No fue posible generar el PDF. Conservamos tu listado para que puedas intentarlo nuevamente.';}
     finally{exportButton.disabled=false;exportButton.textContent=originalLabel;}
@@ -392,7 +425,7 @@
     target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artículos</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Descripción SAP</th><th>Nombre Micros</th><th>#DIA</th><th>#SAP</th><th>Validación</th><th>Referencia opcional</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item);return `<tr><td data-label="Descripción SAP"><strong>${escapeHtml(item.descripcionSap||'Sin descripción SAP')}</strong></td><td data-label="Nombre Micros">${(item.micros||[]).length?(item.micros||[]).map(escapeHtml).join('<br>'):'<span class="woe-missing">Sin coincidencia</span>'}</td><td data-label="#DIA"><b class="woe-code">${escapeHtml(item.codigoDia||'—')}</b></td><td data-label="#SAP"><b>${escapeHtml(item.idWoe||'—')}</b></td><td data-label="Validación"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'✓':'!'} ${escapeHtml(status.label)}</span></td><td data-label="Referencia opcional">${merchReferenceHtml(item)}</td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar Código DIA ${escapeHtml(item.codigoDia)}">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
     $('woeStatus').classList.toggle('warning',needsReview>0);
     $('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados en SAP + Micros y ${needsReview} por revisar. MERCH no afecta este resultado.`:`<b>Listo:</b> los ${reviewed} artículos tienen cruce SAP + Micros. MERCH se muestra sólo cuando existe como referencia por SKU.`;
-    target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);renderWoeSelection();renderWoeResults();}));
+    target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);woePdfExported=false;renderWoeSelection();renderWoeResults();}));
   }
 
   const stockAliasRows=[];
@@ -588,7 +621,7 @@
   async function confirmStockReading(){
     updateStockConfirmAction();
     if(!stockValidation?.valid)return;
-    stockConfirmed=true;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 · Exportar PDF cruzado';
+    stockConfirmed=true;stockPdfExported=false;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 · Exportar PDF cruzado';updateStockFlow();
     $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
     $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> preparando el PDF cruzado en Carta vertical.`;
     closeStockConfirmation();
@@ -618,7 +651,7 @@
     if(!file)return;
     const loadToken=++stockLoadToken;
     try{await stockLoadingTask?.destroy?.();}catch(error){}
-    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockValidation=null;$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
     status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
     setStockBusy(true);
     let pdf=null;
@@ -645,13 +678,13 @@
       stockMeta={...(firstMeta||{}),pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
       stockRows=rawRows.map(matchStockRow);
       if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
-      const freshness=stockFreshness(stockMeta);if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
+      const freshness=stockFreshness(stockMeta);if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);updateStockFlow();$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
     }catch(error){if(loadToken===stockLoadToken&&error?.name!=='AbortError'){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}}
     finally{if(stockLoadingTask&&loadToken===stockLoadToken)stockLoadingTask=null;try{await pdf?.destroy?.();}catch(error){}if(loadToken===stockLoadToken)setStockBusy(false);}
   }
 
   function clearStockReport(){
-    stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();$('stockAttach').focus();
+    stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();$('stockAttach').focus();
   }
 
   async function generateStockPdf(){
@@ -675,7 +708,7 @@
       function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo físico',page.margin,page.footerY);doc.text(`Página ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
       doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catálogo Micros',creator:'CodeBrew'});
       let y=drawHeader();stockRows.forEach((row,index)=>{const estado=row.matchType==='exact'?'Exacto':row.matchType==='probable'?'Variación':'Sin cruce',values={...row,estado,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);if(column.key==='estado')doc.setTextColor(...(row.matchType==='exact'?style.green:style.warning));else doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty','estado'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
-      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
+      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
     }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
     finally{button.disabled=false;button.textContent=original;}
   }
@@ -706,11 +739,14 @@
     sel.disabled = !p || keys.length <= 1;
   }
 
-  function setLabelProduct(p){ updateLabelTier(p); renderLabelPreview(p); }
+  function setLabelProduct(p){ updateLabelTier(p); void renderLabelPreview(p); }
 
-  function renderLabelPreview(p){
+  async function renderLabelPreview(p){
+    const token=++labelPreviewToken;
     if (!p) { $('labelPreview').className = 'label-preview empty-small'; $('labelPreview').textContent = 'SKU / nombre no encontrado para etiquetado.'; updateLabelTier(null); return; }
     const tier = $('labelTier').value || tierKeys(p)[0] || 'C1';
+    try{await ensureQrious();}catch(error){/* La ficha continúa disponible aunque el QR remoto no cargue. */}
+    if(token!==labelPreviewToken)return;
     const qr = qrDataUrl(qrValue(p), 160);
     $('labelPreview').className = 'label-preview';
     $('labelPreview').innerHTML = `<div class="preview-card">
@@ -743,7 +779,7 @@
   }
 
   async function generatePdf(){
-    try{await ensureJsPdf();}catch(error){alert('No se pudo cargar el generador PDF. Revisa tu conexión e intenta nuevamente.');return;}
+    try{await Promise.all([ensureJsPdf(),ensureQrious()]);}catch(error){alert('No se pudo cargar el generador PDF. Revisa tu conexión e intenta nuevamente.');return;}
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({orientation:'portrait', unit:'in', format:'letter'});
     const labelW = 2, labelH = 1.5;
@@ -1126,12 +1162,13 @@
     let initialTab=location.hash.slice(1);try{if(!TAB_NAMES.includes(initialTab))initialTab=sessionStorage.getItem('codebrew-tab')||'consulta';}catch(error){initialTab='consulta';}showTab(initialTab,{updateHistory:false});
     window.addEventListener('hashchange',()=>showTab(location.hash.slice(1),{updateHistory:false}));
     $('woeTotal').textContent=Number(window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
-    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
+    restoreWoeSelection();renderWoeSelection();updateStockFlow();
+    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woePdfExported=false;updateWoeFlow();woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
-    $('woeSearchClear').addEventListener('click',()=>{clearTimeout(woeSuggestionTimer);$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');$('woeSearch').focus();});
+    $('woeSearchClear').addEventListener('click',()=>{clearTimeout(woeSuggestionTimer);$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');updateWoeFlow();$('woeSearch').focus();});
     $('woeExport').addEventListener('click',generateWoePdf);
-    $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
+    $('woeClear').addEventListener('click',()=>{woeSelection.clear();woePdfExported=false;renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
@@ -1178,7 +1215,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v20-accessible-performance'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v21-operational-flow'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

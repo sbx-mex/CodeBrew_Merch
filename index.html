@@ -9,11 +9,11 @@
   <title>CodeBrew 2.0 · Merch POS</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js" defer></script>
   <script src="data/products.js" defer></script>
   <script src="data/woe.js" defer></script>
   <script src="data/woe-pdf-config.js" defer></script>
   <script src="data/stock-config.js" defer></script>
+  <script src="data/ui-config.js" defer></script>
   <script src="data/app-audit.js" defer></script>
   <script src="app.js" defer></script>
 
@@ -151,11 +151,12 @@
       </section>
 
       <section class="panel woe-search-panel">
-        <div class="woe-mini-guide" aria-label="Ayuda rápida">
-          <div><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
-          <div><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
-          <div><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
+        <div id="woeFlow" class="woe-mini-guide operational-flow" aria-label="Progreso del listado WOE">
+          <div data-step="search"><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
+          <div data-step="select"><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
+          <div data-step="export"><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
         </div>
+        <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
         <label for="woeSearch">Buscar por ID WOE, Código DIA, descripción SAP, nombre Micros o SKU MERCH</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
@@ -187,10 +188,12 @@
           </div>
           <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
-        <div class="stock-flow" aria-label="Flujo Stock on Hand">
-          <div><b>1</b><span>Adjunta el PDF Stock on Hand más actual.</span></div>
-          <div><b>2</b><span>Confirma la lectura y exporta el PDF cruzado.</span></div>
+        <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso Stock on Hand">
+          <div data-step="attach"><b>1</b><span>Adjunta el PDF Stock on Hand más actual.</span></div>
+          <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
+          <div data-step="export"><b>3</b><span>Descarga el PDF cruzado en carta vertical.</span></div>
         </div>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el Stock on Hand más actual.</p>
         <div class="stock-upload-row">
           <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar y validar PDF</button>
           <input id="stockPdfInput" class="visually-hidden" type="file" accept="application/pdf,.pdf">

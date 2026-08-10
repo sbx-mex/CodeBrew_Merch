@@ -39,9 +39,14 @@ def main() -> int:
             "--report", str(STAGE / "import-report.json"),
             "--output", str(STAGE / "stock-config.js"),
         )
+        run(
+            "scripts/build_ui_config.py",
+            "--report", str(STAGE / "import-report.json"),
+            "--output", str(STAGE / "ui-config.js"),
+        )
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
-        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js"):
+        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js"):
             (STAGE / name).replace(data / name)
         run("scripts/audit_project.py")
     finally:
