@@ -59,6 +59,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#mainContent">Saltar al contenido</a>
   <header class="hero">
     <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
     <div>
@@ -66,17 +67,18 @@
       <p>Buscador de códigos · Merch POS</p>
     </div>
     <div class="release-badge" aria-label="Versión actualizada">OCR móvil optimizado · v2</div>
+    <div id="connectionStatus" class="connection-status" role="status" aria-live="polite">En línea</div>
     <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
   </header>
 
   <nav class="tabs" aria-label="Pestañas" role="tablist">
-    <button class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true">Consulta</button>
-    <button class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false">WOE</button>
-    <button class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false">Etiquetado</button>
+    <button id="tabConsulta" class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true">Consulta</button>
+    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false">WOE</button>
+    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false">Etiquetado</button>
   </nav>
 
-  <main>
-    <section id="consulta" class="tabpage active" role="tabpanel">
+  <main id="mainContent">
+    <section id="consulta" class="tabpage active" role="tabpanel" aria-labelledby="tabConsulta" tabindex="0">
       <section class="panel quick-guide">
         <div class="guide-title">Guía rápida de consulta POS</div>
         <div class="quick-steps">
@@ -138,7 +140,7 @@
       </section>
     </section>
 
-    <section id="woe" class="tabpage" role="tabpanel">
+    <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0">
       <section class="panel woe-hero">
         <div>
           <span class="woe-kicker">Catálogo operativo</span>
@@ -158,6 +160,7 @@
         <div class="woe-search-row">
           <div class="woe-search-box">
             <input id="woeSearch" placeholder="Ej. 149213, 730 o Cafe Espresso" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <button id="woeSearchClear" class="search-clear" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
           <button id="woeAdd" type="button">Agregar</button>
@@ -175,7 +178,7 @@
       <section id="woeStatus" class="woe-status" aria-live="polite">Escribe un dato para comenzar.</section>
       <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
 
-      <section class="panel stock-panel" aria-labelledby="stockTitle">
+      <section id="stockPanel" class="panel stock-panel" aria-labelledby="stockTitle" aria-busy="false">
         <div class="stock-head">
           <div>
             <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
@@ -195,6 +198,11 @@
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
         <p class="stock-disclaimer"><b>Importante:</b> Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio. El PDF sirve como referencia y apoyo.</p>
+        <div id="stockProgressWrap" class="stock-progress" hidden>
+          <label for="stockProgress">Lectura del reporte</label>
+          <progress id="stockProgress" max="100" value="0">0%</progress>
+          <output id="stockProgressText" for="stockProgress">Preparando…</output>
+        </div>
         <div id="stockStatus" class="woe-status" aria-live="polite">Adjunta un PDF cuando necesites esta validación opcional.</div>
         <div id="stockMeta" class="stock-meta" hidden></div>
         <div id="stockResults" class="stock-results"></div>
@@ -224,7 +232,7 @@
       </dialog>
     </section>
 
-    <section id="etiquetado" class="tabpage" role="tabpanel">
+    <section id="etiquetado" class="tabpage" role="tabpanel" aria-labelledby="tabEtiquetado" tabindex="0">
       <section class="panel label-panel">
         <h2>Generador de etiquetas POS</h2>
         <p class="label-intro"><b>Flujo recomendado:</b> abre cámara, lee SKU, valida producto, captura piezas y agrega. Repite por cada modelo; al final genera PDF listo para imprimir.</p>

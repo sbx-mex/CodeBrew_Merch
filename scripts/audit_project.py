@@ -93,7 +93,7 @@ def audit(root: Path) -> dict:
     export_keys = [column.get("key") for column in pdf_config.get("columns", [])]
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
-        "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()", "detectStockLayout", "stockTokenIndex",
+        "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()", "detectStockLayout", "stockTokenIndex", "stockLoadToken", "stockMatchCache", "yieldToMain", "setStockBusy",
     )) and (root / "assets/stock_pdf_woe.jpeg").exists()
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
@@ -115,12 +115,12 @@ def audit(root: Path) -> dict:
         "WOE 4 columnas + Stock Premium de 7 columnas; ambos en carta vertical y dentro del margen",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"consulta", "woe", "etiquetado", "woeSearch", "woeResults", "stockAttach", "stockPdfInput", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
+    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeSearch", "woeSearchClear", "woeResults", "stockPanel", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     checks.append(check(
         "Navegación e interfaz",
         not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids),
-        f"{len(parser.ids)} controles con ID único y sin acciones redundantes"
+        f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",
     ))
@@ -141,7 +141,7 @@ def audit(root: Path) -> dict:
     shell_block = sw_text.split("const APP_SHELL = [", 1)[1].split("];", 1)[0] if "const APP_SHELL = [" in sw_text else ""
     shell_refs = re.findall(r"['\"](\./[^'\"]+)['\"]", shell_block)
     missing_shell = [value for value in shell_refs if value != "./" and value[2:] not in GENERATED_TARGETS and not (root / value[2:]).exists()]
-    sw_ok = bool(shell_refs) and not missing_shell and "Lista_Precios_Base.xlsx" not in shell_block
+    sw_ok = bool(shell_refs) and not missing_shell and "Lista_Precios_Base.xlsx" not in shell_block and "navigationPreload" in sw_text and "SKIP_WAITING" in sw_text
     checks.append(check(
         "Caché y modo offline",
         sw_ok,

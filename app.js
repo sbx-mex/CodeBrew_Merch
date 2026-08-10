@@ -9,6 +9,9 @@
   let stockPdfName = '';
   let stockConfirmed = false;
   let stockValidation = null;
+  let stockLoadToken = 0;
+  let stockLoadingTask = null;
+  const stockMatchCache = new Map();
   let stream = null;
   let labelStream = null;
   let currentProduct = null;
@@ -45,6 +48,16 @@
   async function ensurePdfJs(){
     await loadExternalScript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js',()=>Boolean(window.pdfjsLib?.getDocument));
     window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  }
+
+  function yieldToMain(){return new Promise(resolve=>(window.requestIdleCallback?requestIdleCallback(()=>resolve(),{timeout:90}):setTimeout(resolve,0)));}
+  function setStockBusy(busy,current=0,total=0){
+    const panel=$('stockPanel'),wrap=$('stockProgressWrap'),progress=$('stockProgress'),output=$('stockProgressText');
+    panel.setAttribute('aria-busy',String(busy));wrap.hidden=!busy;$('stockAttach').disabled=busy;
+    const percent=total?Math.round((current/total)*100):0;progress.value=percent;output.textContent=total?`${current} de ${total} páginas`:'Preparando…';
+  }
+  function updateConnectivity(){
+    const online=navigator.onLine,target=$('connectionStatus');document.body.classList.toggle('offline',!online);target.classList.toggle('offline',!online);target.textContent=online?'En línea':'Sin conexión';target.title=online?'Conexión disponible':'La consulta continúa con los datos guardados';
   }
 
 
@@ -474,13 +487,15 @@
 
   function matchStockRow(row){
     const query=normalizeText(row.sourceName).replace(/^\d+\s+/,'');
-    let chosen=chooseStockAlias(stockExactIndex.get(query)||[],'exact',1);
-    if(!chosen){
+    const cached=stockMatchCache.has(query);
+    let chosen=cached?stockMatchCache.get(query):chooseStockAlias(stockExactIndex.get(query)||[],'exact',1);
+    if(!cached&&!chosen){
       const candidates=new Set();query.split(' ').filter(token=>token.length>=3).forEach(token=>(stockTokenIndex.get(token)||[]).forEach(alias=>candidates.add(alias)));
       const pool=candidates.size?[...candidates]:stockAliasRows;
       const ranked=pool.map(alias=>({alias,score:tokenScore(query,alias.normalized)})).filter(result=>result.score>=.76).sort((a,b)=>b.score-a.score);
       if(ranked.length&&ranked[0].score-(ranked[1]?.score||0)>=.05)chosen=chooseStockAlias([ranked[0].alias],'probable',ranked[0].score);
     }
+    if(!cached)stockMatchCache.set(query,chosen||null);
     if(!chosen)return {...row,codigoDia:'',idWoe:'',descripcionSap:'Sin cruce SAP',nombreMicros:row.sourceName,unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
     const item=chosen.alias.item;
     return {...row,codigoDia:item.codigoDia||'',idWoe:item.idWoe||'',descripcionSap:item.descripcionSap||'Sin descripción SAP',nombreMicros:chosen.alias.name,unidad:row.pdfUnit||item.unidadMicros||'N/D',matchType:chosen.matchType,matchScore:chosen.matchScore,alternatives:chosen.alternatives};
@@ -567,6 +582,7 @@
     const block=$('stockConfirmBlock'),messages=[...(stockValidation?.blocking||[]),...(stockValidation?.warnings||[])];
     block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'Exportación bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
     if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
+    requestAnimationFrame(()=>(stockValidation?.valid?$('stockConfirmAccept'):$('stockConfirmClose')).focus());
   }
 
   async function confirmStockReading(){
@@ -600,36 +616,42 @@
 
   async function loadStockPdf(file){
     if(!file)return;
+    const loadToken=++stockLoadToken;
+    try{await stockLoadingTask?.destroy?.();}catch(error){}
     const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockValidation=null;$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
     status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
+    setStockBusy(true);
     let pdf=null;
     try{
       if(file.size>25*1024*1024)throw new Error('El PDF supera 25 MB. Genera un reporte optimizado directamente desde Micros.');
       const signature=new TextDecoder('ascii').decode(await file.slice(0,5).arrayBuffer());
       if(signature!=='%PDF-')throw new Error('El archivo no tiene una firma PDF válida.');
       await ensurePdfJs();
-      const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)});pdf=await task.promise;
+      const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)});stockLoadingTask=task;pdf=await task.promise;
       if(!pdf.numPages||pdf.numPages>250)throw new Error('El reporte debe contener entre 1 y 250 páginas.');
       const rawRows=[];let firstMeta=null,adaptivePages=0,fallbackPages=0;const headerMismatches=new Set();
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+        if(loadToken!==stockLoadToken)throw new DOMException('Lectura reemplazada','AbortError');
         const page=await pdf.getPage(pageNumber),content=await page.getTextContent(),lines=groupStockPdfLines(content.items);
         const pageMeta=readStockMeta(lines,content.items,file.name),layout=detectStockLayout(lines);layout.detected?adaptivePages++:fallbackPages++;
         if(pageNumber===1)firstMeta=pageMeta;
         else for(const field of ['store','reportDate','printedDate','printedTime'])if(pageMeta[field]&&firstMeta?.[field]&&pageMeta[field]!==firstMeta[field])headerMismatches.add(field);
         lines.forEach(line=>{const row=parseStockRow(line,pageNumber,layout);if(row)rawRows.push(row);});
+        setStockBusy(true,pageNumber,pdf.numPages);
         if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo Stock on Hand · página ${pageNumber} de ${pdf.numPages}...`;
+        if(pageNumber%4===0)await yieldToMain();
       }
       if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
       stockMeta={...(firstMeta||{}),pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
       stockRows=rawRows.map(matchStockRow);
       if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
       const freshness=stockFreshness(stockMeta);if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
-    }catch(error){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}
-    finally{try{await pdf?.destroy?.();}catch(error){}}
+    }catch(error){if(loadToken===stockLoadToken&&error?.name!=='AbortError'){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}}
+    finally{if(stockLoadingTask&&loadToken===stockLoadToken)stockLoadingTask=null;try{await pdf?.destroy?.();}catch(error){}if(loadToken===stockLoadToken)setStockBusy(false);}
   }
 
   function clearStockReport(){
-    stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();
+    stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockValidation=null;$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();$('stockAttach').focus();
   }
 
   async function generateStockPdf(){
@@ -1091,6 +1113,7 @@
 
   function init(){
     renderAuditHealth();
+    updateConnectivity();window.addEventListener('online',updateConnectivity);window.addEventListener('offline',updateConnectivity);
     const latestItem = String(window.PRODUCT_META?.latestItem || '').trim();
     $('latestItem').textContent = latestItem
       ? `Último artículo actualizado: ${latestItem}`
@@ -1103,9 +1126,10 @@
     let initialTab=location.hash.slice(1);try{if(!TAB_NAMES.includes(initialTab))initialTab=sessionStorage.getItem('codebrew-tab')||'consulta';}catch(error){initialTab='consulta';}showTab(initialTab,{updateHistory:false});
     window.addEventListener('hashchange',()=>showTab(location.hash.slice(1),{updateHistory:false}));
     $('woeTotal').textContent=Number(window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
-    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
+    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
+    $('woeSearchClear').addEventListener('click',()=>{clearTimeout(woeSuggestionTimer);$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');$('woeSearch').focus();});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
     $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
@@ -1115,6 +1139,10 @@
     $('stockConfirmAccept').addEventListener('click',confirmStockReading);
     $('stockConfirmClose').addEventListener('click',closeStockConfirmation);
     $('stockConfirmDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockConfirmation();});
+    document.addEventListener('keydown',event=>{
+      if(event.altKey&&['1','2','3'].includes(event.key)){event.preventDefault();showTab(TAB_NAMES[Number(event.key)-1],{focus:true});return;}
+      if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){event.preventDefault();const active=document.querySelector('.tab.active')?.dataset.tab;(active==='woe'?$('woeSearch'):active==='etiquetado'?$('labelSku'):$('manualSku')).focus();}
+    });
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
     $('labelAddBtn').addEventListener('click', () => addLabel($('labelSku').value, $('labelQty').value));
@@ -1150,7 +1178,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v19-stock-adaptive'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v20-accessible-performance'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
