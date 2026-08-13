@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T08:51:28+00:00",
+  "auditedAtUtc": "2026-08-13T08:59:50+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "5129127198b553592dff3e781300d8025646168ad2b8a1cfb2fb62e69e7f1437",
   "checksTotal": 13,
@@ -79,7 +79,7 @@
       "index.html": 21671,
       "styles.css": 35242,
       "catalog.css": 12122,
-      "app.js": 121979,
+      "app.js": 121975,
       "data/products.js": 356315,
       "data/woe.js": 1058152,
       "data/merch-catalog.js": 849199,
