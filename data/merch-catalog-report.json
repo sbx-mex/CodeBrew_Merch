@@ -10,7 +10,7 @@
   "uniqueVisuals": 827,
   "atlases": 0,
   "featuredImages": 1,
-  "restoredImageFiles": 806,
+  "restoredImageFiles": 809,
   "canvasPixels": 768,
   "contentPixels": 660,
   "restorationAudit": {
@@ -18,7 +18,7 @@
     "restored": 826,
     "restoredFromThumbnail": 816,
     "approximationAssets": 7,
-    "published": 806
+    "published": 809
   },
   "visualSources": {
     "premium-override": 1,
