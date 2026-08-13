@@ -1,11 +1,11 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T02:14:33+00:00",
+  "auditedAtUtc": "2026-08-13T02:43:01+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
   "checksTotal": 12,
-  "checksOk": 12,
-  "warnings": 0,
+  "checksOk": 11,
+  "warnings": 1,
   "errors": 0,
   "checks": [
     {
@@ -55,8 +55,8 @@
     },
     {
       "name": "Workflows y obsoletos",
-      "status": "ok",
-      "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
+      "status": "warning",
+      "detail": "Actualización y limpieza protegidas; 1 candidatos controlados"
     },
     {
       "name": "Límites GitHub",
@@ -93,5 +93,7 @@
       "data/ui-config.js": 10000
     }
   },
-  "cleanupCandidates": []
+  "cleanupCandidates": [
+    "VALIDACION_CORRECCION.md"
+  ]
 }
