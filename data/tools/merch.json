@@ -1,0 +1,16 @@
+{
+  "id": "merch",
+  "menuTitle": "Revisión de Merch",
+  "shortTitle": "Merch",
+  "eyebrow": "Tumblers · Tazas · Mercancía",
+  "description": "Explora únicamente referencias de Merch y comprueba visualmente el artículo con su Código SAP.",
+  "menuDescription": "Tumblers, tazas y mercancía",
+  "icon": "M",
+  "heroImage": "assets/catalog/catalog-hero.webp",
+  "sapPriority": true,
+  "steps": [
+    {"title": "Filtra", "text": "Elige Tumblers, Tazas o Mercancía."},
+    {"title": "Compara", "text": "Usa la imagen como referencia y confirma Código SAP + Día."},
+    {"title": "Agrega", "text": "Selecciona piezas sólo cuando el cruce sea congruente."}
+  ]
+}

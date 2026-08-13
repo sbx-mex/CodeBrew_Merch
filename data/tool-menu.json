@@ -1,0 +1,13 @@
+{
+  "version": "visual-tools-v1",
+  "title": "5 herramientas internas",
+  "subtitle": "Elige una tarea y muestra sólo lo necesario.",
+  "order": ["consulta", "catalog", "merch", "export", "etiquetado"],
+  "sections": {
+    "consulta": "data/tools/consulta.json",
+    "catalog": "data/tools/catalog.json",
+    "merch": "data/tools/merch.json",
+    "export": "data/tools/export.json",
+    "etiquetado": "data/tools/etiquetado.json"
+  }
+}

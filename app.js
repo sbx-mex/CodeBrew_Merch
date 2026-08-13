@@ -33,7 +33,18 @@
   const OCR_TARGET_MAX_SIDE = 1600;
   const OCR_VARIANTS = ['normal','contrast','binary'];
   const externalLoads = new Map();
-  const TAB_NAMES = ['consulta','woe','etiquetado'];
+  const APP_MODES = ['consulta','catalog','merch','export','etiquetado'];
+  const MODE_TO_PANEL = {consulta:'consulta',catalog:'woe',merch:'woe',export:'woe',etiquetado:'etiquetado'};
+  const MERCH_PRODUCT_CATEGORIES = new Set(['mug','tumbler','cold-cup','bottle','accessory','other']);
+  const TOOL_FALLBACKS = {
+    consulta:{id:'consulta',menuTitle:'Consulta Precio & POS',shortTitle:'Precio & POS',eyebrow:'Consulta rápida',description:'Busca un artículo, valida precio y genera el código para escanear en POS.',menuDescription:'Buscar, validar y escanear',icon:'$',heroImage:'',sapPriority:false,steps:[{title:'Busca',text:'Escribe o escanea SKU, Código Día o nombre.'},{title:'Valida',text:'Confirma artículo y precio antes de marcar en POS.'},{title:'Escanea',text:'Usa el código generado en la ruta correcta del POS.'}]},
+    catalog:{id:'catalog',menuTitle:'WOE | Catálogo',shortTitle:'WOE | Catálogo',eyebrow:'Catálogo General',description:'Busca cualquier artículo por Código SAP, Código Día, Conteo, SKU o nombre.',menuDescription:'Buscar cualquier artículo',icon:'#',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:true,steps:[{title:'Busca',text:'Empieza por Código SAP o Código Día cuando lo tengas.'},{title:'Comprueba',text:'Valida el cruce SAP + Micros antes de confiar en el nombre.'},{title:'Selecciona',text:'Agrega piezas y exporta sólo los artículos que necesitas.'}]},
+    merch:{id:'merch',menuTitle:'Revisión de Merch',shortTitle:'Merch',eyebrow:'Tumblers · Tazas · Mercancía',description:'Explora únicamente referencias de Merch y comprueba visualmente el artículo con su Código SAP.',menuDescription:'Tumblers, tazas y mercancía',icon:'M',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:true,steps:[{title:'Filtra',text:'Elige Tumblers, Tazas o Mercancía.'},{title:'Compara',text:'Usa la imagen como referencia y confirma Código SAP + Día.'},{title:'Agrega',text:'Selecciona piezas sólo cuando el cruce sea congruente.'}]},
+    export:{id:'export',menuTitle:'HTML → CodeBrew',shortTitle:'HTML → CodeBrew',eyebrow:'Inventario SAP',description:'Adjunta el HTML guardado desde WOE Web, cruza inventario y exporta PDF o Excel.',menuDescription:'Cruzar y exportar inventario',icon:'↗',heroImage:'assets/stock_pdf_woe.jpeg',sapPriority:true,steps:[{title:'Guarda',text:'En WOE Web usa Guardar como → Página web completa (*.html).'},{title:'Transfiere',text:'Lleva el .html al celular por correo o OneDrive.'},{title:'Adjunta',text:'CodeBrew lee el reporte, valida SAP y habilita la exportación.'}]},
+    etiquetado:{id:'etiquetado',menuTitle:'Etiquetas',shortTitle:'Etiquetas',eyebrow:'Etiquetado POS',description:'Busca o escanea el artículo, define piezas y genera etiquetas listas para imprimir.',menuDescription:'Generar etiquetas POS',icon:'▤',heroImage:'',sapPriority:false,steps:[{title:'Identifica',text:'Busca o escanea el artículo correcto.'},{title:'Captura',text:'Define piezas y valida la vista previa.'},{title:'Genera',text:'Agrega modelos y crea el PDF final.'}]}
+  };
+  let toolMenuConfig = {order:[...APP_MODES]};
+  let toolConfigs = {...TOOL_FALLBACKS};
   const cameraState = {
     consulta:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' },
     label:{ stream:null, track:null, scanning:false, token:0, qualityTimer:null, previousFrame:null, focusBaseline:0, deviceId:'' }
@@ -73,6 +84,49 @@
     const online=navigator.onLine,target=$('connectionStatus');document.body.classList.toggle('offline',!online);target.classList.toggle('offline',!online);target.textContent=online?'En línea':'Sin conexión';target.title=online?'Conexión disponible':'La consulta continúa con los datos guardados';
   }
 
+  function safeToolImage(value){
+    const source=String(value||'').trim();
+    return /^assets\/[a-zA-Z0-9_./-]+$/.test(source)?source:'';
+  }
+  async function loadJsonConfig(path){
+    const response=await fetch(path,{cache:'no-cache'});
+    if(!response.ok)throw new Error(`No se pudo cargar ${path}`);
+    return response.json();
+  }
+  async function loadToolConfigs(){
+    try{
+      const menu=await loadJsonConfig('data/tool-menu.json'),order=Array.isArray(menu.order)?menu.order.filter(id=>APP_MODES.includes(id)):APP_MODES;
+      const entries=await Promise.all(order.map(async id=>{
+        const path=menu.sections?.[id];if(!path)return [id,TOOL_FALLBACKS[id]];
+        try{return [id,{...TOOL_FALLBACKS[id],...(await loadJsonConfig(path)),id}];}catch(error){return [id,TOOL_FALLBACKS[id]];}
+      }));
+      toolMenuConfig={...menu,order};toolConfigs={...TOOL_FALLBACKS,...Object.fromEntries(entries)};
+    }catch(error){toolMenuConfig={order:[...APP_MODES]};toolConfigs={...TOOL_FALLBACKS};}
+    renderModeMenu();
+  }
+  function renderModeMenu(){
+    const grid=$('modeMenuGrid');if(!grid)return;
+    grid.innerHTML=(toolMenuConfig.order||APP_MODES).map(id=>{
+      const tool=toolConfigs[id]||TOOL_FALLBACKS[id],image=safeToolImage(tool.heroImage),sap=tool.sapPriority?'<em>SAP comprobable primero</em>':'';
+      return `<button type="button" class="tool-card tool-card-${escapeHtml(id)} ${image?'has-image':''}" data-app-mode="${escapeHtml(id)}"${image?` style="--tool-image:url('${image}')"`:''}><span class="tool-card-icon">${escapeHtml(tool.icon||'•')}</span><span><b>${escapeHtml(tool.menuTitle||id)}</b><small>${escapeHtml(tool.menuDescription||tool.description||'')}</small>${sap}</span></button>`;
+    }).join('');
+  }
+  function renderToolContext(){
+    const context=$('toolContext'),switcher=$('toolSwitcher');
+    if(!appMode){context.hidden=true;switcher.hidden=true;return;}
+    const tool=toolConfigs[appMode]||TOOL_FALLBACKS[appMode],image=safeToolImage(tool.heroImage),visual=$('toolContextVisual');
+    context.hidden=false;switcher.hidden=false;$('toolContextEyebrow').textContent=tool.eyebrow||'CodeBrew';$('toolContextTitle').textContent=tool.menuTitle||tool.shortTitle||'Herramienta';$('toolContextDescription').textContent=tool.description||'';
+    $('toolSapBadge').hidden=!tool.sapPriority;visual.classList.toggle('has-image',Boolean(image));if(image)visual.style.setProperty('--tool-context-image',`url("${image}")`);else visual.style.removeProperty('--tool-context-image');
+    $('toolGuideSteps').innerHTML=(tool.steps||[]).map((step,index)=>`<div><b>${index+1}</b><span><strong>${escapeHtml(step.title||'Paso')}</strong>${escapeHtml(step.text||'')}</span></div>`).join('');$('toolGuide').open=false;
+    document.querySelectorAll('#toolSwitcher [data-app-mode]').forEach(button=>{const active=button.dataset.appMode===appMode;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});
+    if($('woeScopeLabel'))$('woeScopeLabel').textContent=appMode==='merch'?'Revisión de Merch':'Catálogo General';
+    if($('woeTotal')){const total=appMode==='merch'?visualCatalog.filter(isMerchProduct).length:(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length);$('woeTotal').textContent=Number(total).toLocaleString('es-MX');}
+  }
+  function bindModeButtons(){document.querySelectorAll('[data-app-mode]').forEach(button=>button.addEventListener('click',()=>selectAppMode(button.dataset.appMode)));}
+  function scrollToolToTop(){
+    const reduce=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    requestAnimationFrame(()=>window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}));
+  }
 
   function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
   function normalizeText(value){ return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
@@ -271,7 +325,15 @@
   function articleName(item){const product=visualProductFor(item);return product?.descripcionSci||item.descripcionSap||product?.displayName||product?.nombrePos||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Artículo';}
   function visualQualityLabel(product){return product?.visualSource==='premium-override'?'Restauración HD':product?.visual?.kind==='restored'?'Foto restaurada':'Referencia aproximada';}
   function catalogItemKey(item){return woeKey(item,'catalog');}
-  function catalogCategoryLabel(value){return ({all:'Todo',featured:'Destacados HD',mug:'Tazas',tumbler:'Tumblers','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
+  function catalogCategoryLabel(value){return ({all:appMode==='merch'?'Todo Merch':'Todo',featured:'Destacados HD',mug:'Tazas',tumbler:'Tumblers',merchandise:'Mercancía','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
+  function isMerchProduct(product){return Boolean(product&&MERCH_PRODUCT_CATEGORIES.has(product.category));}
+  function isMerchItem(item){const product=visualProductFor(item);return Boolean((product&&isMerchProduct(product))||(item?.merch||[]).length);}
+  function matchesCatalogCategory(product,category){
+    if(category==='all')return true;
+    if(category==='featured')return product.visualSource==='premium-override';
+    if(category==='merchandise')return ['cold-cup','bottle','accessory','other'].includes(product.category);
+    return product.category===category;
+  }
   function openCatalogVisual(item){
     const product=visualProductFor(item);if(!product)return;
     $('catalogVisualImage').setAttribute('style',visualStyle(product));
@@ -283,12 +345,13 @@
   }
   function renderCatalog(raw=''){
     const filters=$('catalogFilters'),grid=$('catalogGrid');if(!filters||!grid)return;
-    const categories=['all','featured','mug','tumbler','cold-cup','bottle','brew','accessory','other'];
+    const merchMode=appMode==='merch',categories=merchMode?['all','tumbler','mug','merchandise']:['all','featured','mug','tumbler','cold-cup','bottle','brew','accessory','other'];
+    if(!categories.includes(catalogCategory))catalogCategory='all';
     filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('');
-    const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${catalogCategory}|${query}`;
+    const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${appMode}|${catalogCategory}|${query}`;
     if(signature!==catalogRenderSignature){catalogVisibleLimit=5;catalogRenderSignature=signature;}
-    const allMatches=woeSearchRows.filter(row=>tokens.every(token=>row.text.includes(token)));
-    const matches=allMatches.filter(row=>row.item.visualProduct&&(catalogCategory==='all'||(catalogCategory==='featured'?row.item.visualProduct.visualSource==='premium-override':row.item.visualProduct.category===catalogCategory)));
+    const allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&tokens.every(token=>row.text.includes(token)));
+    const matches=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))&&matchesCatalogCategory(row.item.visualProduct,catalogCategory));
     const unique=[];const seen=new Set();for(const row of matches){if(seen.has(row.item.visualProduct.articleKey))continue;seen.add(row.item.visualProduct.articleKey);unique.push(row.item);}unique.sort((a,b)=>Number(b.visualProduct.visualSource==='premium-override')-Number(a.visualProduct.visualSource==='premium-override'));
     const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore');$('catalogSummary').textContent=`Mostrando ${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
     loadMore.hidden=visible.length>=unique.length;loadMore.textContent=`Ver ${Math.min(5,unique.length-visible.length)} imágenes más`;
@@ -312,12 +375,12 @@
   function findWoeMatches(raw,limit=12){
     const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input);
     if(!query)return [];
-    const exact=numeric?woeExactIndex.get(numeric):null;
-    if(exact?.length)return exact.slice(0,limit);
+    const exact=numeric?woeExactIndex.get(numeric):null,merchMode=appMode==='merch',exactMatches=(exact||[]).filter(item=>!merchMode||isMerchItem(item));
+    if(exactMatches.length)return exactMatches.slice(0,limit);
     const tokens=query.split(' ').filter(Boolean);
     return woeSearchRows
       .map(row=>{
-        if(!tokens.every(token=>row.text.includes(token)))return null;
+        if((merchMode&&!isMerchItem(row.item))||!tokens.every(token=>row.text.includes(token)))return null;
         const sap=normalizeText(row.item.descripcionSap),micros=normalizeText((row.item.micros||[]).join(' '));
         let score=tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
         if(sap===query||micros===query)score+=30;
@@ -346,7 +409,7 @@
   }
 
   function updateWoeFlow(){
-    const count=woeSelection.size,query=Boolean($('woeSearch')?.value.trim());
+    const count=selectedWoeItems().length,query=Boolean($('woeSearch')?.value.trim());
     const states=count?{search:'done',select:'done',export:woePdfExported?'done':'active'}:query?{search:'done',select:'active',export:'pending'}:{search:'active',select:'pending',export:'pending'};
     const message=count?(woePdfExported?'PDF generado; puedes conservar o ajustar el listado.':uiConfig.messages?.woeReady):uiConfig.messages?.woeEmpty;
     setOperationalFlow('woeFlow',states,'woeNextAction',message||'Continúa con el siguiente paso.',count>0);
@@ -360,7 +423,7 @@
   }
 
   function persistWoeSelection(){
-    try{sessionStorage.setItem('codebrew-woe-selection-v2',JSON.stringify(selectedWoeItems().map(({key,item})=>({key,quantity:Number(item.quantity)||1})).slice(0,100)));}catch(error){}
+    try{sessionStorage.setItem('codebrew-woe-selection-v2',JSON.stringify(selectedWoeItems({respectMode:false}).map(({key,item})=>({key,quantity:Number(item.quantity)||1})).slice(0,100)));}catch(error){}
   }
 
   function restoreWoeSelection(){
@@ -390,18 +453,20 @@
   }
 
   function renderWoeSelection(){
-    const target=$('woeSelection'),items=[...woeSelection.entries()];
+    const target=$('woeSelection'),items=selectedWoeItems();
     $('woeSelectedCount').textContent=items.length;
     if($('tabWoeCount'))$('tabWoeCount').textContent=items.length;
     $('woeExport').disabled=!items.length;
     persistWoeSelection();updateWoeFlow();
-    if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
-    target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><span class="woe-chip-qty">${Number(item.quantity)||1}</span><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(articleName(item))}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
+    if(!items.length){target.innerHTML=`<span class="woe-empty-selection">${appMode==='merch'?'Sin Merch seleccionado.':'Sin elementos seleccionados.'}</span>`;return;}
+    target.innerHTML=items.map(({key,item})=>`<span class="woe-chip"><span class="woe-chip-qty">${Number(item.quantity)||1}</span><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(articleName(item))}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
     target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);woePdfExported=false;renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
   }
 
-  function selectedWoeItems(){
-    return [...woeSelection.entries()].map(([key,item])=>({key,item})).sort((a,b)=>String(a.item.codigoDia).localeCompare(String(b.item.codigoDia),'es',{numeric:true}));
+  function selectedWoeItems({respectMode=true}={}){
+    let rows=[...woeSelection.entries()].map(([key,item])=>({key,item}));
+    if(respectMode&&appMode==='merch')rows=rows.filter(({item})=>isMerchItem(item));
+    return rows.sort((a,b)=>String(a.item.codigoDia).localeCompare(String(b.item.codigoDia),'es',{numeric:true}));
   }
 
   function operationalWoeStatus(item){
@@ -947,32 +1012,39 @@
 
   function applyAppMode(){
     document.body.classList.remove('home-mode','workspace-open','mode-catalog','mode-merch','mode-export','mode-consulta','mode-etiquetado');
-    if(!appMode){document.body.classList.add('home-mode');return;}
-    document.body.classList.add('workspace-open',`mode-${appMode}`);
+    if(!appMode){document.body.classList.add('home-mode');renderToolContext();return;}
+    document.body.classList.add('workspace-open',`mode-${appMode}`);renderToolContext();
+  }
+
+  function setActivePanel(name){
+    const target=['consulta','woe','etiquetado'].includes(name)?name:'consulta';
+    document.querySelectorAll('.tabpage').forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
+    try{sessionStorage.setItem('codebrew-tab',target);}catch(error){}
   }
 
   function showHome(){
     appMode='';applyAppMode();
-    document.querySelectorAll('.tab').forEach(button=>{button.classList.remove('active');button.setAttribute('aria-selected','false');button.tabIndex=0;});
     document.querySelectorAll('.tabpage').forEach(panel=>{panel.classList.remove('active');panel.hidden=true;});
     if(location.hash)history.replaceState({home:true},'',location.pathname+location.search);
-    requestAnimationFrame(()=>$('modeMenu')?.focus?.());
+    requestAnimationFrame(()=>document.querySelector('#modeMenuGrid [data-app-mode]')?.focus());
   }
 
-  function selectAppMode(mode){
-    appMode=['catalog','merch','export'].includes(mode)?mode:'catalog';applyAppMode();showTab('woe');
-    requestAnimationFrame(()=>$(appMode==='export'?'stockPanel':'woeSearch')?.focus?.());
+  function selectAppMode(mode,{updateHistory=true,focusTarget=true}={}){
+    const next=APP_MODES.includes(mode)?mode:'catalog',previous=appMode;appMode=next;applyAppMode();setActivePanel(MODE_TO_PANEL[next]);
+    if(['catalog','merch'].includes(next)){
+      if(previous!==next){catalogCategory='all';catalogRenderSignature='';}
+      renderCatalog($('woeSearch')?.value||'');renderWoeSelection();
+      if(woeSelection.size)renderWoeResults();
+    }
+    if(updateHistory&&location.hash!==`#${next}`)history.pushState({mode:next},'',`#${next}`);
+    scrollToolToTop();
+    if(focusTarget)requestAnimationFrame(()=>$(next==='export'?'stockPanel':next==='consulta'?'manualSku':next==='etiquetado'?'labelSku':'woeSearch')?.focus?.());
   }
 
   function showTab(name,{updateHistory=true,focus=false}={}){
-    const target=TAB_NAMES.includes(name)?name:'consulta';
-    if(target==='woe'&&!appMode)appMode='catalog';
-    if(target!=='woe')appMode=target;
-    applyAppMode();
-    document.querySelectorAll('.tab').forEach(button=>{const active=button.dataset.tab===target;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;if(active&&focus)button.focus();});
-    document.querySelectorAll('.tabpage').forEach(panel=>{const active=panel.id===target;panel.classList.toggle('active',active);panel.hidden=!active;});
-    try{sessionStorage.setItem('codebrew-tab',target);}catch(error){}
-    if(updateHistory&&location.hash!==`#${target}`)history.pushState({tab:target},'',`#${target}`);
+    if(name==='woe'){selectAppMode(['catalog','merch','export'].includes(appMode)?appMode:'catalog',{updateHistory,focusTarget:focus});return;}
+    if(name==='consulta'||name==='etiquetado'){selectAppMode(name,{updateHistory,focusTarget:focus});return;}
+    selectAppMode('consulta',{updateHistory,focusTarget:focus});
   }
 
   function setActiveWoeSection(id){
@@ -1422,22 +1494,19 @@
     finally{image?.close?.();if(previewUrl)setTimeout(()=>URL.revokeObjectURL(previewUrl),1000);input.value='';state.scanning=false;if(cameraState[mode].stream)$(ids.scan).disabled=false;}
   }
 
-  function init(){
+  async function init(){
+    await loadToolConfigs();bindModeButtons();
     renderAuditHealth();
     updateConnectivity();window.addEventListener('online',updateConnectivity);window.addEventListener('offline',updateConnectivity);
     const latestItem = String(window.PRODUCT_META?.latestItem || '').trim();
     $('latestItem').textContent = latestItem
       ? `Último artículo actualizado: ${latestItem}`
       : 'Último artículo actualizado: información no disponible';
-    const tabButtons=[...document.querySelectorAll('.tab')];
-    tabButtons.forEach((button,index)=>{
-      button.addEventListener('click',()=>showTab(button.dataset.tab));
-      button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();let next=index;if(event.key==='ArrowLeft')next=(index-1+tabButtons.length)%tabButtons.length;if(event.key==='ArrowRight')next=(index+1)%tabButtons.length;if(event.key==='Home')next=0;if(event.key==='End')next=tabButtons.length-1;showTab(tabButtons[next].dataset.tab,{focus:true});});
-    });
-    showHome();
-    window.addEventListener('hashchange',()=>{const target=location.hash.slice(1);if(TAB_NAMES.includes(target))showTab(target,{updateHistory:false});});
+    const initialMode=location.hash.slice(1);
+    if(APP_MODES.includes(initialMode))selectAppMode(initialMode,{updateHistory:false,focusTarget:false});else showHome();
+    window.addEventListener('hashchange',()=>{const target=location.hash.slice(1);if(APP_MODES.includes(target))selectAppMode(target,{updateHistory:false,focusTarget:false});else if(!target)showHome();});
     setupWoeNavigation();
-    $('woeTotal').textContent=Number(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
+    renderToolContext();
     restoreWoeSelection();renderWoeSelection();updateStockFlow();
     renderCatalog('');
     $('catalogLoadMore').addEventListener('click',()=>{catalogVisibleLimit+=5;renderCatalog($('woeSearch').value);});
@@ -1461,11 +1530,14 @@
     $('stockConfirmExcel').addEventListener('click',()=>{if(!stockValidation?.valid)return;closeStockConfirmation();exportStockExcel();});
     $('stockConfirmClose').addEventListener('click',closeStockConfirmation);
     $('stockConfirmDialog').addEventListener('cancel',event=>{event.preventDefault();closeStockConfirmation();});
-    document.querySelectorAll('[data-app-mode]').forEach(button=>button.addEventListener('click',()=>selectAppMode(button.dataset.appMode)));
     $('modeBack').addEventListener('click',showHome);
+    document.querySelectorAll('[data-transfer-route]').forEach(button=>button.addEventListener('click',()=>{
+      const email=button.dataset.transferRoute==='email';document.querySelectorAll('[data-transfer-route]').forEach(item=>item.classList.toggle('active',item===button));
+      $('transferHint').innerHTML=email?'<b>Correo:</b> adjunta el .html en un correo, abre el mensaje en el celular de tienda, descarga el archivo y súbelo aquí.':'<b>OneDrive:</b> guarda el .html en una carpeta sincronizada, abre OneDrive en el celular de tienda, descarga el archivo y súbelo aquí.';
+    }));
     document.addEventListener('keydown',event=>{
-      if(event.altKey&&['1','2','3'].includes(event.key)){event.preventDefault();showTab(TAB_NAMES[Number(event.key)-1],{focus:true});return;}
-      if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){event.preventDefault();const active=document.querySelector('.tab.active')?.dataset.tab;(active==='woe'?$('woeSearch'):active==='etiquetado'?$('labelSku'):$('manualSku')).focus();}
+      if(event.altKey&&['1','2','3','4','5'].includes(event.key)){event.preventDefault();selectAppMode(APP_MODES[Number(event.key)-1],{focusTarget:true});return;}
+      if(event.key==='/'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName||'')){event.preventDefault();const target=appMode==='consulta'?$('manualSku'):appMode==='etiquetado'?$('labelSku'):['catalog','merch'].includes(appMode)?$('woeSearch'):null;target?.focus();}
     });
     $('manualBtn').addEventListener('click', () => search($('manualSku').value));
     $('manualSku').addEventListener('keydown', e => { if(e.key === 'Enter') search(e.target.value); });
@@ -1503,7 +1575,7 @@
     });
     window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory-detail'));
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v30-general-catalog-export'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v32-visual-tools'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

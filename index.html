@@ -34,20 +34,46 @@
   </header>
 
   <section id="modeMenu" class="mode-menu" aria-labelledby="modeMenuTitle">
-    <div><span>Inicio</span><h2 id="modeMenuTitle">¿Qué necesitas hacer?</h2><p>Elige una opción. Mostraremos únicamente lo necesario.</p></div>
-    <button type="button" data-app-mode="catalog"><b>Catálogo General</b><small>Buscar cualquier artículo</small></button>
-    <button type="button" data-app-mode="merch"><b>Revisión de Merch</b><small>Explorar referencias visuales</small></button>
-    <button type="button" data-app-mode="export"><b>HTML a PDF / Excel</b><small>Cruzar inventario SAP</small></button>
+    <div class="mode-menu-intro">
+      <span>Inicio · 5 herramientas internas</span>
+      <h2 id="modeMenuTitle">¿Qué necesitas resolver?</h2>
+      <p>Elige una herramienta. Verás sólo el flujo necesario y podrás cambiar de tarea sin perder tu avance.</p>
+    </div>
+    <div id="modeMenuGrid" class="mode-menu-grid" aria-live="polite">
+      <button type="button" class="tool-card tool-card-consulta" data-app-mode="consulta"><span class="tool-card-icon">$</span><span><b>Consulta Precio &amp; POS</b><small>Buscar, validar y escanear</small></span></button>
+      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Buscar cualquier artículo</small><em>SAP comprobable primero</em></span></button>
+      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small><em>SAP comprobable primero</em></span></button>
+      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>HTML → CodeBrew</b><small>Cruzar y exportar inventario</small><em>SAP comprobable primero</em></span></button>
+      <button type="button" class="tool-card tool-card-etiquetado" data-app-mode="etiquetado"><span class="tool-card-icon">▤</span><span><b>Etiquetas</b><small>Generar etiquetas POS</small></span></button>
+    </div>
   </section>
 
-  <nav class="tabs" aria-label="Pestañas" role="tablist">
-    <button id="tabConsulta" class="tab" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="false"><span>Consulta</span><small>Precio y POS</small></button>
-    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>WOE | Catálogo</span><b id="tabWoeCount" hidden>0</b></button>
-    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false"><span>Etiquetas</span></button>
+  <nav id="toolSwitcher" class="tool-switcher" aria-label="Cambiar herramienta" hidden>
+    <button type="button" data-app-mode="consulta">Precio &amp; POS</button>
+    <button type="button" data-app-mode="catalog">WOE | Catálogo</button>
+    <button type="button" data-app-mode="merch">Merch</button>
+    <button type="button" data-app-mode="export">HTML → CodeBrew</button>
+    <button type="button" data-app-mode="etiquetado">Etiquetas</button>
   </nav>
 
+  <section id="toolContext" class="tool-context" hidden>
+    <button id="modeBack" class="mode-back ghost" type="button">← Herramientas</button>
+    <div id="toolContextVisual" class="tool-context-visual">
+      <div class="tool-context-copy">
+        <span id="toolContextEyebrow" class="tool-context-eyebrow">CodeBrew</span>
+        <h2 id="toolContextTitle">Herramienta</h2>
+        <p id="toolContextDescription"></p>
+        <span id="toolSapBadge" class="tool-sap-badge" hidden>Código SAP comprobable primero</span>
+      </div>
+      <details id="toolGuide" class="tool-guide">
+        <summary>Cómo usar</summary>
+        <div id="toolGuideSteps" class="tool-guide-steps"></div>
+      </details>
+    </div>
+  </section>
+
   <main id="mainContent">
-    <section id="consulta" class="tabpage" role="tabpanel" aria-labelledby="tabConsulta" tabindex="0" hidden>
+    <section id="consulta" class="tabpage" role="tabpanel" tabindex="0" hidden>
       <section class="panel quick-guide">
         <div class="guide-title">Guía rápida de consulta POS</div>
         <div class="quick-steps">
@@ -109,18 +135,9 @@
       </section>
     </section>
 
-    <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0" hidden>
-      <button id="modeBack" class="mode-back ghost" type="button">← Cambiar herramienta</button>
-      <section class="panel woe-hero mode-catalog-only mode-merch-only">
-        <div class="woe-hero-copy">
-          <span class="woe-kicker">Catálogo operativo · búsqueda y exportación</span>
-          <h2>Encuentra cualquier artículo.</h2>
-          <p>Busca cualquier artículo por nombre, Conteo, Código Día, SAP o SKU.</p>
-        </div>
-        <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos del catálogo</span></div>
-      </section>
-
+    <section id="woe" class="tabpage" role="tabpanel" tabindex="0" hidden>
       <section id="woeCatalog" class="panel woe-search-panel mode-catalog-only mode-merch-only">
+        <div class="woe-context-line"><span id="woeScopeLabel">Catálogo General</span><span><b id="woeTotal">0</b> referencias visuales</span></div>
         <div id="woeFlow" class="visually-hidden" aria-hidden="true"></div>
         <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
         <label for="woeSearch">¿Qué artículo necesitas?</label>
@@ -169,9 +186,9 @@
         <div id="stockPrintHeader" class="stock-print-header" aria-hidden="true"></div>
         <div class="stock-head">
           <div>
-            <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
-            <h2 id="stockTitle">Cruce de inventario</h2>
-            <p>Adjunta el HTML guardado desde SAP para una lectura más rápida. PDF SAP permanece disponible como respaldo.</p>
+            <span class="woe-kicker stock-kicker">HTML → CodeBrew</span>
+            <h2 id="stockTitle">Cruza y exporta inventario SAP</h2>
+            <p>Adjunta el HTML guardado desde WOE Web. CodeBrew identifica el reporte y prioriza el Código SAP comprobable.</p>
           </div>
         </div>
         <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
@@ -179,13 +196,24 @@
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
           <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <details class="save-html-tutorial"><summary>¿Cómo guardo el HTML?</summary><p>Al finalizar tu conteo: <strong>clic derecho → Guardar como… → Página web completa (*.html)</strong>. Después adjunta el archivo.</p></details>
-        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el HTML SAP.</p>
+        <details class="save-html-tutorial" open>
+          <summary>¿Cómo guardo el HTML y exporto a CodeBrew?</summary>
+          <div class="save-html-guide">
+            <div class="save-html-step"><b>1</b><span><strong>Desde WOE Web</strong>Al finalizar tu conteo: clic derecho → Guardar como… → Página web completa (*.html).</span></div>
+            <div class="save-html-step"><b>2</b><span><strong>Llévalo al celular de tienda</strong>Envía el archivo .html por correo o sincronízalo con OneDrive.</span></div>
+            <div class="save-html-step"><b>3</b><span><strong>Abre CodeBrew</strong>Adjunta el HTML. La tienda se toma del archivo cuando está disponible.</span></div>
+          </div>
+          <div class="transfer-chooser" aria-label="Elegir forma de llevar el HTML al celular">
+            <span>¿Cómo lo vas a llevar al celular?</span>
+            <div><button type="button" data-transfer-route="email">Correo</button><button type="button" data-transfer-route="onedrive">OneDrive</button></div>
+            <p id="transferHint">Elige una opción para ver la ruta más corta.</p>
+          </div>
+        </details>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el HTML SAP más actual.</p>
         <div class="inventory-source-guide" aria-label="Formatos compatibles">
-          <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa, rápida y local</span></div>
-          <div><b>PDF SAP</b><span>Código SAP → Código Día + nombre de inventario</span></div>
+          <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa y conserva datos del reporte</span></div>
+          <div><b>PDF SAP · respaldo</b><span>Úsalo sólo si no tienes el HTML</span></div>
         </div>
-        <label class="stock-store-field" for="stockStoreInput"><span>Tienda</span><input id="stockStoreInput" type="text" maxlength="100" placeholder="Ej. Luna Park" autocomplete="organization"></label>
         <div class="stock-upload-row">
           <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar HTML / PDF</button>
           <input id="stockPdfInput" class="visually-hidden" type="file" accept="text/html,.html,.htm,application/pdf,.pdf">
@@ -200,7 +228,7 @@
           <progress id="stockProgress" max="100" value="0">0%</progress>
           <output id="stockProgressText" for="stockProgress">Preparando…</output>
         </div>
-        <div id="stockStatus" class="woe-status" aria-live="polite">Adjunta un PDF cuando necesites esta validación opcional.</div>
+        <div id="stockStatus" class="woe-status" aria-live="polite">Adjunta el HTML SAP más actual para iniciar el cruce.</div>
         <div id="stockMeta" class="stock-meta" hidden></div>
         <div id="stockResults" class="stock-results"></div>
       </section>
@@ -229,7 +257,7 @@
       </dialog>
     </section>
 
-    <section id="etiquetado" class="tabpage" role="tabpanel" aria-labelledby="tabEtiquetado" tabindex="0" hidden>
+    <section id="etiquetado" class="tabpage" role="tabpanel" tabindex="0" hidden>
       <section class="panel label-panel">
         <h2>Generador de etiquetas POS</h2>
         <p class="label-intro"><b>Flujo recomendado:</b> abre cámara, lee SKU, valida producto, captura piezas y agrega. Repite por cada modelo; al final genera PDF listo para imprimir.</p>

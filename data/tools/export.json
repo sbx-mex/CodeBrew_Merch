@@ -1,0 +1,16 @@
+{
+  "id": "export",
+  "menuTitle": "HTML → CodeBrew",
+  "shortTitle": "HTML → CodeBrew",
+  "eyebrow": "Inventario SAP",
+  "description": "Adjunta el HTML guardado desde WOE Web, cruza inventario y exporta PDF o Excel.",
+  "menuDescription": "Cruzar y exportar inventario",
+  "icon": "↗",
+  "heroImage": "assets/stock_pdf_woe.jpeg",
+  "sapPriority": true,
+  "steps": [
+    {"title": "Guarda", "text": "En WOE Web usa Guardar como → Página web completa (*.html)."},
+    {"title": "Transfiere", "text": "Lleva el .html al celular por correo o OneDrive."},
+    {"title": "Adjunta", "text": "CodeBrew lee el reporte, valida SAP y habilita la exportación."}
+  ]
+}

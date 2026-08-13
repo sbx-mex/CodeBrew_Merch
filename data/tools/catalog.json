@@ -1,0 +1,16 @@
+{
+  "id": "catalog",
+  "menuTitle": "WOE | Catálogo",
+  "shortTitle": "WOE | Catálogo",
+  "eyebrow": "Catálogo General",
+  "description": "Busca cualquier artículo por Código SAP, Código Día, Conteo, SKU o nombre.",
+  "menuDescription": "Buscar cualquier artículo",
+  "icon": "#",
+  "heroImage": "assets/catalog/catalog-general-hero.webp",
+  "sapPriority": true,
+  "steps": [
+    {"title": "Busca", "text": "Empieza por Código SAP o Código Día cuando lo tengas."},
+    {"title": "Comprueba", "text": "Valida el cruce SAP + Micros antes de confiar en el nombre."},
+    {"title": "Selecciona", "text": "Agrega piezas y exporta sólo los artículos que necesitas."}
+  ]
+}
