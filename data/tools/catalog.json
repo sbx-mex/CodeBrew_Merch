@@ -3,7 +3,7 @@
   "menuTitle": "WOE | Catálogo",
   "shortTitle": "WOE | Catálogo",
   "eyebrow": "Catálogo General",
-  "description": "Busca por Código SAP, Código Día, Conteo Micros, SKU o nombre.",
+  "description": "Filtra por Conteo Micros o busca por Código SAP, Código Día, SKU o nombre.",
   "menuDescription": "Encuentra y valida artículos",
   "icon": "#",
   "heroImage": "assets/catalog/catalog-general-hero.webp",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v35-conteo-az-2026-08-13';
+const CACHE_NAME = 'codebrew-v36-intuitive-count-sap-2026-08-13';
 const APP_SHELL = [
   './',
   './index.html',

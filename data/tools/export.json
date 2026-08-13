@@ -4,7 +4,7 @@
   "shortTitle": "Exportar",
   "eyebrow": "HTML → CodeBrew",
   "description": "Carga tu reporte WOE, cruza inventario y exporta PDF o Excel.",
-  "menuDescription": "HTML → CodeBrew · PDF / Excel",
+  "menuDescription": "Cruza y exporta inventario",
   "icon": "↗",
   "heroImage": "assets/stock_pdf_woe.jpeg",
   "sapPriority": false,
