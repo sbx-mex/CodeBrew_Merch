@@ -70,8 +70,10 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
-        for token in ("catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "merch-catalog.js"):
+        for token in ("catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "microsGroupFilter", "microsFamilyFilter", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
+        self.assertIn("catalogVisibleLimit = 5", app)
+        self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
         for token in ("renderCatalog", "articleKey", "quantity", "Código Día", "Código SAP"):
             self.assertIn(token, app)
         self.assertNotIn("catalogPrice", app)

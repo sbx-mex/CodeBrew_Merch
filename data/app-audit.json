@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T08:16:19+00:00",
+  "auditedAtUtc": "2026-08-13T08:51:28+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
+  "sourceSha256": "5129127198b553592dff3e781300d8025646168ad2b8a1cfb2fb62e69e7f1437",
   "checksTotal": 13,
   "checksOk": 13,
   "warnings": 0,
@@ -31,7 +31,7 @@
     {
       "name": "Integridad WOE",
       "status": "ok",
-      "detail": "2,244 relaciones; 751 cruces SAP + Micros"
+      "detail": "2,244 relaciones; 752 cruces SAP + Micros"
     },
     {
       "name": "Exportación PDF",
@@ -41,7 +41,7 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "113 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "117 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -71,17 +71,17 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2174 KB auditados en archivos críticos"
+      "detail": "2399 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 20707,
-      "styles.css": 34707,
-      "catalog.css": 10230,
-      "app.js": 118956,
+      "index.html": 21671,
+      "styles.css": 35242,
+      "catalog.css": 12122,
+      "app.js": 121979,
       "data/products.js": 356315,
-      "data/woe.js": 833682,
+      "data/woe.js": 1058152,
       "data/merch-catalog.js": 849199,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 546

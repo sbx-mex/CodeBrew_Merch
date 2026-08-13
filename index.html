@@ -110,37 +110,43 @@
       </nav>
       <section class="panel woe-hero">
         <div class="woe-hero-copy">
-          <span class="woe-kicker">Catálogo visual · Cruce operativo</span>
-          <h2>Encuentra, cuenta y valida.</h2>
-          <p>Busca un artículo MERCH por nombre, Código Día, SAP o SKU. Confirma cuántas piezas tienes y valida el cruce antes de exportar.</p>
+          <span class="woe-kicker">Catálogo operativo · búsqueda y exportación</span>
+          <h2>Encuentra cualquier artículo.</h2>
+          <p>Busca alimentos, insumos, café, mercancía o equipo por nombre, Familia, Agrupado, Código Día, SAP o SKU.</p>
         </div>
         <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos del catálogo</span></div>
       </section>
 
       <section id="woeCatalog" class="panel woe-search-panel">
         <div id="woeFlow" class="woe-mini-guide operational-flow" aria-label="Progreso del listado WOE">
-          <div data-step="search"><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
+          <div data-step="search"><b>1</b><span>Busca cualquier artículo por nombre, Día, SAP, grupo o familia.</span></div>
           <div data-step="select"><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
           <div data-step="export"><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
         </div>
         <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
-        <label for="woeSearch">Buscar en el catálogo</label>
+        <label for="woeSearch">¿Qué artículo necesitas?</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
-            <input id="woeSearch" placeholder="Nombre del artículo, Código Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <input id="woeSearch" placeholder="Escribe cualquier artículo, familia, grupo, Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <button id="woeSearchClear" class="search-clear" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
           <button id="woeAdd" type="button">Agregar coincidencia</button>
         </div>
-        <p id="woeHelp" class="hint">También puedes pegar varios códigos separados por coma o renglón. El cruce siempre parte de Código Día y muestra Código y Descripción SAP.</p>
+        <p id="woeHelp" class="hint">Busca en todo el Catálogo Micros. También puedes pegar varios códigos separados por coma o renglón y preparar un PDF.</p>
+        <div class="micros-filter-bar" aria-label="Filtros del Catálogo Micros">
+          <label for="microsGroupFilter">Agrupado<select id="microsGroupFilter"><option value="">Todos</option></select></label>
+          <label for="microsFamilyFilter">Familia<select id="microsFamilyFilter"><option value="">Todas</option></select></label>
+          <button id="microsFiltersClear" class="ghost" type="button">Limpiar filtros</button>
+        </div>
         <div class="catalog-toolbar">
           <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
           <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
         </div>
-        <div id="catalogGrid" class="catalog-grid" aria-label="Catálogo de artículos MERCH"></div>
+        <div id="microsCatalogResults" class="micros-catalog-results" aria-live="polite" hidden></div>
+        <div id="catalogGrid" class="catalog-grid" aria-label="Vista visual destacada del catálogo"></div>
         <button id="catalogLoadMore" class="catalog-load-more ghost" type="button" hidden>Ver más artículos</button>
-        <p class="catalog-image-note">Las fotografías se restauran de forma uniforme y fiel a la fuente. Si el motor no contiene fotografía, se identifica como referencia aproximada.</p>
+        <p class="catalog-image-note">Se muestran únicamente cinco artículos visuales. Escribe cualquier artículo arriba para consultar todo el catálogo.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
@@ -158,7 +164,7 @@
         <div id="catalogVisualImage" class="catalog-dialog-image" role="img"></div>
         <div class="catalog-dialog-copy">
           <span class="woe-kicker">Vista ampliada</span>
-          <h2 id="catalogVisualTitle">Artículo MERCH</h2>
+          <h2 id="catalogVisualTitle">Artículo</h2>
           <p id="catalogVisualDescription"></p>
           <div id="catalogVisualCodes" class="catalog-dialog-codes"></div>
           <small>Imagen recreada de la Lista de Precio; es una aproximación visual.</small>
@@ -181,7 +187,10 @@
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
           <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <p id="stockNextAction" class="next-action" aria-live="polite">Recomendado: en SAP usa Ctrl+S / Guardar como → Página web completa (.html).</p>
+        <aside class="save-html-tutorial" aria-label="Tutorial para guardar el inventario SAP">
+          <span class="tutorial-icon" aria-hidden="true">⌁</span><div><b>Al finalizar tu conteo</b><p>En la página de SAP haz <strong>clic derecho → Guardar como… → Página web completa (*.html)</strong>. Después adjunta aquí el archivo HTML.</p></div>
+        </aside>
+        <p id="stockNextAction" class="next-action" aria-live="polite">El HTML es la opción recomendada: lectura local, rápida y sin ejecutar contenido.</p>
         <div class="inventory-source-guide" aria-label="Formatos compatibles">
           <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa, rápida y local</span></div>
           <div><b>Stock on Hand</b><span>Nombre Micros → WOE</span></div>
@@ -195,7 +204,7 @@
           <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
-        <label class="stock-all-toggle" for="stockIncludeZero"><input id="stockIncludeZero" type="checkbox" checked><span><b>Validar todo el inventario</b><small>Incluye también artículos con Cantidad y $ Stock en cero.</small></span></label>
+        <label class="stock-all-toggle" for="stockIncludeZero"><input id="stockIncludeZero" type="checkbox"><span><b>Mostrar también artículos en cero</b><small>Desactivado por defecto: el PDF exporta únicamente productos con Cantidad o $ Stock mayor a cero.</small></span></label>
         <p class="stock-disclaimer"><b>Importante:</b> el HTML se procesa como texto en el navegador y no ejecuta scripts. Se toma la primera Cantidad y UMB junto al artículo; el archivo puede pesar hasta 35 MB.</p>
         <div id="stockProgressWrap" class="stock-progress" hidden>
           <label for="stockProgress">Lectura del reporte</label>

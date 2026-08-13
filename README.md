@@ -42,6 +42,12 @@ En HTML/PDF SAP sólo se leen la primera `Cantidad` y la primera `UMB` ubicadas 
 
 La vista puede descargarse como PDF o imprimirse con el botón **Imprimir vista** / `Ctrl+P`.
 
+## Catálogo Micros y navegación
+
+La pestaña `Catalogo Micros` se lee por encabezado, no por posición fija. Sus columnas operativas son `Agrupado`, `Familia`, `Nombre Micros` y `Codigo DIA`; pueden aumentar o disminuir filas sin modificar el código. WOE permite buscar cualquier artículo y filtrar por Agrupado o Familia. Para mantener una vista ligera se muestran sólo cinco imágenes inicialmente; el buscador consulta todo el motor.
+
+Para exportar inventario desde SAP: al finalizar el conteo, usa **clic derecho → Guardar como… → Página web completa (*.html)** y adjunta ese HTML. La exportación generada desde HTML incluye únicamente productos con Cantidad o `$ Stock` mayor a cero.
+
 ## Límites y rendimiento
 
 - Ningún archivo puede alcanzar 25 MB.
