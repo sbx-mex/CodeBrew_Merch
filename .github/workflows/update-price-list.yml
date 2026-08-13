@@ -56,13 +56,14 @@ jobs:
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/atlases assets/catalog/featured; then
+          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/images assets/catalog/featured; then
             echo "La lista ya está actualizada."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/atlases assets/catalog/featured
+          git add data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/images assets/catalog/featured
+          git add --all assets/catalog/atlases
           git commit -m "Actualizar motores y catálogo visual"
           git pull --rebase origin main
           git push
