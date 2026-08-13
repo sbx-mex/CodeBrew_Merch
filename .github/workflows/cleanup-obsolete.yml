@@ -1,15 +1,9 @@
 name: Auditar y limpiar obsoletos
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - products.js
-      - icon-512.png
-      - VALIDACION_CORRECCION.md
-      - scripts/cleanup_obsolete.py
-      - scripts/audit_project.py
-      - .github/workflows/cleanup-obsolete.yml
+  workflow_run:
+    workflows: ["Actualizar lista de precios"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       aplicar:
@@ -27,30 +21,41 @@ concurrency:
 
 jobs:
   auditar:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
+        with:
+          ref: main
+
       - name: Configurar Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validar proyecto antes de limpiar
-        run: python scripts/audit_project.py --output "$RUNNER_TEMP/audit-before.json" --js-output "$RUNNER_TEMP/audit-before.js"
-      - name: Auditar sin borrar
-        if: ${{ github.event_name == 'workflow_dispatch' && !inputs.aplicar }}
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Instalar dependencias validadas
+        run: python -m pip install --requirement scripts/requirements.txt
+
+      - name: Auditar candidatos sin borrar
         run: python scripts/cleanup_obsolete.py --report "$RUNNER_TEMP/cleanup-report.json"
+
       - name: Eliminar sólo candidatos validados
-        if: ${{ github.event_name == 'push' || inputs.aplicar }}
+        if: ${{ github.event_name == 'workflow_run' || inputs.aplicar }}
         run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
-      - name: Validar proyecto después de limpiar
-        if: ${{ github.event_name == 'push' || inputs.aplicar }}
+
+      - name: Validar proyecto limpio
+        if: ${{ github.event_name == 'workflow_run' || inputs.aplicar }}
         run: python scripts/audit_project.py --output "$RUNNER_TEMP/audit-after.json" --js-output "$RUNNER_TEMP/audit-after.js"
+
       - name: Mostrar resultado
         run: cat "$RUNNER_TEMP/cleanup-report.json" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Publicar limpieza
-        if: ${{ github.event_name == 'push' || inputs.aplicar }}
+        if: ${{ github.event_name == 'workflow_run' || inputs.aplicar }}
         run: |
           if git diff --quiet; then
             echo "No hay archivos seguros por eliminar."

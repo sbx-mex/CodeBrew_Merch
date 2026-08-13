@@ -6,20 +6,15 @@ on:
     paths:
       - Lista_Precios_Base.xlsx
       - engines/**
-      - scripts/generate_products.py
-      - scripts/generate_visual_catalog.py
-      - scripts/build_woe_pdf_config.py
-      - scripts/build_stock_config.py
-      - scripts/build_ui_config.py
-      - scripts/audit_project.py
-      - scripts/build_all.py
-      - scripts/requirements.txt
+      - scripts/**
+      - tests/**
       - index.html
       - app.js
       - styles.css
       - catalog.css
       - sw.js
       - manifest.webmanifest
+      - assets/catalog/catalog-hero.webp
       - .github/workflows/update-price-list.yml
   workflow_dispatch:
 
@@ -33,7 +28,7 @@ concurrency:
 jobs:
   validate-and-generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
@@ -45,8 +40,11 @@ jobs:
           cache: pip
           cache-dependency-path: scripts/requirements.txt
 
-      - name: Instalar lector de Excel
-        run: pip install --requirement scripts/requirements.txt
+      - name: Instalar dependencias validadas
+        run: python -m pip install --requirement scripts/requirements.txt
+
+      - name: Validar recursos estáticos
+        run: test -f assets/catalog/catalog-hero.webp
 
       - name: Construir y auditar motores
         run: python scripts/build_all.py
@@ -56,14 +54,14 @@ jobs:
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/images assets/catalog/featured; then
-            echo "La lista ya está actualizada."
+          if git diff --quiet -- data assets/catalog; then
+            echo "La lista y el catálogo ya están actualizados."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/images assets/catalog/featured
-          git add --all assets/catalog/atlases
+          git add data
+          git add --all assets/catalog
           git commit -m "Actualizar motores y catálogo visual"
           git pull --rebase origin main
           git push
