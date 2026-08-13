@@ -25,25 +25,24 @@
   <header class="hero">
     <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
     <div>
-      <h1>CodeBrew <span>v2 OCR</span></h1>
-      <p>Catálogo general · búsqueda y exportación</p>
+      <h1>CodeBrew <span>v2</span></h1>
+      <p>5 herramientas · operación en tienda</p>
     </div>
-    <div class="release-badge" aria-label="Versión actualizada">OCR móvil optimizado · v2</div>
     <div id="connectionStatus" class="connection-status" role="status" aria-live="polite">En línea</div>
     <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
   </header>
 
   <section id="modeMenu" class="mode-menu" aria-labelledby="modeMenuTitle">
     <div class="mode-menu-intro">
-      <span>Inicio · 5 herramientas internas</span>
+      <span>Inicio</span>
       <h2 id="modeMenuTitle">¿Qué necesitas resolver?</h2>
-      <p>Elige una herramienta. Verás sólo el flujo necesario y podrás cambiar de tarea sin perder tu avance.</p>
+      <p>Elige una tarea. Mostramos sólo lo necesario.</p>
     </div>
     <div id="modeMenuGrid" class="mode-menu-grid" aria-live="polite">
       <button type="button" class="tool-card tool-card-consulta" data-app-mode="consulta"><span class="tool-card-icon">$</span><span><b>Consulta Precio &amp; POS</b><small>Buscar, validar y escanear</small></span></button>
-      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Buscar cualquier artículo</small><em>SAP comprobable primero</em></span></button>
-      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small><em>SAP comprobable primero</em></span></button>
-      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>HTML → CodeBrew</b><small>Cruzar y exportar inventario</small><em>SAP comprobable primero</em></span></button>
+      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Buscar cualquier artículo</small><em>SAP primero</em></span></button>
+      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small><em>SAP primero</em></span></button>
+      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>HTML → CodeBrew</b><small>Cruzar y exportar inventario</small><em>SAP primero</em></span></button>
       <button type="button" class="tool-card tool-card-etiquetado" data-app-mode="etiquetado"><span class="tool-card-icon">▤</span><span><b>Etiquetas</b><small>Generar etiquetas POS</small></span></button>
     </div>
   </section>
@@ -63,7 +62,7 @@
         <span id="toolContextEyebrow" class="tool-context-eyebrow">CodeBrew</span>
         <h2 id="toolContextTitle">Herramienta</h2>
         <p id="toolContextDescription"></p>
-        <span id="toolSapBadge" class="tool-sap-badge" hidden>Código SAP comprobable primero</span>
+        <span id="toolSapBadge" class="tool-sap-badge" hidden>Código SAP primero</span>
       </div>
       <details id="toolGuide" class="tool-guide">
         <summary>Cómo usar</summary>
@@ -74,20 +73,20 @@
 
   <main id="mainContent">
     <section id="consulta" class="tabpage" role="tabpanel" tabindex="0" hidden>
-      <section class="panel quick-guide">
-        <div class="guide-title">Guía rápida de consulta POS</div>
+      <details class="panel quick-guide">
+        <summary class="guide-title">Cómo consultar en POS</summary>
         <div class="quick-steps">
           <div><b>1</b><span><strong>Escanea cerca</strong><br>Enfoca el texto <em>SKU # 011...</em> de la etiqueta.</span></div>
           <div><b>2</b><span><strong>Valida el item</strong><br>Confirma Nombre POS, precio y SKU POS.</span></div>
           <div><b>3</b><span><strong>Marca en POS</strong><br>Mercancía → Botón POS → escanea el código generado.</span></div>
         </div>
-      </section>
+      </details>
       <section class="panel price-warning">
         <div class="warning-icon">!</div>
         <div>
-          <h2>Consulta precio antes</h2>
-          <p><b>Si sólo vas a validar precio o información del artículo, primero toca en POS: <span>Consultar Precio</span>.</b></p>
-          <p>Después escanea el código generado. Si escaneas directo sin entrar a Consultar Precio, el POS puede marcar el artículo en la cuenta.</p>
+          <h2>Antes de escanear</h2>
+          <p><b>Para validar precio, entra primero a <span>Consultar Precio</span> en POS.</b></p>
+          <p>Escanear directo puede agregar el artículo a la cuenta.</p>
         </div>
       </section>
       <section class="panel search-panel">
@@ -140,10 +139,10 @@
         <div class="woe-context-line"><span id="woeScopeLabel">Catálogo General</span><span><b id="woeTotal">0</b> referencias visuales</span></div>
         <div id="woeFlow" class="visually-hidden" aria-hidden="true"></div>
         <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
-        <label for="woeSearch">¿Qué artículo necesitas?</label>
+        <label for="woeSearch">Busca por SAP, Día, SKU o nombre</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
-            <input id="woeSearch" placeholder="Escribe artículo, Conteo, Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <input id="woeSearch" placeholder="Código SAP, Día, SKU o nombre" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <button id="woeSearchClear" class="search-clear" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
@@ -196,12 +195,12 @@
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
           <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <details class="save-html-tutorial" open>
+        <details class="save-html-tutorial">
           <summary>¿Cómo guardo el HTML y exporto a CodeBrew?</summary>
           <div class="save-html-guide">
-            <div class="save-html-step"><b>1</b><span><strong>Desde WOE Web</strong>Al finalizar tu conteo: clic derecho → Guardar como… → Página web completa (*.html).</span></div>
-            <div class="save-html-step"><b>2</b><span><strong>Llévalo al celular de tienda</strong>Envía el archivo .html por correo o sincronízalo con OneDrive.</span></div>
-            <div class="save-html-step"><b>3</b><span><strong>Abre CodeBrew</strong>Adjunta el HTML. La tienda se toma del archivo cuando está disponible.</span></div>
+            <div class="save-html-step"><b>1</b><span><strong>Guarda</strong>En WOE Web: clic derecho → Guardar como → Página web completa (*.html).</span></div>
+            <div class="save-html-step"><b>2</b><span><strong>Pásalo al celular</strong>Usa correo u OneDrive.</span></div>
+            <div class="save-html-step"><b>3</b><span><strong>Adjunta</strong>CodeBrew detecta el reporte y cruza SAP.</span></div>
           </div>
           <div class="transfer-chooser" aria-label="Elegir forma de llevar el HTML al celular">
             <span>¿Cómo lo vas a llevar al celular?</span>
@@ -222,6 +221,7 @@
           <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
+        <input id="stockStoreInput" type="hidden" value="">
         <input id="stockIncludeZero" type="checkbox" hidden>
         <div id="stockProgressWrap" class="stock-progress" hidden>
           <label for="stockProgress">Lectura del reporte</label>
@@ -260,13 +260,15 @@
     <section id="etiquetado" class="tabpage" role="tabpanel" tabindex="0" hidden>
       <section class="panel label-panel">
         <h2>Generador de etiquetas POS</h2>
-        <p class="label-intro"><b>Flujo recomendado:</b> abre cámara, lee SKU, valida producto, captura piezas y agrega. Repite por cada modelo; al final genera PDF listo para imprimir.</p>
-        <div class="guide">
+        <details class="label-guide">
+          <summary>Cómo generar etiquetas</summary>
+          <div class="guide">
           <div><b>1</b><span>Escanea o busca el SKU del artículo.</span></div>
           <div><b>2</b><span>Valida nombre, precio y Botón POS.</span></div>
           <div><b>3</b><span>Coloca piezas, agrega y continúa con el siguiente modelo.</span></div>
-          <div><b>4</b><span>Genera PDF para imprimir etiquetas 2” x 1.5”.</span></div>
-        </div>
+            <div><b>4</b><span>Genera PDF para imprimir etiquetas 2” x 1.5”.</span></div>
+          </div>
+        </details>
         <div class="label-camera">
           <div class="camera-head"><h3>Escaneo rápido para etiquetado</h3><span id="labelOcrStatus">Listo</span></div>
           <div class="camera-stage small">
@@ -294,7 +296,7 @@
             <label class="file-action">Tomar foto<input id="labelTakePhotoInput" type="file" accept="image/*" capture="environment"></label>
           </div>
           <img id="labelPhotoPreview" class="photo-preview" alt="Vista previa de la fotografía para etiquetado" hidden>
-          <p class="hint">Flujo lineal: centrar SKU → validar enfoque → leer → piezas → agregar etiquetas.</p>
+          <p class="hint">Centra el SKU dentro del marco y valida el artículo.</p>
         </div>
         <div class="label-grid">
           <div>

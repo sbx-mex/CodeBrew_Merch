@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v32-visual-tools-2026-08-13';
+const CACHE_NAME = 'codebrew-v33-fast-nav-2026-08-13';
 const APP_SHELL = [
   './',
   './index.html',
