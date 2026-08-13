@@ -171,30 +171,32 @@
           <div>
             <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
             <h2 id="stockTitle">Cruce de inventario</h2>
-            <p>Adjunta un Stock on Hand o un PDF SAP. El motor identifica el formato, lee todas las páginas y conserva sólo los valores operativos.</p>
+            <p>Adjunta el HTML guardado desde SAP para una lectura más rápida. PDF SAP y Stock on Hand permanecen disponibles como respaldo.</p>
           </div>
           <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
         <a class="back-to-catalog" href="#woeCatalog">← Volver al catálogo</a>
         <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
-          <div data-step="attach"><b>1</b><span>Adjunta Stock on Hand o PDF SAP.</span></div>
+          <div data-step="attach"><b>1</b><span>Adjunta HTML SAP, PDF SAP o Stock on Hand.</span></div>
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
           <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el reporte más actual; el formato se detecta automáticamente.</p>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Recomendado: en SAP usa Ctrl+S / Guardar como → Página web completa (.html).</p>
         <div class="inventory-source-guide" aria-label="Formatos compatibles">
+          <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa, rápida y local</span></div>
           <div><b>Stock on Hand</b><span>Nombre Micros → WOE</span></div>
           <div><b>PDF SAP</b><span>Código SAP → Código Día + nombre de inventario</span></div>
         </div>
         <label class="stock-store-field" for="stockStoreInput"><span>Nombre de tienda <small>opcional si viene dentro del PDF</small></span><input id="stockStoreInput" type="text" maxlength="100" placeholder="Ej. Starbucks MX Luna Park" autocomplete="organization"></label>
         <div class="stock-upload-row">
-          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar Stock / PDF SAP</button>
-          <input id="stockPdfInput" class="visually-hidden" type="file" accept="application/pdf,.pdf">
+          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar HTML / PDF</button>
+          <input id="stockPdfInput" class="visually-hidden" type="file" accept="text/html,.html,.htm,application/pdf,.pdf">
           <button id="stockExport" type="button" class="stock-export" disabled>2 · Exportar PDF cruzado</button>
           <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
-        <p class="stock-disclaimer"><b>Importante:</b> Stock on Hand conserva su validación actual. En PDF SAP se toma únicamente la primera Cantidad y UMB junto al artículo; si el valor de stock no es inequívoco se muestra “Sin valor reportado”.</p>
+        <label class="stock-all-toggle" for="stockIncludeZero"><input id="stockIncludeZero" type="checkbox" checked><span><b>Validar todo el inventario</b><small>Incluye también artículos con Cantidad y $ Stock en cero.</small></span></label>
+        <p class="stock-disclaimer"><b>Importante:</b> el HTML se procesa como texto en el navegador y no ejecuta scripts. Se toma la primera Cantidad y UMB junto al artículo; el archivo puede pesar hasta 35 MB.</p>
         <div id="stockProgressWrap" class="stock-progress" hidden>
           <label for="stockProgress">Lectura del reporte</label>
           <progress id="stockProgress" max="100" value="0">0%</progress>

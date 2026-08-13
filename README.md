@@ -35,9 +35,10 @@ Las filas pueden aumentar o disminuir. El cruce se reconstruye completo en cada 
 El apartado WOE conserva su buscador, selección, conteo y exportación actuales. El bloque **Cruce de inventario** acepta dos fuentes sin enviarlas a un servidor:
 
 - **Stock on Hand:** mantiene el cruce por nombre Micros y exporta la referencia operativa WOE.
-- **PDF SAP:** detecta `DATOS INVENTARIO`, cruza `Código SAP → Código Día + nombre de inventario` y genera `Inventario Cruzado · Detalle`.
+- **HTML SAP (recomendado):** usa `Ctrl+S / Guardar como → Página web completa`, lee directamente la tabla local y cruza `Código SAP → Código Día + nombre de inventario`.
+- **PDF SAP (respaldo):** conserva la lectura paginada y genera `Inventario Cruzado · Detalle`.
 
-En PDF SAP sólo se leen la primera `Cantidad` y la primera `UMB` ubicadas junto al artículo. `$ Stock` se incorpora únicamente cuando la columna aparece de forma inequívoca; en formatos sin ese dato se presenta `Sin valor reportado`. La `Fecha Grabación` proviene del archivo y la hora se registra dinámicamente al exportar. Si el PDF no contiene la tienda, escríbela antes de adjuntarlo; `Starbucks MX Luna Park` se presenta como `Luna Park`.
+En HTML/PDF SAP sólo se leen la primera `Cantidad` y la primera `UMB` ubicadas junto al artículo. `$ Stock` se incorpora únicamente cuando la columna aparece de forma inequívoca. El control **Validar todo el inventario** incluye los artículos en cero. La entrada local acepta hasta 35 MB; el límite de 25 MB se mantiene únicamente para archivos versionados dentro de GitHub.
 
 La vista puede descargarse como PDF o imprimirse con el botón **Imprimir vista** / `Ctrl+P`.
 
