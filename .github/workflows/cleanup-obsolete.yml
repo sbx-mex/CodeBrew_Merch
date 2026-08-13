@@ -6,6 +6,7 @@ on:
     paths:
       - products.js
       - icon-512.png
+      - VALIDACION_CORRECCION.md
       - scripts/cleanup_obsolete.py
       - scripts/audit_project.py
       - .github/workflows/cleanup-obsolete.yml
@@ -21,7 +22,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: codebrew-cleanup
+  group: codebrew-maintenance
   cancel-in-progress: false
 
 jobs:
@@ -59,4 +60,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -u
           git commit -m "Eliminar archivos obsoletos validados"
+          git pull --rebase origin main
           git push

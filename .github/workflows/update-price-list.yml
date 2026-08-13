@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - Lista_Precios_Base.xlsx
+      - engines/merch-lists/**
       - scripts/generate_products.py
+      - scripts/generate_visual_catalog.py
       - scripts/build_woe_pdf_config.py
       - scripts/build_stock_config.py
       - scripts/build_ui_config.py
@@ -15,6 +17,7 @@ on:
       - index.html
       - app.js
       - styles.css
+      - catalog.css
       - sw.js
       - manifest.webmanifest
       - .github/workflows/update-price-list.yml
@@ -24,7 +27,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: codebrew-price-list
+  group: codebrew-maintenance
   cancel-in-progress: false
 
 jobs:
@@ -45,17 +48,21 @@ jobs:
       - name: Instalar lector de Excel
         run: pip install --requirement scripts/requirements.txt
 
-      - name: Construir y ejecutar diez controles
+      - name: Construir y auditar motores
         run: python scripts/build_all.py
+
+      - name: Ejecutar pruebas funcionales
+        run: python -m unittest discover -s tests -p "test_*.py"
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js; then
+          if git diff --quiet -- data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/atlases; then
             echo "La lista ya está actualizada."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/products.js data/woe.js data/import-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js
-          git commit -m "Actualizar datos desde Lista_Precios_Base.xlsx"
+          git add data/products.js data/woe.js data/import-report.json data/merch-catalog.js data/merch-catalog-report.json data/woe-pdf-config.js data/stock-config.js data/ui-config.js data/app-audit.json data/app-audit.js assets/catalog/atlases
+          git commit -m "Actualizar motores y catálogo visual"
+          git pull --rebase origin main
           git push
