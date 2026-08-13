@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import io
 import json
-import math
 import re
 import shutil
 import unicodedata
@@ -19,12 +18,11 @@ from pathlib import Path, PurePosixPath
 from openpyxl import load_workbook
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
-TILE = 512
-GRID = 3
-ATLAS_CAPACITY = GRID * GRID
+CANVAS = 768
+CONTENT = 660
 MAX_FILE_BYTES = 25_000_000
 MAX_UNCOMPRESSED = 150_000_000
-IMAGE_NOTE = "Las imágenes HD conservan la fuente disponible; cuando no existe fotografía se muestra una referencia aproximada."
+IMAGE_NOTE = "Fotografía restaurada desde la fuente original; se preservan forma, color y diseño del artículo."
 FIELD_ALIASES = {
     "skuIntl": {"sku intl"}, "codigoDia": {"codigo dia"},
     "descripcion": {"descripcion sci", "descripcion"}, "nombrePos": {"nombre pos"},
@@ -196,18 +194,18 @@ def category_for(text: str) -> str:
 
 def fallback_tile(category: str) -> Image.Image:
     palette = {"mug": "#006241", "tumbler": "#173f30", "cold-cup": "#26765b", "bottle": "#537c6c", "brew": "#8a5a34", "accessory": "#c49b51", "other": "#6f7e77"}
-    canvas = Image.new("RGB", (TILE, TILE), "#f2ede4")
+    canvas = Image.new("RGB", (CANVAS, CANVAS), "#f2ede4")
     draw = ImageDraw.Draw(canvas)
-    draw.rounded_rectangle((32, 32, TILE - 32, TILE - 32), 38, fill="#fffdf9")
+    draw.rounded_rectangle((52, 52, CANVAS - 52, CANVAS - 52), 54, fill="#fffdf9")
     color = palette[category]
     if category == "mug":
-        draw.rounded_rectangle((112, 104, 258, 286), 25, fill=color); draw.ellipse((230, 140, 324, 244), outline=color, width=24)
+        draw.rounded_rectangle((228, 190, 492, 550), 42, fill=color); draw.ellipse((440, 258, 610, 462), outline=color, width=38)
     elif category in {"tumbler", "cold-cup"}:
-        draw.rounded_rectangle((118, 70, 266, 316), 38, fill=color); draw.rounded_rectangle((102, 62, 282, 96), 13, fill="#263b33")
+        draw.rounded_rectangle((246, 148, 522, 610), 64, fill=color); draw.rounded_rectangle((218, 132, 550, 198), 22, fill="#263b33")
     elif category == "bottle":
-        draw.rounded_rectangle((132, 82, 252, 318), 44, fill=color); draw.rounded_rectangle((150, 54, 234, 108), 16, fill="#263b33")
+        draw.rounded_rectangle((274, 166, 494, 616), 72, fill=color); draw.rounded_rectangle((306, 112, 462, 218), 28, fill="#263b33")
     else:
-        draw.rounded_rectangle((108, 92, 276, 300), 35, fill=color)
+        draw.rounded_rectangle((220, 176, 548, 592), 58, fill=color)
     return canvas
 
 
@@ -223,29 +221,52 @@ def crop_content(image: Image.Image) -> Image.Image:
     return rgba.crop(bbox) if bbox and bbox[2] - bbox[0] > 2 and bbox[3] - bbox[1] > 2 else rgba
 
 
-def product_tile(data: bytes) -> Image.Image:
+def faithful_upscale(image: Image.Image, size: tuple[int, int]) -> Image.Image:
+    """Amplía sin inventar elementos y recupera bordes por retroproyección."""
+    low = image.convert("RGB")
+    high = low.resize(size, Image.Resampling.LANCZOS)
+    if max(low.size) >= max(size):
+        return high
+    for _ in range(2):
+        projected = high.resize(low.size, Image.Resampling.LANCZOS)
+        residual = ImageChops.subtract(low, projected, offset=128)
+        correction = residual.resize(size, Image.Resampling.BICUBIC)
+        correction = ImageEnhance.Contrast(correction).enhance(.34)
+        high = ImageChops.add(high, correction, offset=-128)
+    source_edge = max(low.size)
+    strength = 130 if source_edge >= 256 else 175 if source_edge >= 96 else 215
+    radius = .65 if source_edge >= 96 else .48
+    return high.filter(ImageFilter.UnsharpMask(radius=radius, percent=strength, threshold=2))
+
+
+def product_tile(data: bytes) -> tuple[Image.Image, dict]:
     with Image.open(io.BytesIO(data)) as source:
-        image = crop_content(ImageOps.exif_transpose(source))
-    image.thumbnail((TILE - 52, TILE - 52), Image.Resampling.LANCZOS)
-    if max(image.size) < TILE - 60:
-        scale = min((TILE - 52) / max(1, image.width), (TILE - 52) / max(1, image.height))
-        image = image.resize((max(1, round(image.width * scale)), max(1, round(image.height * scale))), Image.Resampling.LANCZOS)
-    alpha = image.getchannel("A")
-    rgb = ImageOps.autocontrast(image.convert("RGB"), cutoff=0.35)
-    rgb = ImageEnhance.Contrast(rgb).enhance(1.045)
-    rgb = ImageEnhance.Color(rgb).enhance(1.025)
-    rgb = rgb.filter(ImageFilter.UnsharpMask(radius=1.35, percent=175, threshold=2))
+        original = ImageOps.exif_transpose(source)
+        source_size = original.size
+        image = crop_content(original)
+    scale = min(CONTENT / max(1, image.width), CONTENT / max(1, image.height))
+    fitted = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))
+    alpha = image.getchannel("A").resize(fitted, Image.Resampling.LANCZOS)
+    rgb = faithful_upscale(image.convert("RGB"), fitted)
+    rgb = ImageOps.autocontrast(rgb, cutoff=0.22)
+    rgb = ImageEnhance.Contrast(rgb).enhance(1.035)
+    rgb = ImageEnhance.Color(rgb).enhance(1.018)
+    rgb = rgb.filter(ImageFilter.UnsharpMask(radius=.72, percent=145, threshold=2))
     enhanced = rgb.convert("RGBA")
     enhanced.putalpha(alpha)
-    canvas = Image.new("RGBA", (TILE, TILE), "#fffdf9")
-    x = (TILE - rgb.width) // 2
-    y = (TILE - rgb.height) // 2
-    shadow_alpha = alpha.filter(ImageFilter.GaussianBlur(10)).point(lambda value: round(value * 0.16))
+    canvas = Image.new("RGBA", (CANVAS, CANVAS), "#fffdf9")
+    x = (CANVAS - rgb.width) // 2
+    y = (CANVAS - rgb.height) // 2
+    shadow_alpha = alpha.filter(ImageFilter.GaussianBlur(12)).point(lambda value: round(value * 0.13))
     shadow = Image.new("RGBA", enhanced.size, (19, 48, 39, 0))
     shadow.putalpha(shadow_alpha)
-    canvas.alpha_composite(shadow, (x + 5, y + 8))
+    canvas.alpha_composite(shadow, (x + 7, y + 10))
     canvas.alpha_composite(enhanced, (x, y))
-    return canvas.convert("RGB")
+    return canvas.convert("RGB"), {
+        "sourceWidth": source_size[0], "sourceHeight": source_size[1],
+        "contentWidth": fitted[0], "contentHeight": fitted[1],
+        "scale": round(scale, 3), "passes": 2,
+    }
 
 
 def parse_workbook(path: Path, priority: int, external: dict[tuple[str, str], bytes], overrides: Path) -> tuple[list[dict], dict[str, bytes], dict]:
@@ -321,54 +342,70 @@ def parse_workbook(path: Path, priority: int, external: dict[tuple[str, str], by
     return products, visuals, {"file": path.name, "sheet": title, "rows": rows, "products": len(products), "visualSources": dict(quality)}
 
 
-def write_visuals(visuals: dict[str, bytes], output: Path, featured_output: Path) -> dict[str, dict]:
-    output.mkdir(parents=True, exist_ok=True)
-    featured_output.mkdir(parents=True, exist_ok=True)
+def save_webp(image: Image.Image, destination: Path, quality: int = 93) -> None:
+    encoded = io.BytesIO()
+    image.save(encoded, "WEBP", quality=quality, method=6)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(encoded.getvalue())
+    with Image.open(destination) as saved:
+        saved.verify()
+    if destination.stat().st_size >= MAX_FILE_BYTES:
+        raise ValueError(f"Imagen mayor a 25 MB: {destination.name}")
+
+
+def write_visuals(visuals: dict[str, bytes], output: Path, featured_output: Path) -> tuple[dict[str, dict], dict]:
+    if output.exists():
+        shutil.rmtree(output)
+    if featured_output.exists():
+        shutil.rmtree(featured_output)
+    output.mkdir(parents=True)
+    featured_output.mkdir(parents=True)
     descriptors: dict[str, dict] = {}
-    tiles = []
+    audit = Counter()
     for key, raw in sorted(visuals.items()):
-        if not key.startswith("direct:"):
-            tiles.append((key, product_tile(raw), "remastered"))
+        digest = hashlib.sha256(raw).hexdigest()[:12]
+        if key.startswith("direct:"):
+            _, codigo, _ = key.split(":", 2)
+            destination = featured_output / f"dia-{slug(codigo, 18)}-{digest}.webp"
+            with Image.open(io.BytesIO(raw)) as source:
+                image = ImageOps.exif_transpose(source).convert("RGB")
+                image = image.filter(ImageFilter.UnsharpMask(radius=.72, percent=135, threshold=2))
+                source_size = image.size
+            save_webp(image, destination, 96)
+            descriptors[key] = {
+                "type": "direct", "src": f"assets/catalog/featured/{destination.name}",
+                "kind": "premium", "width": image.width, "height": image.height,
+                "sourceWidth": source_size[0], "sourceHeight": source_size[1], "passes": 1,
+            }
+            audit["premium"] += 1
             continue
-        _, codigo, digest = key.split(":", 2)
-        destination = featured_output / f"dia-{slug(codigo, 18)}-{digest[:8]}.webp"
-        with Image.open(io.BytesIO(raw)) as source:
-            image = ImageOps.exif_transpose(source).convert("RGB")
-            if max(image.size) > 2200:
-                image.thumbnail((2200, 2200), Image.Resampling.LANCZOS)
-            image = image.filter(ImageFilter.UnsharpMask(radius=.8, percent=115, threshold=3))
-            encoded = io.BytesIO()
-            image.save(encoded, "WEBP", quality=96, method=6)
-            destination.write_bytes(encoded.getvalue())
-        with Image.open(destination) as saved:
-            saved.verify()
-        if destination.stat().st_size >= MAX_FILE_BYTES:
-            raise ValueError(f"Imagen HD mayor a 25 MB: {destination.name}")
+        image, metrics = product_tile(raw)
+        bucket = digest[:2]
+        destination = output / bucket / f"visual-{digest}.webp"
+        save_webp(image, destination)
         descriptors[key] = {
-            "type": "direct", "src": f"assets/catalog/featured/{destination.name}",
-            "kind": "premium", "width": image.width, "height": image.height,
+            "type": "direct", "src": f"assets/catalog/images/{bucket}/{destination.name}",
+            "kind": "restored", "width": CANVAS, "height": CANVAS, **metrics,
         }
-    tiles.extend((f"fallback:{category}", fallback_tile(category), "approximation") for category in ("mug", "tumbler", "cold-cup", "bottle", "brew", "accessory", "other"))
-    for atlas_index in range(math.ceil(len(tiles) / ATLAS_CAPACITY)):
-        atlas = Image.new("RGB", (TILE * GRID, TILE * GRID), "#fffdf9")
-        for local_index, (key, tile, kind) in enumerate(tiles[atlas_index * ATLAS_CAPACITY:(atlas_index + 1) * ATLAS_CAPACITY]):
-            column, row = local_index % GRID, local_index // GRID
-            atlas.paste(tile, (column * TILE, row * TILE))
-            descriptors[key] = {"atlas": f"assets/catalog/atlases/catalog-{atlas_index + 1:02d}.webp", "x": round(column * 100 / (GRID - 1), 6), "y": round(row * 100 / (GRID - 1), 6), "grid": GRID, "kind": kind}
-        destination = output / f"catalog-{atlas_index + 1:02d}.webp"
-        encoded = io.BytesIO()
-        atlas.save(encoded, "WEBP", quality=92, method=6)
-        destination.write_bytes(encoded.getvalue())
-        with Image.open(destination) as saved:
-            saved.verify()
-        if destination.stat().st_size >= MAX_FILE_BYTES:
-            raise ValueError(f"Atlas mayor a 25 MB: {destination.name}")
-    if len(list(output.glob("*.webp"))) >= 100 or len(list(featured_output.glob("*.webp"))) >= 100:
-        raise ValueError("La carpeta de atlas alcanzó 100 archivos")
-    return descriptors
+        audit["restored"] += 1
+        if max(metrics["sourceWidth"], metrics["sourceHeight"]) < 128:
+            audit["restoredFromThumbnail"] += 1
+    for category in ("mug", "tumbler", "cold-cup", "bottle", "brew", "accessory", "other"):
+        destination = output / "fallback" / f"{category}.webp"
+        save_webp(fallback_tile(category), destination, 92)
+        descriptors[f"fallback:{category}"] = {
+            "type": "direct", "src": f"assets/catalog/images/fallback/{destination.name}",
+            "kind": "approximation", "width": CANVAS, "height": CANVAS,
+            "sourceWidth": 0, "sourceHeight": 0, "passes": 0,
+        }
+        audit["approximationAssets"] += 1
+    crowded = {path.as_posix(): sum(child.is_file() for child in path.iterdir()) for path in [output, *output.iterdir()] if path.is_dir() and sum(child.is_file() for child in path.iterdir()) >= 100}
+    if crowded:
+        raise ValueError(f"Carpetas de imágenes con 100 archivos: {crowded}")
+    return descriptors, dict(audit)
 
 
-def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_output: Path, report_output: Path, atlas_output: Path, featured_output: Path) -> dict:
+def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_output: Path, report_output: Path, image_output: Path, featured_output: Path) -> dict:
     def priority(path: Path) -> tuple[int, str]:
         name = normalize(path.stem)
         return (0 if "summer 2026" in name else 1 if "winter 2026" in name else 2, name)
@@ -388,30 +425,37 @@ def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_outp
         else:
             deduplicated[fingerprint] = product
     products = sorted(deduplicated.values(), key=lambda item: (item["visualSource"] != "premium-override", item["priority"], int(item["codigoDia"]) if item["codigoDia"].isdigit() else 999999, item["displayName"]))
-    if atlas_output.exists():
-        shutil.rmtree(atlas_output)
-    if featured_output.exists():
-        shutil.rmtree(featured_output)
-    descriptors = write_visuals(visuals, atlas_output, featured_output)
+    descriptors, restoration_audit = write_visuals(visuals, image_output, featured_output)
     source_counts = Counter()
     for product in products:
         product["visual"] = descriptors[product.pop("visualKey")]
         product.pop("priority", None)
         source_counts[product["visualSource"]] += 1
         product["imageNote"] = "Imagen HD reconstruida desde la referencia original." if product["visualSource"] == "premium-override" else IMAGE_NOTE
+    referenced_assets = {product["visual"]["src"] for product in products}
+    for path in list(image_output.rglob("*.webp")):
+        published_path = Path("assets/catalog/images") / path.relative_to(image_output)
+        if published_path.as_posix() not in referenced_assets:
+            path.unlink()
+    for directory in sorted((path for path in image_output.iterdir() if path.is_dir()), reverse=True):
+        if not any(directory.iterdir()):
+            directory.rmdir()
+    restoration_audit["published"] = sum(1 for path in image_output.rglob("*.webp") if path.parent.name != "fallback")
     approximation_count = source_counts["approximation"]
     report = {
-        "status": "ok", "version": "premium-hd-direct-v3", "engineFiles": len(paths),
+        "status": "ok", "version": "faithful-restoration-v4", "engineFiles": len(paths),
         "visualSourceFiles": len(visual_reports), "products": len(products), "duplicateRowsIgnored": duplicate_count,
         "withSourceImage": len(products) - approximation_count, "withApproximation": approximation_count,
-        "uniqueVisuals": len(visuals), "atlases": len(list(atlas_output.glob("*.webp"))),
+        "uniqueVisuals": len(visuals), "atlases": 0,
         "featuredImages": len(list(featured_output.glob("*.webp"))),
-        "tilePixels": TILE, "atlasGrid": GRID, "visualSources": dict(source_counts),
+        "restoredImageFiles": restoration_audit["published"],
+        "canvasPixels": CANVAS, "contentPixels": CONTENT, "restorationAudit": restoration_audit,
+        "visualSources": dict(source_counts),
         "categories": dict(Counter(product["category"] for product in products)),
         "sources": sources, "visualSourceAudit": visual_reports, "imageNote": IMAGE_NOTE,
         "moneyFieldsPublished": 0,
     }
-    payload = {"version": "premium-hd-direct-v3", "products": products, "meta": report}
+    payload = {"version": "faithful-restoration-v4", "products": products, "meta": report}
     js_output.parent.mkdir(parents=True, exist_ok=True); report_output.parent.mkdir(parents=True, exist_ok=True)
     js_output.write_text("window.MERCH_VISUAL_CATALOG=" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     report_output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -425,10 +469,10 @@ def main() -> int:
     parser.add_argument("--overrides", type=Path, default=Path("engines/image-overrides"))
     parser.add_argument("--output", type=Path, default=Path("data/merch-catalog.js"))
     parser.add_argument("--report", type=Path, default=Path("data/merch-catalog-report.json"))
-    parser.add_argument("--atlas-output", type=Path, default=Path("assets/catalog/atlases"))
+    parser.add_argument("--image-output", type=Path, default=Path("assets/catalog/images"))
     parser.add_argument("--featured-output", type=Path, default=Path("assets/catalog/featured"))
     args = parser.parse_args()
-    print(json.dumps(generate(args.engine_dir, args.visual_source_dir, args.overrides, args.output, args.report, args.atlas_output, args.featured_output), ensure_ascii=False))
+    print(json.dumps(generate(args.engine_dir, args.visual_source_dir, args.overrides, args.output, args.report, args.image_output, args.featured_output), ensure_ascii=False))
     return 0
 
 

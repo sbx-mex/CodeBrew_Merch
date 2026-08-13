@@ -57,12 +57,15 @@ class VisualCatalogContractTests(unittest.TestCase):
             elif path.is_dir():
                 self.assertLess(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
 
-    def test_every_published_webp_is_readable(self) -> None:
-        images = list((ROOT / "assets/catalog/atlases").glob("*.webp")) + list((ROOT / "assets/catalog/featured").glob("*.webp"))
+    def test_every_published_webp_is_readable_and_uniform(self) -> None:
+        restored = list((ROOT / "assets/catalog/images").rglob("*.webp"))
+        images = restored + list((ROOT / "assets/catalog/featured").glob("*.webp"))
         self.assertTrue(images)
         for path in images:
             with Image.open(path) as image:
                 image.verify()
+                if path in restored:
+                    self.assertEqual(image.size, (768, 768), path)
 
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -84,7 +87,25 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(item["visual"]["type"], "direct")
         self.assertGreaterEqual(item["visual"]["width"], 1000)
         self.assertGreaterEqual(item["visual"]["height"], 1000)
-        self.assertGreaterEqual(self.catalog["meta"]["tilePixels"], 512)
+        self.assertGreaterEqual(self.catalog["meta"]["canvasPixels"], 768)
+
+    def test_all_source_photos_are_individual_restorations(self) -> None:
+        meta = self.catalog["meta"]
+        self.assertEqual(meta["atlases"], 0)
+        self.assertGreaterEqual(meta["restoredImageFiles"], 800)
+        self.assertGreaterEqual(meta["restorationAudit"]["restored"], meta["restoredImageFiles"])
+        self.assertEqual(meta["restorationAudit"]["published"], meta["restoredImageFiles"])
+        for product in self.products:
+            self.assertEqual(product["visual"]["type"], "direct")
+            self.assertIn("src", product["visual"])
+
+    def test_no_orphan_or_duplicate_published_images(self) -> None:
+        referenced = {product["visual"]["src"] for product in self.products}
+        published = {
+            path.relative_to(ROOT).as_posix()
+            for path in [*(ROOT / "assets/catalog/images").rglob("*.webp"), *(ROOT / "assets/catalog/featured").glob("*.webp")]
+        }
+        self.assertEqual(referenced, published)
 
 
 if __name__ == "__main__":

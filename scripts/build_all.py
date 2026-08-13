@@ -17,6 +17,13 @@ def run(*arguments: str) -> None:
     subprocess.run([sys.executable, *arguments], cwd=ROOT, check=True)
 
 
+def validate_stage() -> None:
+    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json")
+    missing = [name for name in required if not (STAGE / name).is_file()]
+    if missing or not (STAGE / "images").is_dir() or not (STAGE / "featured").is_dir():
+        raise RuntimeError(f"Construcción incompleta: {missing}")
+
+
 def main() -> int:
     if STAGE.exists():
         shutil.rmtree(STAGE)
@@ -49,18 +56,22 @@ def main() -> int:
             "--engine-dir", "engines/merch-lists",
             "--output", str(STAGE / "merch-catalog.js"),
             "--report", str(STAGE / "merch-catalog-report.json"),
-            "--atlas-output", str(STAGE / "atlases"),
+            "--image-output", str(STAGE / "images"),
             "--featured-output", str(STAGE / "featured"),
         )
+        validate_stage()
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
         for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json"):
             (STAGE / name).replace(data / name)
-        atlas_target = ROOT / "assets/catalog/atlases"
-        if atlas_target.exists():
-            shutil.rmtree(atlas_target)
-        atlas_target.parent.mkdir(parents=True, exist_ok=True)
-        (STAGE / "atlases").replace(atlas_target)
+        image_target = ROOT / "assets/catalog/images"
+        if image_target.exists():
+            shutil.rmtree(image_target)
+        image_target.parent.mkdir(parents=True, exist_ok=True)
+        (STAGE / "images").replace(image_target)
+        obsolete_atlases = ROOT / "assets/catalog/atlases"
+        if obsolete_atlases.exists():
+            shutil.rmtree(obsolete_atlases)
         featured_target = ROOT / "assets/catalog/featured"
         if featured_target.exists():
             shutil.rmtree(featured_target)
