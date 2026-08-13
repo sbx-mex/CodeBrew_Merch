@@ -1,9 +1,0 @@
-AJUSTE CÓDIGO DÍA 16919
-
-Copiar estas rutas en la raíz del proyecto y reemplazar los archivos existentes:
-- assets/catalog/featured/16919.webp
-- data/merch-catalog.js
-- sw.js
-
-Cruce validado: 16919 | WC26StanQuen30 | SKU POS 58820 | SKU INTL 11178957.
-Después de publicar, recargar dos veces o borrar la caché del sitio para activar la versión v25.
