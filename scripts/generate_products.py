@@ -242,9 +242,9 @@ def parse_woe_catalog(workbook, products):
     micros_headers = [normalize_header(cell.value) for cell in micros_ws[1]]
     if sap_headers[:3] != ["id woe", "codigo dia", "descripcion sap"]:
         raise ValueError("SAP requiere: ID WOE, Codigo DIA y Descripcion SAP")
-    expected_micros = {"agrupado", "familia", "nombre micros", "codigo dia"}
+    expected_micros = {"agrupado", "familia", "conteo", "nombre micros", "codigo dia"}
     if not expected_micros.issubset(set(micros_headers)):
-        raise ValueError("Catalogo Micros requiere: Agrupado, Familia, Nombre Micros y Codigo DIA")
+        raise ValueError("Catalogo Micros requiere: Agrupado, Familia, Conteo, Nombre Micros y Codigo DIA")
     micros_positions = {header: micros_headers.index(header) for header in expected_micros}
 
     micros_by_dia = {}
@@ -255,7 +255,8 @@ def parse_woe_catalog(workbook, products):
         name = clean_text(row[micros_positions["nombre micros"]].value)
         agrupado = clean_text(row[micros_positions["agrupado"]].value)
         familia = clean_text(row[micros_positions["familia"]].value)
-        if not code and not name and not agrupado and not familia:
+        conteo = clean_text(row[micros_positions["conteo"]].value)
+        if not code and not name and not agrupado and not familia and not conteo:
             continue
         micros_rows += 1
         if not code:
@@ -264,7 +265,7 @@ def parse_woe_catalog(workbook, products):
         if name and name not in values:
             values.append(name)
         meta = micros_meta_by_dia.setdefault(code, [])
-        detail = {"agrupado": agrupado, "familia": familia, "nombre": name}
+        detail = {"agrupado": agrupado, "familia": familia, "conteo": conteo, "nombre": name}
         if detail not in meta:
             meta.append(detail)
 
@@ -319,6 +320,7 @@ def parse_woe_catalog(workbook, products):
             "microsMeta": micros_meta_by_dia.get(code, []),
             "agrupado": sorted({item["agrupado"] for item in micros_meta_by_dia.get(code, []) if item["agrupado"]}),
             "familia": sorted({item["familia"] for item in micros_meta_by_dia.get(code, []) if item["familia"]}),
+            "conteo": sorted({item["conteo"] for item in micros_meta_by_dia.get(code, []) if item["conteo"]}),
             "unidadMicros": "",
             "merch": merch,
             "validation": {
@@ -349,6 +351,7 @@ def parse_woe_catalog(workbook, products):
             "microsMeta": micros_meta_by_dia.get(code, []),
             "agrupado": sorted({item["agrupado"] for item in micros_meta_by_dia.get(code, []) if item["agrupado"]}),
             "familia": sorted({item["familia"] for item in micros_meta_by_dia.get(code, []) if item["familia"]}),
+            "conteo": sorted({item["conteo"] for item in micros_meta_by_dia.get(code, []) if item["conteo"]}),
             "unidadMicros": "",
             "merch": merch,
             "validation": {"sap": False, "micros": bool(micros), "merch": bool(merch)},
@@ -375,6 +378,7 @@ def parse_woe_catalog(workbook, products):
         "microsUnitsPopulated": 0,
         "microsGroups": len({item["agrupado"] for rows in micros_meta_by_dia.values() for item in rows if item["agrupado"]}),
         "microsFamilies": len({item["familia"] for rows in micros_meta_by_dia.values() for item in rows if item["familia"]}),
+        "microsCountGroups": len({item["conteo"] for rows in micros_meta_by_dia.values() for item in rows if item["conteo"]}),
         "withMicros": sum(1 for item in catalog if item["validation"]["micros"]),
         "withMerch": sum(1 for item in catalog if item["validation"]["merch"]),
         "withoutSap": sum(1 for item in catalog if not item["validation"]["sap"]),

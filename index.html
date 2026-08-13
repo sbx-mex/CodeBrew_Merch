@@ -20,7 +20,7 @@
   <script src="app.js" defer></script>
 
 </head>
-<body>
+<body class="home-mode">
   <a class="skip-link" href="#mainContent">Saltar al contenido</a>
   <header class="hero">
     <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
@@ -33,21 +33,21 @@
     <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
   </header>
 
-  <section class="mode-menu" aria-labelledby="modeMenuTitle">
-    <div><span>Menú rápido</span><h2 id="modeMenuTitle">¿Qué necesitas hacer?</h2></div>
-    <button type="button" data-mode-target="woeCatalog"><b>Catálogo General</b><small>Buscar cualquier artículo</small></button>
-    <button type="button" data-mode-target="catalogGrid"><b>Revisión de Merch</b><small>Explorar referencias visuales</small></button>
-    <button type="button" data-mode-target="stockPanel"><b>HTML a PDF / Excel</b><small>Cruzar inventario SAP</small></button>
+  <section id="modeMenu" class="mode-menu" aria-labelledby="modeMenuTitle">
+    <div><span>Inicio</span><h2 id="modeMenuTitle">¿Qué necesitas hacer?</h2><p>Elige una opción. Mostraremos únicamente lo necesario.</p></div>
+    <button type="button" data-app-mode="catalog"><b>Catálogo General</b><small>Buscar cualquier artículo</small></button>
+    <button type="button" data-app-mode="merch"><b>Revisión de Merch</b><small>Explorar referencias visuales</small></button>
+    <button type="button" data-app-mode="export"><b>HTML a PDF / Excel</b><small>Cruzar inventario SAP</small></button>
   </section>
 
   <nav class="tabs" aria-label="Pestañas" role="tablist">
-    <button id="tabConsulta" class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true"><span>Consulta</span><small>Precio y POS</small></button>
-    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>Catálogo General</span><small><b id="tabWoeCount">0</b> seleccionados</small></button>
-    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false"><span>Etiquetas</span><small>Preparar PDF</small></button>
+    <button id="tabConsulta" class="tab" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="false"><span>Consulta</span><small>Precio y POS</small></button>
+    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>WOE | Catálogo</span><b id="tabWoeCount" hidden>0</b></button>
+    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false"><span>Etiquetas</span></button>
   </nav>
 
   <main id="mainContent">
-    <section id="consulta" class="tabpage active" role="tabpanel" aria-labelledby="tabConsulta" tabindex="0">
+    <section id="consulta" class="tabpage" role="tabpanel" aria-labelledby="tabConsulta" tabindex="0" hidden>
       <section class="panel quick-guide">
         <div class="guide-title">Guía rápida de consulta POS</div>
         <div class="quick-steps">
@@ -109,51 +109,38 @@
       </section>
     </section>
 
-    <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0">
-      <nav class="woe-section-nav" aria-label="Navegación del catálogo y WOE">
-        <a class="active" href="#woeCatalog" data-woe-nav="woeCatalog"><span>1</span> Explorar catálogo</a>
-        <a href="#woeResults" data-woe-nav="woeResults"><span>2</span> Revisar listado</a>
-        <a href="#stockPanel" data-woe-nav="stockPanel"><span>3</span> Cruzar inventario</a>
-      </nav>
-      <section class="panel woe-hero">
+    <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0" hidden>
+      <button id="modeBack" class="mode-back ghost" type="button">← Cambiar herramienta</button>
+      <section class="panel woe-hero mode-catalog-only mode-merch-only">
         <div class="woe-hero-copy">
           <span class="woe-kicker">Catálogo operativo · búsqueda y exportación</span>
           <h2>Encuentra cualquier artículo.</h2>
-          <p>Busca alimentos, insumos, café, mercancía o equipo por nombre, Familia, Agrupado, Código Día, SAP o SKU.</p>
+          <p>Busca cualquier artículo por nombre, Conteo, Código Día, SAP o SKU.</p>
         </div>
         <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos del catálogo</span></div>
       </section>
 
-      <section id="woeCatalog" class="panel woe-search-panel">
-        <div id="woeFlow" class="woe-mini-guide operational-flow" aria-label="Progreso del listado WOE">
-          <div data-step="search"><b>1</b><span>Busca cualquier artículo por nombre, Día, SAP, grupo o familia.</span></div>
-          <div data-step="select"><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
-          <div data-step="export"><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
-        </div>
+      <section id="woeCatalog" class="panel woe-search-panel mode-catalog-only mode-merch-only">
+        <div id="woeFlow" class="visually-hidden" aria-hidden="true"></div>
         <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
         <label for="woeSearch">¿Qué artículo necesitas?</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
-            <input id="woeSearch" placeholder="Escribe cualquier artículo, familia, grupo, Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <input id="woeSearch" placeholder="Escribe artículo, Conteo, Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <button id="woeSearchClear" class="search-clear" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
           <button id="woeAdd" type="button">Agregar coincidencia</button>
         </div>
-        <p id="woeHelp" class="hint">Busca en todo el Catálogo Micros. También puedes pegar varios códigos separados por coma o renglón y preparar un PDF.</p>
-        <div class="micros-filter-bar" aria-label="Filtros del Catálogo Micros">
-          <label for="microsGroupFilter">Agrupado<select id="microsGroupFilter"><option value="">Todos</option></select></label>
-          <label for="microsFamilyFilter">Familia<select id="microsFamilyFilter"><option value="">Todas</option></select></label>
-          <button id="microsFiltersClear" class="ghost" type="button">Limpiar filtros</button>
-        </div>
-        <div class="catalog-toolbar">
+        <p id="woeHelp" class="hint">Busca en todo el Catálogo Micros o pega varios códigos separados por coma o renglón.</p>
+        <div class="catalog-toolbar mode-merch-content">
           <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
           <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
         </div>
-        <div id="microsCatalogResults" class="micros-catalog-results" aria-live="polite" hidden></div>
-        <div id="catalogGrid" class="catalog-grid" aria-label="Vista visual destacada del catálogo"></div>
-        <button id="catalogLoadMore" class="catalog-load-more ghost" type="button" hidden>Ver más artículos</button>
-        <p class="catalog-image-note">Se muestran únicamente cinco artículos visuales. Escribe cualquier artículo arriba para consultar todo el catálogo.</p>
+        <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>
+        <div id="catalogGrid" class="catalog-grid mode-merch-content" aria-label="Vista visual destacada del catálogo"></div>
+        <button id="catalogLoadMore" class="catalog-load-more ghost mode-merch-content" type="button" hidden>Ver más artículos</button>
+        <p class="catalog-image-note mode-merch-content">Cinco referencias visuales por vista. Escribe cualquier artículo para explorar el catálogo completo.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
@@ -163,8 +150,8 @@
         </div>
       </section>
 
-      <section id="woeStatus" class="woe-status" aria-live="polite">Escribe un dato para comenzar.</section>
-      <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
+      <section id="woeStatus" class="woe-status mode-catalog-only mode-merch-only" aria-live="polite">Escribe un dato para comenzar.</section>
+      <section id="woeResults" class="woe-results mode-catalog-only mode-merch-only" aria-label="Resultados WOE"></section>
 
       <dialog id="catalogVisualDialog" class="catalog-dialog" aria-labelledby="catalogVisualTitle">
         <button id="catalogVisualClose" class="catalog-dialog-close" type="button" aria-label="Cerrar imagen">×</button>
@@ -178,7 +165,7 @@
         </div>
       </dialog>
 
-      <section id="stockPanel" class="panel stock-panel" aria-labelledby="stockTitle" aria-busy="false">
+      <section id="stockPanel" class="panel stock-panel mode-export-only" aria-labelledby="stockTitle" aria-busy="false">
         <div id="stockPrintHeader" class="stock-print-header" aria-hidden="true"></div>
         <div class="stock-head">
           <div>
@@ -187,7 +174,6 @@
             <p>Adjunta el HTML guardado desde SAP para una lectura más rápida. PDF SAP permanece disponible como respaldo.</p>
           </div>
         </div>
-        <a class="back-to-catalog" href="#woeCatalog">← Volver al catálogo</a>
         <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
           <div data-step="attach"><b>1</b><span>Adjunta HTML o PDF SAP.</span></div>
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
@@ -243,7 +229,7 @@
       </dialog>
     </section>
 
-    <section id="etiquetado" class="tabpage" role="tabpanel" aria-labelledby="tabEtiquetado" tabindex="0">
+    <section id="etiquetado" class="tabpage" role="tabpanel" aria-labelledby="tabEtiquetado" tabindex="0" hidden>
       <section class="panel label-panel">
         <h2>Generador de etiquetas POS</h2>
         <p class="label-intro"><b>Flujo recomendado:</b> abre cámara, lee SKU, valida producto, captura piezas y agrega. Repite por cada modelo; al final genera PDF listo para imprimir.</p>

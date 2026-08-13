@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v30-general-catalog-export-2026-08-13';
+const CACHE_NAME = 'codebrew-v31-mode-navigation-count-2026-08-13';
 const APP_SHELL = [
   './',
   './index.html',

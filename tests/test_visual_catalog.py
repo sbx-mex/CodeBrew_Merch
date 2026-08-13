@@ -70,14 +70,16 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
-        for token in ("catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "microsGroupFilter", "microsFamilyFilter", "microsCatalogResults", "merch-catalog.js"):
+        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
+        self.assertNotIn("microsGroupFilter", html)
+        self.assertNotIn("microsFamilyFilter", html)
         self.assertIn("catalogVisibleLimit = 5", app)
         self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
         self.assertIn("exportStockExcel", app)
         self.assertIn("stockConfirmExcel", html)
         self.assertIn("Catálogo General", html)
-        for token in ("renderCatalog", "articleKey", "quantity", "Código Día", "Código SAP"):
+        for token in ("renderCatalog", "selectAppMode", "showHome", "articleKey", "quantity", "Código Día", "Código SAP", "label:'CONTEO'", "'Conteo'"):
             self.assertIn(token, app)
         self.assertNotIn("catalogPrice", app)
         self.assertNotIn("Agregar · $", app)

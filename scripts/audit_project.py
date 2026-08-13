@@ -145,7 +145,7 @@ def audit(root: Path) -> dict:
         f"{cross_checked:,} imágenes cotejadas Excel/HTML; {premium} reconstrucción premium verificada",
     ))
     woe = report.get("woe", {})
-    woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
+    woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("microsCountGroups", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
     checks.append(check(
         "Integridad WOE",
         woe_ok,
@@ -161,7 +161,7 @@ def audit(root: Path) -> dict:
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
         "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()", "detectStockLayout", "stockTokenIndex", "stockLoadToken", "stockMatchCache", "yieldToMain", "setStockBusy",
-        "detectInventoryDocument", "parseSapInventoryPage", "matchSapInventoryRow", "generateSapInventoryPdf", "Sin valor reportado", "window.print()",
+        "detectInventoryDocument", "parseSapInventoryPage", "matchSapInventoryRow", "generateSapInventoryPdf", "Sin valor reportado", "window.print()", "label:'CONTEO'", "'Conteo'",
     )) and (root / "assets/stock_pdf_woe.jpeg").exists()
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
@@ -187,10 +187,10 @@ def audit(root: Path) -> dict:
         "WOE + Stock On Hand + HTML/PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsGroupFilter", "microsFamilyFilter", "microsFiltersClear", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
+    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "populateMicrosFilters", "openCatalogVisual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "openCatalogVisual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     checks.append(check(
         "Navegación e interfaz",
         not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html,
@@ -245,7 +245,12 @@ def audit(root: Path) -> dict:
     for directory in [root, *(path for path in root.rglob("*") if path.is_dir())]:
         if any(part in {".git", ".codebrew-build", "__pycache__"} for part in directory.relative_to(root).parts):
             continue
-        count = sum(child.is_file() for child in directory.iterdir())
+        try:
+            count = sum(child.is_file() for child in directory.iterdir())
+        except FileNotFoundError:
+            # Una carpeta temporal de publicación puede desaparecer durante
+            # el recorrido; no forma parte del artefacto final.
+            continue
         if count >= 100:
             crowded.append(f"{directory.relative_to(root).as_posix() or '.'} ({count})")
     checks.append(check(
