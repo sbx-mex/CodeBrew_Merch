@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - Lista_Precios_Base.xlsx
-      - engines/merch-lists/**
+      - engines/**
       - scripts/generate_products.py
       - scripts/generate_visual_catalog.py
       - scripts/build_woe_pdf_config.py
