@@ -1,0 +1,5 @@
+ARCHIVOS A ELIMINAR AL ACTUALIZAR
+
+- assets/catalog/atlases/ (carpeta completa)
+
+El nuevo motor usa assets/catalog/images/ con fotografías individuales de 768 x 768 px.

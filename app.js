@@ -264,9 +264,9 @@
 
   function woeKey(item,index=''){ return `${item.visualProduct?.articleKey||'sin-visual'}|${item.idWoe||'sin-sap'}|${item.codigoDia}|${item.sourceRow||item.origin||index}`; }
   function visualProductFor(item){return item?.visualProduct||(visualByDay.get(normalizeSku(item?.codigoDia))||[])[0]||null;}
-  function visualStyle(product){const visual=product?.visual;if(!visual)return '';if(visual.type==='direct'){const src=String(visual.src||'').replace(/[^a-zA-Z0-9_./-]/g,'');return `--catalog-image:url(${src});--catalog-size:contain;--catalog-position:center`;}const atlas=String(visual.atlas||'').replace(/[^a-zA-Z0-9_./-]/g,''),grid=Math.max(1,Number(visual.grid)||3);return `--catalog-image:url(${atlas});--catalog-x:${Number(visual.x)||0}%;--catalog-y:${Number(visual.y)||0}%;--catalog-scale:${grid*100}%`;}
+  function visualStyle(product){const src=String(product?.visual?.src||'').replace(/[^a-zA-Z0-9_./-]/g,'');return src?`--catalog-image:url(${src});--catalog-size:contain;--catalog-position:center`:'';}
   function articleName(item){const product=visualProductFor(item);return product?.descripcionSci||item.descripcionSap||product?.displayName||product?.nombrePos||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Artículo MERCH';}
-  function visualQualityLabel(product){return product?.visualSource==='premium-override'?'Imagen HD':product?.visual?.kind==='remastered'?'Foto fuente mejorada':'Referencia aproximada';}
+  function visualQualityLabel(product){return product?.visualSource==='premium-override'?'Restauración HD':product?.visual?.kind==='restored'?'Foto restaurada':'Referencia aproximada';}
   function catalogItemKey(item){return woeKey(item,'catalog');}
   function catalogCategoryLabel(value){return ({all:'Todo',featured:'Destacados HD',mug:'Tazas',tumbler:'Tumblers','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
   function openCatalogVisual(item){
