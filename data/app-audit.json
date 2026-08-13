@@ -1,11 +1,11 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T05:21:28+00:00",
+  "auditedAtUtc": "2026-08-13T07:59:41+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
   "checksTotal": 13,
-  "checksOk": 13,
-  "warnings": 0,
+  "checksOk": 12,
+  "warnings": 1,
   "errors": 0,
   "checks": [
     {
@@ -36,12 +36,12 @@
     {
       "name": "Exportación PDF",
       "status": "ok",
-      "detail": "WOE con piezas + Stock Premium; ambos en carta vertical y dentro del margen"
+      "detail": "WOE + Stock On Hand + PDF SAP; lectura separada, cruce e impresión segura"
     },
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "107 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "112 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -60,8 +60,8 @@
     },
     {
       "name": "Workflows y obsoletos",
-      "status": "ok",
-      "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
+      "status": "warning",
+      "detail": "Actualización y limpieza protegidas; 1 candidatos controlados"
     },
     {
       "name": "Límites GitHub",
@@ -71,15 +71,15 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2149 KB auditados en archivos críticos"
+      "detail": "2168 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 19904,
-      "styles.css": 29204,
+      "index.html": 20360,
+      "styles.css": 34178,
       "catalog.css": 10230,
-      "app.js": 100453,
+      "app.js": 114301,
       "data/products.js": 356315,
       "data/woe.js": 833682,
       "data/merch-catalog.js": 849199,
@@ -98,5 +98,7 @@
       "data/ui-config.js": 10000
     }
   },
-  "cleanupCandidates": []
+  "cleanupCandidates": [
+    "ELIMINAR_OBSOLETOS.txt"
+  ]
 }
