@@ -1,16 +1,25 @@
 {
   "id": "consulta",
-  "menuTitle": "Consulta Precio & POS",
+  "menuTitle": "Precio & POS",
   "shortTitle": "Precio & POS",
   "eyebrow": "Consulta rápida",
-  "description": "Busca un artículo, valida precio y genera el código para escanear en POS.",
-  "menuDescription": "Buscar, validar y escanear",
+  "description": "Consulta el artículo, confirma el precio y escanea en POS.",
+  "menuDescription": "Consulta, valida y escanea",
   "icon": "$",
-  "heroImage": "",
+  "heroImage": "assets/catalog/catalog-general-hero.webp",
   "sapPriority": false,
   "steps": [
-    {"title": "Busca", "text": "Escribe o escanea SKU, Código Día o nombre."},
-    {"title": "Valida", "text": "Confirma artículo y precio antes de marcar en POS."},
-    {"title": "Escanea", "text": "Usa el código generado en la ruta correcta del POS."}
+    {
+      "title": "Busca",
+      "text": "Escribe o escanea SKU, Código Día o nombre."
+    },
+    {
+      "title": "Valida",
+      "text": "Confirma artículo y precio antes de marcar en POS."
+    },
+    {
+      "title": "Escanea",
+      "text": "Usa el código generado en la ruta correcta del POS."
+    }
   ]
 }

@@ -3,14 +3,23 @@
   "menuTitle": "Etiquetas",
   "shortTitle": "Etiquetas",
   "eyebrow": "Etiquetado POS",
-  "description": "Busca o escanea el artículo, define piezas y genera etiquetas listas para imprimir.",
-  "menuDescription": "Generar etiquetas POS",
+  "description": "Busca, define piezas y prepara etiquetas listas para imprimir.",
+  "menuDescription": "Prepara e imprime etiquetas POS",
   "icon": "▤",
-  "heroImage": "",
+  "heroImage": "assets/catalog/catalog-hero.webp",
   "sapPriority": false,
   "steps": [
-    {"title": "Identifica", "text": "Busca o escanea el artículo correcto."},
-    {"title": "Captura", "text": "Define piezas y valida la vista previa."},
-    {"title": "Genera", "text": "Agrega modelos y crea el PDF final."}
+    {
+      "title": "Identifica",
+      "text": "Busca o escanea el artículo correcto."
+    },
+    {
+      "title": "Captura",
+      "text": "Define piezas y valida la vista previa."
+    },
+    {
+      "title": "Genera",
+      "text": "Agrega modelos y crea el PDF final."
+    }
   ]
 }

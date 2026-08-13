@@ -8,7 +8,7 @@ const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Busca por SAP, Día, S
 const woeSelection = new Map();
 const catalogItemByKey = new Map();
 let catalogCategory = 'all';
-let catalogVisibleLimit = 5;
+let catalogVisibleLimit = 5,microsCount='all';
 let appMode = '';
 let catalogRenderSignature = '';
 let woePdfExported = false;
@@ -37,11 +37,11 @@ const APP_MODES = ['consulta','catalog','merch','export','etiquetado'];
 const MODE_TO_PANEL = {consulta:'consulta',catalog:'woe',merch:'woe',export:'woe',etiquetado:'etiquetado'};
 const MERCH_PRODUCT_CATEGORIES = new Set(['mug','tumbler','cold-cup','bottle','accessory','other']);
 const TOOL_FALLBACKS = {
-consulta:{id:'consulta',menuTitle:'Consulta Precio & POS',shortTitle:'Precio & POS',eyebrow:'Consulta rápida',description:'Busca, valida precio y escanea en POS.',menuDescription:'Buscar, validar y escanear',icon:'$',heroImage:'',sapPriority:false,steps:[{title:'Busca',text:'SKU, Día o nombre.'},{title:'Valida',text:'Confirma artículo y precio.'},{title:'Escanea',text:'Usa el código en POS.'}]},
+consulta:{id:'consulta',menuTitle:'Precio & POS',shortTitle:'Precio & POS',eyebrow:'Consulta rápida',description:'Consulta el artículo, confirma el precio y escanea en POS.',menuDescription:'Consulta, valida y escanea',icon:'$',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:false,steps:[{title:'Busca',text:'SKU, Día o nombre.'},{title:'Valida',text:'Confirma artículo y precio.'},{title:'Escanea',text:'Usa el código en POS.'}]},
 catalog:{id:'catalog',menuTitle:'WOE | Catálogo',shortTitle:'WOE | Catálogo',eyebrow:'Catálogo General',description:'Busca por Código SAP, Día, SKU o nombre.',menuDescription:'Buscar cualquier artículo',icon:'#',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:true,steps:[{title:'Busca',text:'Empieza por SAP o Día.'},{title:'Comprueba',text:'Valida SAP + Micros.'},{title:'Selecciona',text:'Agrega piezas y exporta.'}]},
 merch:{id:'merch',menuTitle:'Revisión de Merch',shortTitle:'Merch',eyebrow:'Tumblers · Tazas · Mercancía',description:'Revisa Merch y confirma el Código SAP.',menuDescription:'Tumblers, tazas y mercancía',icon:'M',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:true,steps:[{title:'Filtra',text:'Tumbler, Taza o Mercancía.'},{title:'Compara',text:'Confirma SAP + Día.'},{title:'Agrega',text:'Selecciona las piezas.'}]},
-export:{id:'export',menuTitle:'HTML → CodeBrew',shortTitle:'HTML → CodeBrew',eyebrow:'Inventario SAP',description:'Adjunta HTML WOE y exporta PDF o Excel.',menuDescription:'Cruzar y exportar inventario',icon:'↗',heroImage:'assets/stock_pdf_woe.jpeg',sapPriority:true,steps:[{title:'Guarda',text:'WOE → Página web completa.'},{title:'Transfiere',text:'Correo u OneDrive.'},{title:'Adjunta',text:'CodeBrew cruza SAP.'}]},
-etiquetado:{id:'etiquetado',menuTitle:'Etiquetas',shortTitle:'Etiquetas',eyebrow:'Etiquetado POS',description:'Busca, define piezas y genera etiquetas.',menuDescription:'Generar etiquetas POS',icon:'▤',heroImage:'',sapPriority:false,steps:[{title:'Identifica',text:'Busca o escanea.'},{title:'Captura',text:'Define piezas.'},{title:'Genera',text:'Crea el PDF.'}]}
+export:{id:'export',menuTitle:'Exportar inventario',shortTitle:'Exportar',eyebrow:'HTML → CodeBrew',description:'Carga tu reporte WOE, cruza inventario y exporta PDF o Excel.',menuDescription:'HTML → CodeBrew · PDF / Excel',icon:'↗',heroImage:'assets/stock_pdf_woe.jpeg',sapPriority:false,steps:[{title:'Guarda',text:'WOE → Página web completa.'},{title:'Transfiere',text:'Correo u OneDrive.'},{title:'Adjunta',text:'CodeBrew cruza SAP.'}]},
+etiquetado:{id:'etiquetado',menuTitle:'Etiquetas',shortTitle:'Etiquetas',eyebrow:'Etiquetado POS',description:'Busca, define piezas y prepara etiquetas listas para imprimir.',menuDescription:'Prepara e imprime etiquetas POS',icon:'▤',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:false,steps:[{title:'Identifica',text:'Busca o escanea.'},{title:'Captura',text:'Define piezas.'},{title:'Genera',text:'Crea el PDF.'}]}
 };
 let toolMenuConfig = {order:[...APP_MODES]};
 let toolConfigs = {...TOOL_FALLBACKS};
@@ -104,8 +104,8 @@ renderModeMenu();renderToolContext();
 function renderModeMenu(){
 const grid=$('modeMenuGrid');if(!grid)return;
 grid.innerHTML=(toolMenuConfig.order||APP_MODES).map(id=>{
-const tool=toolConfigs[id]||TOOL_FALLBACKS[id],image=safeToolImage(tool.heroImage),sap=tool.sapPriority?'<em>SAP primero</em>':'';
-return `<button type="button" class="tool-card tool-card-${escapeHtml(id)} ${image?'has-image':''}" data-app-mode="${escapeHtml(id)}"${image?` style="--tool-image:url('${image}')"`:''}><span class="tool-card-icon">${escapeHtml(tool.icon||'•')}</span><span><b>${escapeHtml(tool.menuTitle||id)}</b><small>${escapeHtml(tool.menuDescription||tool.description||'')}</small>${sap}</span></button>`;
+const tool=toolConfigs[id]||TOOL_FALLBACKS[id],image=safeToolImage(tool.heroImage);
+return `<button type="button" class="tool-card tool-card-${escapeHtml(id)} ${image?'has-image':''}" data-app-mode="${escapeHtml(id)}"${image?` style="--tool-image:url('${image}')"`:''}><span class="tool-card-icon">${escapeHtml(tool.icon||'•')}</span><span><b>${escapeHtml(tool.menuTitle||id)}</b><small>${escapeHtml(tool.menuDescription||tool.description||'')}</small></span></button>`;
 }).join('');
 }
 function renderToolContext(){
@@ -113,7 +113,7 @@ const context=$('toolContext'),switcher=$('toolSwitcher');
 if(!appMode){context.hidden=true;switcher.hidden=true;return;}
 const tool=toolConfigs[appMode]||TOOL_FALLBACKS[appMode],image=safeToolImage(tool.heroImage),visual=$('toolContextVisual');
 context.hidden=false;switcher.hidden=false;$('toolContextEyebrow').textContent=tool.eyebrow||'CodeBrew';$('toolContextTitle').textContent=tool.menuTitle||tool.shortTitle||'Herramienta';$('toolContextDescription').textContent=tool.description||'';
-$('toolSapBadge').hidden=!tool.sapPriority;visual.classList.toggle('has-image',Boolean(image));if(image)visual.style.setProperty('--tool-context-image',`url("${image}")`);else visual.style.removeProperty('--tool-context-image');
+visual.classList.toggle('has-image',Boolean(image));if(image)visual.style.setProperty('--tool-context-image',`url("${image}")`);else visual.style.removeProperty('--tool-context-image');
 $('toolGuideSteps').innerHTML=(tool.steps||[]).map((step,index)=>`<div><b>${index+1}</b><span><strong>${escapeHtml(step.title||'Paso')}</strong>${escapeHtml(step.text||'')}</span></div>`).join('');$('toolGuide').open=false;
 document.querySelectorAll('#toolSwitcher [data-app-mode]').forEach(button=>{const active=button.dataset.appMode===appMode;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});
 if($('woeScopeLabel'))$('woeScopeLabel').textContent=appMode==='merch'?'Revisión de Merch':'Catálogo General';
@@ -235,6 +235,7 @@ const keys = tierKeys(p);
 if (keys.length <= 1) return '';
 return `<label class="tier-inline">Tier <select id="${id}">${keys.map(k => `<option value="${k}" ${k===selected?'selected':''}>${k} · ${p.tier[k]}</option>`).join('')}</select></label>`;
 }
+function productSapDesc(p){const d=String(p.codigoDia||'');return woeCatalog.find(x=>String(x.codigoDia||'')===d&&x.descripcionSap)?.descripcionSap||p.descripcion||'';}
 function renderProduct(p, source){
 currentProduct = p;
 const keys = tierKeys(p); if (!keys.includes(currentTier)) currentTier = keys[0] || 'C1';
@@ -245,8 +246,8 @@ $('result').innerHTML = `
 <div class="card">
 <div class="info">
 <span class="badge">Mercancía → ${boton}</span>
-<div class="title">${p.nombrePos || 'Sin nombre POS'}</div>
-<p class="desc">${p.descripcion || ''}</p>
+<div class="title product-pos-name">${p.nombrePos || 'Sin nombre POS'}</div>
+<p class="desc sap-description"><span>Descripción SAP</span>${productSapDesc(p)}</p>
 ${tierSelectHtml(p, currentTier, 'tierSelect')}
 <div class="grid">
 <div class="field"><span>SKU leído</span><b>${source || p.skuIntl || '-'}</b></div>
@@ -335,7 +336,7 @@ if(!categories.includes(catalogCategory))catalogCategory='all';
 filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('');
 const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${appMode}|${catalogCategory}|${query}`;
 if(signature!==catalogRenderSignature){catalogVisibleLimit=5;catalogRenderSignature=signature;}
-const allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&tokens.every(token=>row.text.includes(token)));
+const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort().forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&tokens.every(token=>row.text.includes(token))).sort((a,b)=>Number(Boolean(b.item.idWoe))-Number(Boolean(a.item.idWoe)));
 const matches=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))&&matchesCatalogCategory(row.item.visualProduct,catalogCategory));
 const unique=[];const seen=new Set();for(const row of matches){if(seen.has(row.item.visualProduct.articleKey))continue;seen.add(row.item.visualProduct.articleKey);unique.push(row.item);}unique.sort((a,b)=>Number(operationalWoeStatus(b).kind==='ok')-Number(operationalWoeStatus(a).kind==='ok')||Number(b.visualProduct.visualSource==='premium-override')-Number(a.visualProduct.visualSource==='premium-override'));
 const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore');$('catalogSummary').textContent=`Mostrando ${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
@@ -367,7 +368,7 @@ return woeSearchRows
 .map(row=>{
 if((merchMode&&!isMerchItem(row.item))||!tokens.every(token=>row.text.includes(token)))return null;
 const sap=normalizeText(row.item.descripcionSap),micros=normalizeText((row.item.micros||[]).join(' '));
-let score=tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
+let score=(row.item.idWoe?12:0)+tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
 if(sap===query||micros===query)score+=30;
 return {item:row.item,score};
 })
@@ -949,7 +950,7 @@ requestAnimationFrame(()=>document.querySelector('#modeMenuGrid [data-app-mode]'
 function selectAppMode(mode,{updateHistory=true,focusTarget=true}={}){
 const next=APP_MODES.includes(mode)?mode:'catalog',previous=appMode;appMode=next;applyAppMode();setActivePanel(MODE_TO_PANEL[next]);
 if(['catalog','merch'].includes(next)){
-if(previous!==next){catalogCategory='all';catalogRenderSignature='';}
+if(previous!==next){catalogCategory='all';microsCount='all';catalogRenderSignature='';const c=$('microsCountFilter');if(c)c.value='all';}
 renderCatalog($('woeSearch')?.value||'');renderWoeSelection();
 if(woeSelection.size)renderWoeResults();
 }

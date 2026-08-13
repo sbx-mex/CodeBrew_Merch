@@ -43,7 +43,7 @@ def main() -> int:
         "messages": {
             "woeEmpty": "Empieza con WOE, DIA, nombre o SKU.",
             "woeReady": "Listado listo para validar y exportar.",
-            "stockEmpty": "Adjunta el Stock on Hand más actual.",
+            "stockEmpty": "Carga tu archivo de inventario WOE.",
             "stockReady": "Lectura lista para confirmar y exportar.",
         },
     }

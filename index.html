@@ -39,11 +39,11 @@
       <p>Elige una tarea. Mostramos sólo lo necesario.</p>
     </div>
     <div id="modeMenuGrid" class="mode-menu-grid" aria-live="polite">
-      <button type="button" class="tool-card tool-card-consulta" data-app-mode="consulta"><span class="tool-card-icon">$</span><span><b>Consulta Precio &amp; POS</b><small>Buscar, validar y escanear</small></span></button>
-      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Buscar cualquier artículo</small><em>SAP primero</em></span></button>
-      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small><em>SAP primero</em></span></button>
-      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>HTML → CodeBrew</b><small>Cruzar y exportar inventario</small><em>SAP primero</em></span></button>
-      <button type="button" class="tool-card tool-card-etiquetado" data-app-mode="etiquetado"><span class="tool-card-icon">▤</span><span><b>Etiquetas</b><small>Generar etiquetas POS</small></span></button>
+      <button type="button" class="tool-card tool-card-consulta has-image" data-app-mode="consulta" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">$</span><span><b>Precio &amp; POS</b><small>Consulta, valida y escanea</small></span></button>
+      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Encuentra y valida artículos</small></span></button>
+      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small></span></button>
+      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>Exportar inventario</b><small>HTML → CodeBrew · PDF / Excel</small></span></button>
+      <button type="button" class="tool-card tool-card-etiquetado has-image" data-app-mode="etiquetado" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">▤</span><span><b>Etiquetas</b><small>Prepara e imprime etiquetas POS</small></span></button>
     </div>
   </section>
 
@@ -51,7 +51,7 @@
     <button type="button" data-app-mode="consulta">Precio &amp; POS</button>
     <button type="button" data-app-mode="catalog">WOE | Catálogo</button>
     <button type="button" data-app-mode="merch">Merch</button>
-    <button type="button" data-app-mode="export">HTML → CodeBrew</button>
+    <button type="button" data-app-mode="export">Exportar</button>
     <button type="button" data-app-mode="etiquetado">Etiquetas</button>
   </nav>
 
@@ -62,10 +62,9 @@
         <span id="toolContextEyebrow" class="tool-context-eyebrow">CodeBrew</span>
         <h2 id="toolContextTitle">Herramienta</h2>
         <p id="toolContextDescription"></p>
-        <span id="toolSapBadge" class="tool-sap-badge" hidden>Código SAP primero</span>
       </div>
       <details id="toolGuide" class="tool-guide">
-        <summary>Cómo usar</summary>
+        <summary>¿Quieres ver el atajo?</summary>
         <div id="toolGuideSteps" class="tool-guide-steps"></div>
       </details>
     </div>
@@ -149,8 +148,9 @@
           <button id="woeAdd" type="button">Agregar coincidencia</button>
         </div>
         <p id="woeHelp" class="hint">Busca en todo el Catálogo Micros o pega varios códigos separados por coma o renglón.</p>
-        <div class="catalog-toolbar mode-merch-content">
+        <div class="catalog-toolbar">
           <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
+          <label id="microsCountFilterWrap" class="micros-count-filter mode-catalog-content" for="microsCountFilter">Conteo Micros<select id="microsCountFilter"><option value="all">Todos los conteos</option></select></label>
           <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
         </div>
         <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>
