@@ -19,6 +19,7 @@
   let stockValidation = null;
   let stockLoadToken = 0;
   let stockLoadingTask = null;
+  let stockDocumentType = 'stock';
   const stockMatchCache = new Map();
   let stream = null;
   let labelStream = null;
@@ -486,6 +487,7 @@
   const stockAliasRows=[];
   const stockExactIndex=new Map();
   const stockTokenIndex=new Map();
+  const stockSapIndex=new Map();
   woeCatalog.forEach(item=>(item.micros||[]).forEach(name=>{
     const normalized=normalizeText(name).replace(/^\d+\s+/,''),key=`${item.codigoDia}|${item.idWoe}|${normalized}`;
     if(!normalized||stockAliasRows.some(row=>row.key===key))return;
@@ -494,6 +496,10 @@
     const exact=stockExactIndex.get(normalized)||[];exact.push(row);stockExactIndex.set(normalized,exact);
     row.tokens.forEach(token=>{if(token.length<3)return;const matches=stockTokenIndex.get(token)||[];matches.push(row);stockTokenIndex.set(token,matches);});
   }));
+  woeCatalog.forEach(item=>{
+    const sap=normalizeSku(item.idWoe);if(!sap)return;
+    const rows=stockSapIndex.get(sap)||[];rows.push(item);stockSapIndex.set(sap,rows);
+  });
 
   function stockConfigValue(){
     return stockConfig.parser?stockConfig:{
@@ -554,6 +560,62 @@
     const normalized=normalizeText(name);
     if(!name||['item name','name','qty','cost','value'].includes(normalized)||/^page \d+ of \d+$/.test(normalized))return null;
     return {sourceName:name,pdfUnit:unit||'N/D',qty,page:pageNumber};
+  }
+
+  function detectInventoryDocument(lines){
+    const text=normalizeText(lines.slice(0,40).map(line=>line.text).join(' '));
+    if(text.includes('datos inventario')&&text.includes('fecha grabacion'))return 'sap';
+    if((stockConfigValue().parser.titleAliases||[]).some(alias=>text.includes(normalizeText(alias))))return 'stock';
+    return 'unknown';
+  }
+
+  function joinPdfParts(parts){
+    return parts.sort((a,b)=>a.x-b.x).map(part=>part.text).join(' ').replace(/\s+/g,' ').trim();
+  }
+
+  function compactSapCode(parts){
+    const value=parts.sort((a,b)=>a.x-b.x).map(part=>String(part.text||'').replace(/\D/g,'')).join('');
+    return /^\d{5,7}$/.test(value)?value:'';
+  }
+
+  function parseSapInventoryPage(items,pageNumber,detailLayout=false){
+    const parts=items.filter(item=>String(item.str||'').trim()).map(item=>({text:String(item.str).trim(),x:Number(item.transform?.[4]||0),y:Number(item.transform?.[5]||0)}));
+    const numeric=part=>parseStockNumber(part.text);
+    const grouped=[];
+    parts.filter(part=>part.x>=20&&part.x<72&&/^\d[\d\s]*$/.test(part.text)).forEach(part=>{
+      let row=grouped.find(candidate=>Math.abs(candidate.y-part.y)<=2);
+      if(!row){row={y:part.y,parts:[]};grouped.push(row);}row.parts.push(part);
+    });
+    const anchors=grouped.map(row=>({y:row.y,sap:compactSapCode(row.parts)})).filter(row=>row.sap).sort((a,b)=>b.y-a.y);
+    return anchors.map((anchor,index)=>{
+      const above=index?anchors[index-1].y:Infinity,below=anchors[index+1]?.y??-Infinity;
+      const top=Math.min(above,(anchor.y+36)),bottom=Math.max(below,(anchor.y-36));
+      const descriptionParts=parts.filter(part=>part.x>=70&&part.x<139&&part.y<top&&part.y>bottom&&Math.abs(part.y-anchor.y)<=36&&!/^(?:PZ\s*A|PZA|UND|KG|L|CAJ|BOL|BOT|BTE|PQT)$/i.test(part.text));
+      const description=joinPdfParts(descriptionParts);
+      const sameLine=parts.filter(part=>Math.abs(part.y-anchor.y)<=3);
+      const qtyPart=sameLine.filter(part=>detailLayout?part.x>=130&&part.x<180:part.x>=205&&part.x<265).find(part=>numeric(part)!==null);
+      const unitParts=sameLine.filter(part=>detailLayout?part.x>=178&&part.x<205:part.x>=260&&part.x<300);
+      const stockPart=detailLayout?null:sameLine.filter(part=>part.x>=300&&part.x<370).find(part=>numeric(part)!==null);
+      const qty=qtyPart?numeric(qtyPart):null,stockValue=stockPart?numeric(stockPart):null;
+      if(qty===null)return null;
+      return {sourceSap:anchor.sap,sourceDescription:description||'Descripción no identificada',pdfUnit:joinPdfParts(unitParts).replace(/\s+/g,'')||'N/D',qty,stockValue,page:pageNumber};
+    }).filter(Boolean);
+  }
+
+  function matchSapInventoryRow(row){
+    const candidates=stockSapIndex.get(normalizeSku(row.sourceSap))||[];
+    if(!candidates.length)return {...row,codigoDia:'',idWoe:row.sourceSap,descripcionSap:row.sourceDescription,nombreMicros:'Sin nombre de inventario cruzado',unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
+    const ranked=[...candidates].sort((a,b)=>Number(Boolean((b.micros||[]).length))-Number(Boolean((a.micros||[]).length))||String(a.codigoDia).localeCompare(String(b.codigoDia),'es',{numeric:true}));
+    const item=ranked[0],unique=new Set(candidates.map(candidate=>`${candidate.codigoDia}|${(candidate.micros||[])[0]||''}`));
+    return {...row,codigoDia:item.codigoDia||'',idWoe:row.sourceSap,descripcionSap:row.sourceDescription||item.descripcionSap||'Sin descripción SAP',nombreMicros:(item.micros||[])[0]||'Sin nombre de inventario',unidad:row.pdfUnit,matchType:unique.size>1?'ambiguous':'exact',matchScore:1,alternatives:unique.size};
+  }
+
+  function readSapMeta(lines,fileName){
+    const text=lines.map(line=>line.text).join('\n'),field=label=>{const match=text.match(new RegExp(`^${label}\\s*:\\s*([^\\n]+)`,'im'));return match?.[1]?.trim()||'';};
+    const titleFound=/datos\s+inventario/i.test(text),reportDate=(text.match(/Fecha\s+Grabaci[oó]n\s*:?\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'';
+    const rawType=field('Tipo de Inventario')||((text.match(/Inventario\s+(Mensal|Semanal)/i)||[])[1]||'Inventario'),inventoryType=/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`;
+    const entered=$('stockStoreInput')?.value?.trim()||'';
+    return {titleFound,documentType:'sap',store:entered||'Tienda no indicada',reportDate,printedDate:reportDate,printedTime:'',inventoryType,inventoryNumber:field('Número Inventario'),fileName};
   }
 
   function tokenScore(left,right){
@@ -628,16 +690,17 @@
 
   function validateStockReading(meta,rows,freshnessWarnings=[]){
     const missingHeader=[];
-    if(!meta?.titleFound)missingHeader.push('título Stock on Hand');
-    if(!meta?.store||meta.store==='Tienda no identificada')missingHeader.push('tienda');
-    if(!meta?.reportDate)missingHeader.push('Report Date');
-    if(!meta?.printedDate)missingHeader.push('fecha de impresión');
-    if(!meta?.printedTime)missingHeader.push('hora de impresión');
-    const invalidItems=rows.filter(row=>!String(row.sourceName||'').trim()).length;
+    const sap=meta?.documentType==='sap';
+    if(!meta?.titleFound)missingHeader.push(sap?'encabezado DATOS INVENTARIO':'título Stock on Hand');
+    if(!sap&&(!meta?.store||meta.store==='Tienda no identificada'))missingHeader.push('tienda');
+    if(!meta?.reportDate)missingHeader.push(sap?'Fecha Grabación':'Report Date');
+    if(!sap&&!meta?.printedDate)missingHeader.push('fecha de impresión');
+    if(!sap&&!meta?.printedTime)missingHeader.push('hora de impresión');
+    const invalidItems=rows.filter(row=>!String(sap?row.sourceDescription:row.sourceName||'').trim()).length;
     const invalidUnits=rows.filter(row=>!String(row.pdfUnit||'').trim()||row.pdfUnit==='N/D').length;
     const invalidQty=rows.filter(row=>!Number.isFinite(row.qty)||Math.abs(row.qty)<=Number(stockConfigValue().parser.zeroTolerance||.000001)).length;
     const duplicateKeys=new Set(),duplicates=new Set();
-    rows.forEach(row=>{const key=`${normalizeText(row.sourceName)}|${normalizeText(row.pdfUnit)}`;if(duplicateKeys.has(key))duplicates.add(key);else duplicateKeys.add(key);});
+    rows.forEach(row=>{const key=sap?`${normalizeSku(row.sourceSap)}|${normalizeText(row.pdfUnit)}`:`${normalizeText(row.sourceName)}|${normalizeText(row.pdfUnit)}`;if(duplicateKeys.has(key))duplicates.add(key);else duplicateKeys.add(key);});
     const blocking=[];
     if(missingHeader.length)blocking.push(`Falta validar: ${missingHeader.join(', ')}.`);
     if(meta?.headerMismatches?.length)blocking.push(`El encabezado cambia entre páginas: ${meta.headerMismatches.join(', ')}.`);
@@ -649,7 +712,7 @@
     if(invalidUnits)warnings.push(`${invalidUnits} renglón${invalidUnits===1?'':'es'} sin unidad; se conservará${invalidUnits===1?'':'n'} como N/D.`);
     const unmatched=rows.filter(row=>row.matchType==='unmatched'||row.matchType==='ambiguous').length;
     if(unmatched)warnings.push(`${unmatched} artículo${unmatched===1?'':'s'} sin cruce exacto; se conservará${unmatched===1?'':'n'} en el PDF.`);
-    if(meta?.reportDate&&meta?.printedDate&&meta.reportDate!==meta.printedDate)warnings.push('Report Date y Printed On corresponden a fechas distintas.');
+    if(!sap&&meta?.reportDate&&meta?.printedDate&&meta.reportDate!==meta.printedDate)warnings.push('Report Date y Printed On corresponden a fechas distintas.');
     return {valid:blocking.length===0,blocking,warnings,missingHeader,invalidItems,invalidUnits,invalidQty,duplicates:duplicates.size,unmatched};
   }
 
@@ -664,9 +727,9 @@
 
   function openStockConfirmation(){
     if(!stockRows.length||!stockMeta)return;
-    const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable,dialog=$('stockConfirmDialog');
+    const sap=stockMeta.documentType==='sap',exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable,dialog=$('stockConfirmDialog');
     $('stockConfirmAccept').disabled=!stockValidation?.valid;
-    $('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Lectura</span><b>${stockRows.length} no cero · ${exact} exactos · ${probable+review} con aviso</b></div>`;
+    $('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>${sap?'Tipo de inventario':'Printed On'}</span><b>${escapeHtml(sap?(stockMeta.inventoryType||'Inventario'):(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado'))}</b></div><div><span>Lectura</span><b>${stockRows.length} artículos · ${exact} exactos · ${probable+review} con aviso</b></div>`;
     const block=$('stockConfirmBlock'),messages=[...(stockValidation?.blocking||[]),...(stockValidation?.warnings||[])];
     block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'Exportación bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
     if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
@@ -684,7 +747,8 @@
   }
 
   function stockStoreName(value){
-    const parts=String(value||'').split(' - ').map(part=>part.trim()).filter(Boolean);
+    const cleaned=String(value||'').replace(/^starbucks\s+(?:mx|mexico)\s+/i,'').trim();
+    const parts=cleaned.split(' - ').map(part=>part.trim()).filter(Boolean);
     return parts.length>1&&parts[0]===parts[1]?parts[0]:(parts[0]||'Tienda no identificada');
   }
 
@@ -693,20 +757,24 @@
     if(!stockRows.length){target.innerHTML='';metaBox.hidden=true;return;}
     const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable;
     metaBox.hidden=false;
-    metaBox.innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>Report Date</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Printed On</span><b>${escapeHtml(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
+    const sap=stockMeta.documentType==='sap';
+    metaBox.innerHTML=`<div><span>Formato</span><b>${sap?'PDF SAP':'Stock on Hand'}</b></div><div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
     const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} con variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} sin cruce exacto; se conservará${review===1?'':'n'}.`);
     status.classList.toggle('warning',warnings.length>0);
     status.innerHTML=warnings.length?`<b>Lectura completa con avisos:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
     const limit=Number(stockConfigValue().parser.previewLimit)||250,ordered=[...stockRows].sort((a,b)=>({unmatched:0,ambiguous:1,probable:2,exact:3}[a.matchType]-{unmatched:0,ambiguous:1,probable:2,exact:3}[b.matchType])||a.nombreMicros.localeCompare(b.nombreMicros,'es'));
     const visible=ordered.slice(0,limit);
-    target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>cantidades ≠ 0</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>con aviso</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Descripción SAP</th><th>Nombre Micros</th><th>Unidad Stock</th><th>Qty</th><th>Estado</th></tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${row.qty.toFixed(1)}</b></td><td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Variación':'! Sin cruce'}</span></td></tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. El PDF final incluirá los ${stockRows.length} artículos con cantidad diferente de cero.</p>`:''}`;
+    target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>${sap?'artículos leídos':'cantidades ≠ 0'}</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>con aviso</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Descripción SAP</th><th>Nombre inventario</th><th>UMB</th><th>Cantidad</th>${sap?'<th>$ Stock</th>':'<th>Estado</th>'}</tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${formatInventoryNumber(row.qty)}</b></td>${sap?`<td>${row.stockValue===null?'Sin valor reportado':escapeHtml(formatInventoryMoney(row.stockValue))}</td>`:`<td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Variación':'! Sin cruce'}</span></td>`}</tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. El PDF final incluirá los ${stockRows.length} artículos.</p>`:''}`;
   }
+
+  function formatInventoryNumber(value){return Number(value).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function formatInventoryMoney(value){return Number(value).toLocaleString('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:2});}
 
   async function loadStockPdf(file){
     if(!file)return;
     const loadToken=++stockLoadToken;
     try{await stockLoadingTask?.destroy?.();}catch(error){}
-    const status=$('stockStatus');stockRows=[];stockMeta=null;stockPdfName=file.name;stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+    const status=$('stockStatus');stockRows=[];stockMeta=null;stockDocumentType='unknown';stockPdfName=file.name;stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
     status.classList.remove('warning');status.textContent='Preparando lector y validando el PDF...';
     setStockBusy(true);
     let pdf=null;
@@ -721,25 +789,57 @@
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
         if(loadToken!==stockLoadToken)throw new DOMException('Lectura reemplazada','AbortError');
         const page=await pdf.getPage(pageNumber),content=await page.getTextContent(),lines=groupStockPdfLines(content.items);
-        const pageMeta=readStockMeta(lines,content.items,file.name),layout=detectStockLayout(lines);layout.detected?adaptivePages++:fallbackPages++;
+        if(pageNumber===1){stockDocumentType=detectInventoryDocument(lines);if(stockDocumentType==='unknown')throw new Error('El PDF no corresponde a Stock on Hand ni a un inventario SAP compatible.');}
+        const sap=stockDocumentType==='sap',pageMeta=sap?readSapMeta(lines,file.name):readStockMeta(lines,content.items,file.name),layout=sap?null:detectStockLayout(lines);if(!sap)(layout.detected?adaptivePages++:fallbackPages++);
         if(pageNumber===1)firstMeta=pageMeta;
-        else for(const field of ['store','reportDate','printedDate','printedTime'])if(pageMeta[field]&&firstMeta?.[field]&&pageMeta[field]!==firstMeta[field])headerMismatches.add(field);
-        lines.forEach(line=>{const row=parseStockRow(line,pageNumber,layout);if(row)rawRows.push(row);});
+        else for(const field of sap?['reportDate','inventoryType','inventoryNumber']:['store','reportDate','printedDate','printedTime'])if(pageMeta[field]&&firstMeta?.[field]&&pageMeta[field]!==firstMeta[field])headerMismatches.add(field);
+        if(sap)rawRows.push(...parseSapInventoryPage(content.items,pageNumber,normalizeText(lines.map(line=>line.text).join(' ')).includes('detalle de inventario')));
+        else lines.forEach(line=>{const row=parseStockRow(line,pageNumber,layout);if(row)rawRows.push(row);});
         setStockBusy(true,pageNumber,pdf.numPages);
-        if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo Stock on Hand · página ${pageNumber} de ${pdf.numPages}...`;
+        if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo ${stockDocumentType==='sap'?'PDF SAP':'Stock on Hand'} · página ${pageNumber} de ${pdf.numPages}...`;
         if(pageNumber%4===0)await yieldToMain();
       }
       if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
-      stockMeta={...(firstMeta||{}),pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
-      stockRows=rawRows.map(matchStockRow);
-      if(!stockRows.length)throw new Error('No se localizaron cantidades diferentes de cero. Confirma que el PDF tenga texto seleccionable.');
-      const freshness=stockFreshness(stockMeta);if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);updateStockFlow();$('stockExport').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
-    }catch(error){if(loadToken===stockLoadToken&&error?.name!=='AbortError'){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el PDF Stock on Hand.';$('stockPdfInput').value='';}}
+      stockMeta={...(firstMeta||{}),documentType:stockDocumentType,pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
+      const operationalRows=stockDocumentType==='sap'?rawRows.filter(row=>Math.abs(row.qty)>Number(stockConfigValue().parser.zeroTolerance||.000001)||row.stockValue!==null&&Math.abs(row.stockValue)>Number(stockConfigValue().parser.zeroTolerance||.000001)):rawRows;
+      stockRows=operationalRows.map(stockDocumentType==='sap'?matchSapInventoryRow:matchStockRow);
+      if(!stockRows.length)throw new Error('No se localizaron renglones operativos. Confirma que el PDF tenga texto seleccionable.');
+      const freshness=stockDocumentType==='sap'?['PDF SAP detectado: se tomó la primera Cantidad y UMB junto al artículo.']:stockFreshness(stockMeta);if(stockDocumentType==='stock'){if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);}stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);updateStockFlow();$('stockExport').disabled=false;$('stockPrint').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
+    }catch(error){if(loadToken===stockLoadToken&&error?.name!=='AbortError'){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el reporte PDF.';$('stockPdfInput').value='';}}
     finally{if(stockLoadingTask&&loadToken===stockLoadToken)stockLoadingTask=null;try{await pdf?.destroy?.();}catch(error){}if(loadToken===stockLoadToken)setStockBusy(false);}
   }
 
   function clearStockReport(){
-    stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockMeta=null;stockPdfName='';stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();$('stockAttach').focus();
+    stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockMeta=null;stockDocumentType='stock';stockPdfName='';stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un PDF cuando necesites esta validación opcional.';closeStockConfirmation();$('stockAttach').focus();
+  }
+
+  function printStockView(){
+    if(!stockRows.length)return;
+    const now=new Date(),sap=stockMeta?.documentType==='sap';
+    $('stockPrintHeader').innerHTML=`<h1>${sap?'Inventario Cruzado · Detalle':'Stock on Hand · WOE'}</h1><p><b>${escapeHtml(stockStoreName(stockMeta?.store))}</b> · ${escapeHtml(sap?(stockMeta?.inventoryType||'Inventario'):'Referencia operativa')} · ${sap?'Fecha Grabación':'Report Date'} ${escapeHtml(stockMeta?.reportDate||'—')}</p><p>Exportado ${escapeHtml(now.toLocaleDateString('es-MX'))} · ${escapeHtml(now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}))}</p>`;
+    document.body.classList.add('print-inventory-detail');
+    window.print();
+  }
+
+  async function generateSapInventoryPdf(){
+    const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Creando Inventario Cruzado...';
+    try{
+      await ensureJsPdf();
+      const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter',compress:true,putOnlyUsedFonts:true}),pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight();
+      const margin=24,tableTop=112,tableBottom=pageHeight-34,columns=[{key:'codigoDia',label:'#DIA',width:55},{key:'idWoe',label:'#SAP',width:60},{key:'descripcionSap',label:'DESCRIPCIÓN SAP',width:220},{key:'nombreMicros',label:'NOMBRE INVENTARIO',width:175},{key:'unidad',label:'UMB',width:48},{key:'qty',label:'CANTIDAD',width:58},{key:'stock',label:'$ STOCK',width:128}],green=[0,98,65],dark=[7,63,47],cream=[249,246,239],line=[221,225,220],warning=[180,83,9],exported=new Date(),exportDate=exported.toLocaleDateString('es-MX'),exportTime=exported.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),exact=stockRows.filter(row=>row.matchType==='exact').length;
+      const safeLines=(value,width)=>{const lines=doc.splitTextToSize(String(value||'—'),Math.max(18,width-8));if(lines.length<=3)return lines;const clipped=lines.slice(0,3);clipped[2]=`${clipped[2].replace(/\s+$/,'')}…`;return clipped;};
+      function header(){
+        doc.setFillColor(...green);doc.roundedRect(margin,16,8,48,3,3,'F');doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('Inventario Cruzado · Detalle',margin+16,32);
+        doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`${stockStoreName(stockMeta.store)} · ${stockMeta.inventoryType||'Inventario'} · Fecha Grabación ${stockMeta.reportDate||'—'}`,margin+16,47,{maxWidth:pageWidth-margin*2-16});doc.text(`Exportado ${exportDate} · ${exportTime} · ${stockRows.length} artículos · ${exact} cruces exactos`,margin+16,60,{maxWidth:pageWidth-margin*2-16});
+        doc.setFillColor(238,247,242);doc.roundedRect(margin,73,pageWidth-margin*2,27,5,5,'F');doc.setTextColor(...green);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('Código SAP → Código Día + nombre de inventario. Primera Cantidad y UMB junto al artículo.',margin+10,90);
+        let x=margin;doc.setFillColor(...dark);doc.rect(x,tableTop,pageWidth-margin*2,22,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);columns.forEach(column=>{doc.text(column.label,x+4,tableTop+14,{maxWidth:column.width-8});x+=column.width;});return tableTop+22;
+      }
+      function footer(number,total){doc.setDrawColor(...line);doc.line(margin,pageHeight-24,pageWidth-margin,pageHeight-24);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew · Inventario Cruzado Detalle',margin,pageHeight-12);doc.text(`Página ${number} de ${total}`,pageWidth-margin,pageHeight-12,{align:'right'});}
+      doc.setProperties({title:'Inventario Cruzado Detalle',subject:'Cruce de PDF SAP con Código Día y nombre de inventario',creator:'CodeBrew'});
+      let y=header();stockRows.forEach((row,index)=>{const values={...row,qty:formatInventoryNumber(row.qty),stock:row.stockValue===null?'Sin valor reportado':formatInventoryMoney(row.stockValue)},cells=columns.map(column=>safeLines(values[column.key],column.width)),height=Math.max(20,Math.max(...cells.map(lines=>lines.length))*8+8);if(y+height>tableBottom){doc.addPage('letter','landscape');y=header();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...cream);doc.rect(margin,y,pageWidth-margin*2,height,'F');}let x=margin;columns.forEach((column,columnIndex)=>{doc.setDrawColor(...line);doc.setLineWidth(.35);doc.rect(x,y,column.width,height);doc.setTextColor(...(row.matchType==='exact'?dark:warning));doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(7);doc.text(cells[columnIndex],x+4,y+11,{lineHeightFactor:1.15,maxWidth:column.width-8});x+=column.width;});y+=height;});
+      const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);footer(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Inventario_Cruzado_Detalle_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').innerHTML=`<b>Inventario Cruzado generado:</b> ${stockRows.length} artículos. La hora de exportación quedó registrada en el PDF.`;
+    }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar Inventario Cruzado Detalle. La lectura se conserva para volver a intentarlo.';}
+    finally{button.disabled=false;button.textContent=original;}
   }
 
   async function generateStockPdf(){
@@ -747,6 +847,7 @@
     if(!stockConfirmed||!stockValidation?.valid){openStockConfirmation();return;}
     const finalValidation=validateStockReading(stockMeta,stockRows,[]);
     if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='2 · Lectura bloqueada';openStockConfirmation();return;}
+    if(stockMeta.documentType==='sap')return generateSapInventoryPdf();
     const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Creando PDF cruzado...';
     try{
       await ensureJsPdf();
@@ -1232,6 +1333,7 @@
     $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
+    $('stockPrint').addEventListener('click',printStockView);
     $('stockClear').addEventListener('click',clearStockReport);
     $('stockConfirmAccept').addEventListener('click',confirmStockReading);
     $('stockConfirmClose').addEventListener('click',closeStockConfirmation);
@@ -1274,6 +1376,7 @@
       closeCamera('video','ocrStatus','startCamera','scanBtn','stopCamera','consulta',false);
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
+    window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory-detail'));
     renderCart();
     if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v23-remastered-catalog'));
   }

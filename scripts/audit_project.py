@@ -156,6 +156,7 @@ def audit(root: Path) -> dict:
     stock_export_keys = [column.get("key") for column in stock_config.get("columns", [])]
     stock_security_ok = all(token in (root / "app.js").read_text(encoding="utf-8") for token in (
         "validateStockReading", "stockConfirmed", "signature!=='%PDF-'", "rememberConfirmedStock", "await generateStockPdf()", "detectStockLayout", "stockTokenIndex", "stockLoadToken", "stockMatchCache", "yieldToMain", "setStockBusy",
+        "detectInventoryDocument", "parseSapInventoryPage", "matchSapInventoryRow", "generateSapInventoryPdf", "Sin valor reportado", "window.print()",
     )) and (root / "assets/stock_pdf_woe.jpeg").exists()
     export_ok = (
         pdf_config.get("audit", {}).get("fit") is True
@@ -178,10 +179,10 @@ def audit(root: Path) -> dict:
     checks.append(check(
         "Exportación PDF",
         export_ok,
-        "WOE con piezas + Stock Premium; ambos en carta vertical y dentro del margen",
+        "WOE + Stock On Hand + PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
+    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
     operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "openCatalogVisual", "catalogVisibleLimit", "quantity", "Añadir al conteo")

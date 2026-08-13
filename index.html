@@ -201,27 +201,34 @@
       </dialog>
 
       <section id="stockPanel" class="panel stock-panel" aria-labelledby="stockTitle" aria-busy="false">
+        <div id="stockPrintHeader" class="stock-print-header" aria-hidden="true"></div>
         <div class="stock-head">
           <div>
             <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
-            <h2 id="stockTitle">Stock on Hand</h2>
-            <p>Adjunta el reporte completo de Micros. La app leerá todas las páginas, conservará sólo cantidades diferentes de cero y cruzará cada nombre con el catálogo.</p>
+            <h2 id="stockTitle">Cruce de inventario</h2>
+            <p>Adjunta un Stock on Hand o un PDF SAP. El motor identifica el formato, lee todas las páginas y conserva sólo los valores operativos.</p>
           </div>
           <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
-        <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso Stock on Hand">
-          <div data-step="attach"><b>1</b><span>Adjunta el PDF Stock on Hand más actual.</span></div>
+        <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
+          <div data-step="attach"><b>1</b><span>Adjunta Stock on Hand o PDF SAP.</span></div>
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
-          <div data-step="export"><b>3</b><span>Descarga el PDF cruzado en carta vertical.</span></div>
+          <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el Stock on Hand más actual.</p>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el reporte más actual; el formato se detecta automáticamente.</p>
+        <div class="inventory-source-guide" aria-label="Formatos compatibles">
+          <div><b>Stock on Hand</b><span>Nombre Micros → WOE</span></div>
+          <div><b>PDF SAP</b><span>Código SAP → Código Día + nombre de inventario</span></div>
+        </div>
+        <label class="stock-store-field" for="stockStoreInput"><span>Nombre de tienda <small>opcional si viene dentro del PDF</small></span><input id="stockStoreInput" type="text" maxlength="100" placeholder="Ej. Starbucks MX Luna Park" autocomplete="organization"></label>
         <div class="stock-upload-row">
-          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar y validar PDF</button>
+          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar Stock / PDF SAP</button>
           <input id="stockPdfInput" class="visually-hidden" type="file" accept="application/pdf,.pdf">
           <button id="stockExport" type="button" class="stock-export" disabled>2 · Exportar PDF cruzado</button>
+          <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
-        <p class="stock-disclaimer"><b>Importante:</b> Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio. El PDF sirve como referencia y apoyo.</p>
+        <p class="stock-disclaimer"><b>Importante:</b> Stock on Hand conserva su validación actual. En PDF SAP se toma únicamente la primera Cantidad y UMB junto al artículo; si el valor de stock no es inequívoco se muestra “Sin valor reportado”.</p>
         <div id="stockProgressWrap" class="stock-progress" hidden>
           <label for="stockProgress">Lectura del reporte</label>
           <progress id="stockProgress" max="100" value="0">0%</progress>

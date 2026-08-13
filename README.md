@@ -30,6 +30,17 @@ El catálogo es exclusivamente una herramienta interna de conteo: no publica pre
 
 Las filas pueden aumentar o disminuir. El cruce se reconstruye completo en cada ejecución; no depende del número de fila anterior.
 
+## WOE e inventario PDF
+
+El apartado WOE conserva su buscador, selección, conteo y exportación actuales. El bloque **Cruce de inventario** acepta dos fuentes sin enviarlas a un servidor:
+
+- **Stock on Hand:** mantiene el cruce por nombre Micros y exporta la referencia operativa WOE.
+- **PDF SAP:** detecta `DATOS INVENTARIO`, cruza `Código SAP → Código Día + nombre de inventario` y genera `Inventario Cruzado · Detalle`.
+
+En PDF SAP sólo se leen la primera `Cantidad` y la primera `UMB` ubicadas junto al artículo. `$ Stock` se incorpora únicamente cuando la columna aparece de forma inequívoca; en formatos sin ese dato se presenta `Sin valor reportado`. La `Fecha Grabación` proviene del archivo y la hora se registra dinámicamente al exportar. Si el PDF no contiene la tienda, escríbela antes de adjuntarlo; `Starbucks MX Luna Park` se presenta como `Luna Park`.
+
+La vista puede descargarse como PDF o imprimirse con el botón **Imprimir vista** / `Ctrl+P`.
+
 ## Límites y rendimiento
 
 - Ningún archivo puede alcanzar 25 MB.
