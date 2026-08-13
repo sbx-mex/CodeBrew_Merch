@@ -85,18 +85,34 @@ def audit(root: Path) -> dict:
     ))
     atlas_files = sorted((root / "assets/catalog/atlases").glob("*.webp"))
     engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
+    visual_sources = sorted((root / "engines/visual-sources").glob("*.zip"))
+    image_overrides = sorted((root / "engines/image-overrides").glob("*.*"))
+    catalog_text = (root / "data/merch-catalog.js").read_text(encoding="utf-8")
     catalog_ok = (
         catalog_report.get("status") == "ok"
+        and catalog_report.get("version") == "premium-remastered-v2"
         and catalog_report.get("engineFiles") == len(engines) == 3
+        and catalog_report.get("visualSourceFiles") == len(visual_sources) == 3
         and catalog_report.get("products", 0) > 0
+        and catalog_report.get("withSourceImage", 0) > 800
+        and catalog_report.get("tilePixels", 0) >= 384
+        and catalog_report.get("moneyFieldsPublished") == 0
+        and '"prices"' not in catalog_text
         and catalog_report.get("atlases") == len(atlas_files)
         and 0 < len(atlas_files) < 100
-        and all(path.stat().st_size < 25_000_000 for path in [*engines, *atlas_files])
+        and all(path.stat().st_size < 25_000_000 for path in [*engines, *visual_sources, *image_overrides, *atlas_files])
     )
     checks.append(check(
         "Catálogo visual",
         catalog_ok,
-        f"{catalog_report.get('products', 0):,} artículos, {len(engines)} motores y {len(atlas_files)} atlas compactos",
+        f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('withSourceImage', 0):,} imágenes fuente y {len(atlas_files)} atlas HD",
+    ))
+    cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
+    premium = catalog_report.get("visualSources", {}).get("premium-override", 0)
+    checks.append(check(
+        "Doble auditoría visual",
+        cross_checked >= 500 and premium >= 1 and catalog_report.get("visualSourceAudit"),
+        f"{cross_checked:,} imágenes cotejadas Excel/HTML; {premium} reconstrucción premium verificada",
     ))
     woe = report.get("woe", {})
     woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
@@ -140,10 +156,10 @@ def audit(root: Path) -> dict:
         "WOE con piezas + Stock Premium; ambos en carta vertical y dentro del margen",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "catalogFilters", "catalogSummary", "catalogGrid", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
+    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "openCatalogVisual", "quantity")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "openCatalogVisual", "catalogVisibleLimit", "quantity", "Añadir al conteo")
     checks.append(check(
         "Navegación e interfaz",
         not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html,
@@ -174,7 +190,7 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/atlases" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
+    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "engines/**" in workflow_update and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/atlases" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",

@@ -8,6 +8,8 @@
   const woeSelection = new Map();
   const catalogItemByKey = new Map();
   let catalogCategory = 'all';
+  let catalogVisibleLimit = 48;
+  let catalogRenderSignature = '';
   let woePdfExported = false;
   let stockRows = [];
   let stockMeta = null;
@@ -262,9 +264,9 @@
 
   function woeKey(item,index=''){ return `${item.visualProduct?.articleKey||'sin-visual'}|${item.idWoe||'sin-sap'}|${item.codigoDia}|${item.sourceRow||item.origin||index}`; }
   function visualProductFor(item){return item?.visualProduct||(visualByDay.get(normalizeSku(item?.codigoDia))||[])[0]||null;}
-  function visualStyle(product){const visual=product?.visual;if(!visual)return '';const atlas=String(visual.atlas||'').replace(/[^a-zA-Z0-9_./-]/g,'');return `--catalog-image:url(${atlas});--catalog-x:${Number(visual.x)||0}%;--catalog-y:${Number(visual.y)||0}%`;}
+  function visualStyle(product){const visual=product?.visual;if(!visual)return '';const atlas=String(visual.atlas||'').replace(/[^a-zA-Z0-9_./-]/g,''),grid=Math.max(1,Number(visual.grid)||4);return `--catalog-image:url(${atlas});--catalog-x:${Number(visual.x)||0}%;--catalog-y:${Number(visual.y)||0}%;--catalog-scale:${grid*100}%`;}
   function articleName(item){const product=visualProductFor(item);return product?.displayName||product?.nombrePos||item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Artículo MERCH';}
-  function catalogPrice(product){const tiers=product?.prices||{};const key=Object.prototype.hasOwnProperty.call(tiers,'C2')?'C2':Object.keys(tiers)[0];return key?new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(tiers[key]):'Precio por validar';}
+  function visualQualityLabel(product){return product?.visualSource==='premium-override'?'Reconstrucción premium':product?.visual?.kind==='remastered'?'Original remasterizada':'Referencia aproximada';}
   function catalogItemKey(item){return woeKey(item,'catalog');}
   function catalogCategoryLabel(value){return ({all:'Todo',mug:'Tazas',tumbler:'Tumblers','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
   function openCatalogVisual(item){
@@ -273,20 +275,22 @@
     $('catalogVisualImage').setAttribute('aria-label',`Vista ampliada de ${articleName(item)}`);
     $('catalogVisualTitle').textContent=articleName(item);
     $('catalogVisualDescription').textContent=product.descripcionSci||item.descripcionSap||'Descripción por validar';
-    $('catalogVisualCodes').innerHTML=`<div><small>Código Día</small><b>${escapeHtml(item.codigoDia||product.codigoDia||'—')}</b></div><div><small>Código SAP</small><b>${escapeHtml(item.idWoe||'Sin cruce')}</b></div><div><small>SKU POS</small><b>${escapeHtml(product.skuPos||'—')}</b></div><div><small>Precio</small><b>${escapeHtml(catalogPrice(product))}</b></div>`;
+    $('catalogVisualCodes').innerHTML=`<div><small>Código Día</small><b>${escapeHtml(item.codigoDia||product.codigoDia||'—')}</b></div><div><small>Código SAP</small><b>${escapeHtml(item.idWoe||'Sin cruce')}</b></div><div><small>SKU POS</small><b>${escapeHtml(product.skuPos||'—')}</b></div><div><small>Calidad visual</small><b>${escapeHtml(visualQualityLabel(product))}</b></div>`;
     $('catalogVisualDialog').showModal();
   }
   function renderCatalog(raw=''){
     const filters=$('catalogFilters'),grid=$('catalogGrid');if(!filters||!grid)return;
     const categories=['all','mug','tumbler','cold-cup','bottle','brew','accessory','other'];
     filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('');
-    const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean);
+    const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${catalogCategory}|${query}`;
+    if(signature!==catalogRenderSignature){catalogVisibleLimit=48;catalogRenderSignature=signature;}
     const matches=woeSearchRows.filter(row=>row.item.visualProduct&&(catalogCategory==='all'||row.item.visualProduct.category===catalogCategory)&&tokens.every(token=>row.text.includes(token)));
     const unique=[];const seen=new Set();for(const row of matches){if(seen.has(row.item.visualProduct.articleKey))continue;seen.add(row.item.visualProduct.articleKey);unique.push(row.item);}
-    const visible=unique.slice(0,32);$('catalogSummary').textContent=`${unique.length.toLocaleString('es-MX')} coincidencia${unique.length===1?'':'s'}${unique.length>32?' · primeras 32':''}`;
+    const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore');$('catalogSummary').textContent=`Mostrando ${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
+    loadMore.hidden=visible.length>=unique.length;loadMore.textContent=`Ver ${Math.min(48,unique.length-visible.length)} artículos más`;
     grid.innerHTML=visible.length?visible.map(item=>{
       const product=item.visualProduct,key=catalogItemKey(item),status=operationalWoeStatus(item);catalogItemByKey.set(key,item);
-      return `<article class="catalog-card"><button type="button" class="catalog-thumb" data-catalog-visual="${escapeHtml(key)}" style="${visualStyle(product)}" aria-label="Ampliar ${escapeHtml(articleName(item))}"></button><div class="catalog-card-body"><div class="catalog-card-top"><span class="catalog-source">${escapeHtml(product.source)}</span><span class="catalog-match ${status.kind==='ok'?'ok':'review'}">${status.kind==='ok'?'Cruce validado':'Revisar cruce'}</span></div><h3>${escapeHtml(articleName(item))}</h3><p class="catalog-card-description">${escapeHtml(product.descripcionSci||item.descripcionSap||'Descripción por validar')}</p><div class="catalog-codes"><div><small>Día</small><b>${escapeHtml(item.codigoDia||'—')}</b></div><div><small>SAP</small><b>${escapeHtml(item.idWoe||'Pendiente')}</b></div></div><div class="catalog-card-action"><div class="catalog-quantity"><button type="button" data-catalog-step="-1" data-catalog-key="${escapeHtml(key)}" aria-label="Restar pieza">−</button><input type="number" min="1" max="9999" value="1" data-catalog-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"><button type="button" data-catalog-step="1" data-catalog-key="${escapeHtml(key)}" aria-label="Agregar pieza">+</button></div><button type="button" class="catalog-add" data-catalog-add="${escapeHtml(key)}">Agregar · ${escapeHtml(catalogPrice(product))}</button></div></div></article>`;
+      return `<article class="catalog-card"><button type="button" class="catalog-thumb" data-catalog-visual="${escapeHtml(key)}" style="${visualStyle(product)}" aria-label="Ampliar ${escapeHtml(articleName(item))}"><span class="catalog-visual-quality">${escapeHtml(visualQualityLabel(product))}</span></button><div class="catalog-card-body"><div class="catalog-card-top"><span class="catalog-source">${escapeHtml(product.source)}</span><span class="catalog-match ${status.kind==='ok'?'ok':'review'}">${status.kind==='ok'?'Cruce validado':'Revisar cruce'}</span></div><h3>${escapeHtml(articleName(item))}</h3><p class="catalog-card-description">${escapeHtml(product.descripcionSci||item.descripcionSap||'Descripción por validar')}</p><div class="catalog-codes"><div><small>Día</small><b>${escapeHtml(item.codigoDia||'—')}</b></div><div><small>SAP</small><b>${escapeHtml(item.idWoe||'Pendiente')}</b></div></div><div class="catalog-card-action"><div class="catalog-quantity"><button type="button" data-catalog-step="-1" data-catalog-key="${escapeHtml(key)}" aria-label="Restar pieza">−</button><input type="number" min="1" max="9999" value="1" data-catalog-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"><button type="button" data-catalog-step="1" data-catalog-key="${escapeHtml(key)}" aria-label="Agregar pieza">+</button></div><button type="button" class="catalog-add" data-catalog-add="${escapeHtml(key)}">Añadir al conteo</button></div></div></article>`;
     }).join(''):'<div class="catalog-empty"><b>No encontramos artículos.</b><br>Prueba otra palabra, Código Día, SAP o categoría.</div>';
     filters.querySelectorAll('[data-catalog-filter]').forEach(button=>button.addEventListener('click',()=>{catalogCategory=button.dataset.catalogFilter;renderCatalog($('woeSearch').value);}));
     grid.querySelectorAll('[data-catalog-step]').forEach(button=>button.addEventListener('click',()=>{const input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogKey)}"]`);input.value=Math.max(1,Math.min(9999,(Number(input.value)||1)+Number(button.dataset.catalogStep)));}));
@@ -1215,6 +1219,7 @@
     $('woeTotal').textContent=Number(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
     restoreWoeSelection();renderWoeSelection();updateStockFlow();
     renderCatalog('');
+    $('catalogLoadMore').addEventListener('click',()=>{catalogVisibleLimit+=48;renderCatalog($('woeSearch').value);});
     $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woePdfExported=false;updateWoeFlow();renderCatalog(value);woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
@@ -1270,7 +1275,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v22-visual-catalog'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v23-remastered-catalog'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

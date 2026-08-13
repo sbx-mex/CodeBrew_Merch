@@ -1,12 +1,22 @@
 {
   "status": "ok",
+  "version": "premium-remastered-v2",
   "engineFiles": 3,
+  "visualSourceFiles": 3,
   "products": 1019,
   "duplicateRowsIgnored": 28,
-  "withExcelImage": 700,
-  "withApproximation": 319,
-  "uniqueVisuals": 714,
-  "atlases": 12,
+  "withSourceImage": 813,
+  "withApproximation": 206,
+  "uniqueVisuals": 827,
+  "atlases": 53,
+  "tilePixels": 384,
+  "atlasGrid": 4,
+  "visualSources": {
+    "excel": 686,
+    "html-row": 126,
+    "approximation": 206,
+    "premium-override": 1
+  },
   "categories": {
     "other": 161,
     "cold-cup": 274,
@@ -22,22 +32,64 @@
       "sheet": "Table 1",
       "rows": 436,
       "products": 288,
-      "productsWithImage": 256
+      "visualSources": {
+        "crossChecked": 204,
+        "crossReview": 25,
+        "premium-override": 1,
+        "html-row": 22,
+        "crossConsistent": 179,
+        "excel": 255,
+        "approximation": 10
+      }
     },
     {
       "file": "CORE_WINTER_2026.xlsx",
       "sheet": "Table 1",
       "rows": 93,
       "products": 69,
-      "productsWithImage": 68
+      "visualSources": {
+        "crossChecked": 66,
+        "crossConsistent": 63,
+        "excel": 68,
+        "crossReview": 3,
+        "html-row": 1
+      }
     },
     {
       "file": "GENERICO_SUMMER_II_2025.xlsx",
       "sheet": "Table 1",
       "rows": 985,
       "products": 690,
-      "productsWithImage": 394
+      "visualSources": {
+        "crossChecked": 305,
+        "crossReview": 62,
+        "html-row": 104,
+        "crossConsistent": 243,
+        "excel": 381,
+        "approximation": 205
+      }
     }
   ],
-  "imageNote": "Imagen recreada de la Lista de Precio; es una aproximación visual."
+  "visualSourceAudit": [
+    {
+      "file": "CORE_WINTER_2026_visual.zip",
+      "rows": 67,
+      "mappedImages": 67,
+      "rowsWithoutImage": 0
+    },
+    {
+      "file": "GENERICO_SUMMER_II_2025_visual.zip",
+      "rows": 680,
+      "mappedImages": 417,
+      "rowsWithoutImage": 263
+    },
+    {
+      "file": "SUMMER_2026_WK33_visual.zip",
+      "rows": 232,
+      "mappedImages": 226,
+      "rowsWithoutImage": 6
+    }
+  ],
+  "imageNote": "Imagen recreada de la Lista de Precio; es una aproximación visual.",
+  "moneyFieldsPublished": 0
 }

@@ -6,6 +6,8 @@ PWA para consultar artículos MERCH, capturar piezas y validar el cruce operativ
 
 - `Lista_Precios_Base.xlsx`: motor operativo SAP, Micros, Discovery y homologaciones.
 - `engines/merch-lists/*.xlsx`: listas visuales independientes. El proceso descubre entre 1 y 99 archivos sin depender de un nombre fijo.
+- `engines/visual-sources/*.zip`: exportaciones HTML de las listas; permiten confirmar por fila que cada foto corresponde al Código Día y SKU internacional.
+- `engines/image-overrides/`: reconstrucciones premium excepcionales nombradas con su Código Día, por ejemplo `16999.png`.
 - `scripts/generate_products.py`: construye el cruce operativo.
 - `scripts/generate_visual_catalog.py`: normaliza artículos, crea llaves estables y compacta las imágenes en atlas WebP.
 
@@ -14,14 +16,17 @@ Llaves generadas:
 - `articleKey`: `dia-{codigo-dia}--pos-{sku-pos-o-nombre}`.
 - `nameKey`: nombre del artículo normalizado, sin acentos ni caracteres especiales.
 
-Si una lista no trae imagen, se utiliza una recreación por categoría basada en el nombre. **Imagen recreada de la Lista de Precio; es una aproximación visual.**
+Cada imagen disponible se coteja entre Excel y HTML, se elige la fuente con mayor resolución y se remasteriza sin cambiar el producto. Si ninguna fuente trae foto, se utiliza una referencia por categoría. **Imagen recreada de la Lista de Precio; es una aproximación visual.**
+
+El catálogo es exclusivamente una herramienta interna de conteo: no publica precios ni campos monetarios.
 
 ## Actualizar listas
 
 1. Reemplaza o agrega los Excel dentro de `engines/merch-lists/`.
-2. Conserva los encabezados `CÓDIGO DIA`, `Imagen`, `Descripción SCI`, `NOMBRE POS`, `NOMBRE INVENTARIO`, `SKU POS` y al menos un precio `C1`–`C6`.
-3. Sube el cambio a `main`.
-4. El workflow `Actualizar lista de precios` valida los motores, regenera datos e imágenes, ejecuta pruebas y publica únicamente si todo pasa.
+2. Reemplaza también la exportación HTML comprimida correspondiente en `engines/visual-sources/` cuando esté disponible.
+3. Conserva los encabezados `CÓDIGO DIA`, `Imagen`, `Descripción SCI`, `NOMBRE POS`, `NOMBRE INVENTARIO` y `SKU POS`.
+4. Sube el cambio a `main`.
+5. El workflow valida dos veces la relación artículo-imagen, regenera el catálogo y publica únicamente si todo pasa.
 
 Las filas pueden aumentar o disminuir. El cruce se reconstruye completo en cada ejecución; no depende del número de fila anterior.
 
@@ -29,8 +34,8 @@ Las filas pueden aumentar o disminuir. El cruce se reconstruye completo en cada 
 
 - Ningún archivo puede alcanzar 25 MB.
 - Ninguna carpeta puede contener 100 archivos.
-- Las miniaturas se agrupan en atlas de 64 imágenes; el navegador carga sólo los recursos que utiliza.
-- El catálogo muestra hasta 32 resultados a la vez y filtra por nombre, Día, SAP, SKU y categoría.
+- Las imágenes de 384 px se agrupan en atlas de 16; así permanecen nítidas y ninguna carpeta alcanza 100 archivos.
+- El catálogo carga 48 artículos por bloque mediante `Ver más artículos` y filtra por nombre, Día, SAP, SKU y categoría.
 
 ## Auditoría y limpieza
 

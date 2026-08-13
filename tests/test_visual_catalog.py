@@ -23,7 +23,9 @@ class VisualCatalogContractTests(unittest.TestCase):
 
     def test_three_independent_engines_are_reported(self) -> None:
         self.assertEqual(self.catalog["meta"]["engineFiles"], 3)
+        self.assertEqual(self.catalog["meta"]["visualSourceFiles"], 3)
         self.assertEqual(len(list((ROOT / "engines/merch-lists").glob("*.xlsx"))), 3)
+        self.assertEqual(len(list((ROOT / "engines/visual-sources").glob("*.zip"))), 3)
 
     def test_stable_article_keys_are_unique(self) -> None:
         keys = [product["articleKey"] for product in self.products]
@@ -36,6 +38,7 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertTrue(product["codigoDia"])
             self.assertTrue(product["displayName"])
             self.assertTrue(product["nameKey"])
+            self.assertNotIn("prices", product)
             atlas = ROOT / product["visual"]["atlas"]
             self.assertTrue(atlas.is_file(), atlas)
             self.assertLess(atlas.stat().st_size, 25_000_000)
@@ -54,10 +57,21 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
-        for token in ("catalogGrid", "catalogFilters", "catalogVisualDialog", "merch-catalog.js"):
+        for token in ("catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "merch-catalog.js"):
             self.assertIn(token, html)
         for token in ("renderCatalog", "articleKey", "quantity", "Código Día", "Código SAP"):
             self.assertIn(token, app)
+        self.assertNotIn("catalogPrice", app)
+        self.assertNotIn("Agregar · $", app)
+
+    def test_double_image_audit_and_premium_override(self) -> None:
+        meta = self.catalog["meta"]
+        cross_checked = sum(source["visualSources"].get("crossChecked", 0) for source in meta["sources"])
+        self.assertGreaterEqual(meta["withSourceImage"], 800)
+        self.assertGreaterEqual(cross_checked, 500)
+        item = next(product for product in self.products if product["codigoDia"] == "16999")
+        self.assertEqual(item["visualSource"], "premium-override")
+        self.assertGreaterEqual(item["visual"]["grid"], 4)
 
 
 if __name__ == "__main__":

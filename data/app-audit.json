@@ -1,11 +1,11 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T02:43:01+00:00",
+  "auditedAtUtc": "2026-08-13T03:02:47+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
-  "checksTotal": 12,
-  "checksOk": 11,
-  "warnings": 1,
+  "checksTotal": 13,
+  "checksOk": 13,
+  "warnings": 0,
   "errors": 0,
   "checks": [
     {
@@ -21,7 +21,12 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,019 artículos, 3 motores y 12 atlas compactos"
+      "detail": "1,019 artículos, 813 imágenes fuente y 53 atlas HD"
+    },
+    {
+      "name": "Doble auditoría visual",
+      "status": "ok",
+      "detail": "575 imágenes cotejadas Excel/HTML; 1 reconstrucción premium verificada"
     },
     {
       "name": "Integridad WOE",
@@ -36,7 +41,7 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "106 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "107 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -55,8 +60,8 @@
     },
     {
       "name": "Workflows y obsoletos",
-      "status": "warning",
-      "detail": "Actualización y limpieza protegidas; 1 candidatos controlados"
+      "status": "ok",
+      "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
     },
     {
       "name": "Límites GitHub",
@@ -66,18 +71,18 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2035 KB auditados en archivos críticos"
+      "detail": "2014 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 19706,
+      "index.html": 19825,
       "styles.css": 29204,
-      "catalog.css": 9270,
-      "app.js": 99696,
+      "catalog.css": 9900,
+      "app.js": 100237,
       "data/products.js": 356315,
       "data/woe.js": 833682,
-      "data/merch-catalog.js": 734058,
+      "data/merch-catalog.js": 710943,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 546
     },
@@ -93,7 +98,5 @@
       "data/ui-config.js": 10000
     }
   },
-  "cleanupCandidates": [
-    "VALIDACION_CORRECCION.md"
-  ]
+  "cleanupCandidates": []
 }
