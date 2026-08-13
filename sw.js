@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-merch-v29-catalog-micros-2026-08-13';
+const CACHE_NAME = 'codebrew-v30-general-catalog-export-2026-08-13';
 const APP_SHELL = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const APP_SHELL = [
   './data/ui-config.js',
   './data/app-audit.js',
   './assets/catalog/catalog-hero.webp',
+  './assets/catalog/catalog-general-hero.webp',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];

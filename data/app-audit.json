@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-13T08:59:50+00:00",
+  "auditedAtUtc": "2026-08-13T09:01:31+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "5129127198b553592dff3e781300d8025646168ad2b8a1cfb2fb62e69e7f1437",
   "checksTotal": 13,
@@ -41,7 +41,7 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "117 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "121 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -56,7 +56,7 @@
     {
       "name": "Caché y modo offline",
       "status": "ok",
-      "detail": "15 recursos esenciales; Excel excluido del arranque"
+      "detail": "16 recursos esenciales; Excel excluido del arranque"
     },
     {
       "name": "Workflows y obsoletos",
@@ -71,15 +71,15 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2399 KB auditados en archivos críticos"
+      "detail": "2403 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 21671,
-      "styles.css": 35242,
-      "catalog.css": 12122,
-      "app.js": 121975,
+      "index.html": 21323,
+      "styles.css": 36980,
+      "catalog.css": 12130,
+      "app.js": 124194,
       "data/products.js": 356315,
       "data/woe.js": 1058152,
       "data/merch-catalog.js": 849199,

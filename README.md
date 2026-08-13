@@ -1,6 +1,6 @@
-# CodeBrew Merch · Catálogo visual premium
+# CodeBrew · Catálogo General
 
-PWA para consultar artículos MERCH, capturar piezas y validar el cruce operativo `Código Día → Código SAP → Descripción SAP`.
+PWA operativa con tres accesos: **Catálogo General**, **Revisión de Merch** y **Exportación HTML a PDF/Excel**.
 
 ## Motores
 
@@ -47,6 +47,8 @@ La vista puede descargarse como PDF o imprimirse con el botón **Imprimir vista*
 La pestaña `Catalogo Micros` se lee por encabezado, no por posición fija. Sus columnas operativas son `Agrupado`, `Familia`, `Nombre Micros` y `Codigo DIA`; pueden aumentar o disminuir filas sin modificar el código. WOE permite buscar cualquier artículo y filtrar por Agrupado o Familia. Para mantener una vista ligera se muestran sólo cinco imágenes inicialmente; el buscador consulta todo el motor.
 
 Para exportar inventario desde SAP: al finalizar el conteo, usa **clic derecho → Guardar como… → Página web completa (*.html)** y adjunta ese HTML. La exportación generada desde HTML incluye únicamente productos con Cantidad o `$ Stock` mayor a cero.
+
+El PDF agrega `Familia` y compacta cada registro a un solo renglón. El Excel exporta `Agrupado`, `Familia`, códigos, descripciones, UMB, Cantidad y `$ Stock`. En la validación del HTML `Alsea(1).html`, 1,322 de 1,324 códigos SAP existen en el motor; `159925` y `159926` permanecen como cruces pendientes para evitar asignaciones inventadas.
 
 ## Límites y rendimiento
 

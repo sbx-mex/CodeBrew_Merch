@@ -6,7 +6,7 @@
   overflow: hidden;
   align-items: flex-end;
   padding: clamp(28px, 5vw, 58px);
-  background: #e9dfd0 url("assets/catalog/catalog-hero.webp") center/cover no-repeat;
+  background: #e9dfd0 url("assets/catalog/catalog-general-hero.webp") center/cover no-repeat;
   color: #153a2e;
 }
 .woe-hero::after {

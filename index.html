@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#006241" />
-  <meta name="description" content="Herramienta operativa para consultar MERCH, validar WOE y preparar etiquetas POS." />
+  <meta name="description" content="Catálogo general para consultar artículos, revisar Merch y exportar inventario SAP." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>CodeBrew 2.0 · Merch POS</title>
+  <title>CodeBrew · Catálogo General</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="catalog.css" />
@@ -26,16 +26,23 @@
     <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
     <div>
       <h1>CodeBrew <span>v2 OCR</span></h1>
-      <p>Buscador de códigos · Merch POS</p>
+      <p>Catálogo general · búsqueda y exportación</p>
     </div>
     <div class="release-badge" aria-label="Versión actualizada">OCR móvil optimizado · v2</div>
     <div id="connectionStatus" class="connection-status" role="status" aria-live="polite">En línea</div>
     <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
   </header>
 
+  <section class="mode-menu" aria-labelledby="modeMenuTitle">
+    <div><span>Menú rápido</span><h2 id="modeMenuTitle">¿Qué necesitas hacer?</h2></div>
+    <button type="button" data-mode-target="woeCatalog"><b>Catálogo General</b><small>Buscar cualquier artículo</small></button>
+    <button type="button" data-mode-target="catalogGrid"><b>Revisión de Merch</b><small>Explorar referencias visuales</small></button>
+    <button type="button" data-mode-target="stockPanel"><b>HTML a PDF / Excel</b><small>Cruzar inventario SAP</small></button>
+  </section>
+
   <nav class="tabs" aria-label="Pestañas" role="tablist">
     <button id="tabConsulta" class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true"><span>Consulta</span><small>Precio y POS</small></button>
-    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>Catálogo y WOE</span><small><b id="tabWoeCount">0</b> seleccionados</small></button>
+    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>Catálogo General</span><small><b id="tabWoeCount">0</b> seleccionados</small></button>
     <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false"><span>Etiquetas</span><small>Preparar PDF</small></button>
   </nav>
 
@@ -177,35 +184,31 @@
           <div>
             <span class="woe-kicker stock-kicker">Opcional · apoyo al conteo físico</span>
             <h2 id="stockTitle">Cruce de inventario</h2>
-            <p>Adjunta el HTML guardado desde SAP para una lectura más rápida. PDF SAP y Stock on Hand permanecen disponibles como respaldo.</p>
+            <p>Adjunta el HTML guardado desde SAP para una lectura más rápida. PDF SAP permanece disponible como respaldo.</p>
           </div>
-          <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
         <a class="back-to-catalog" href="#woeCatalog">← Volver al catálogo</a>
         <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
-          <div data-step="attach"><b>1</b><span>Adjunta HTML SAP, PDF SAP o Stock on Hand.</span></div>
+          <div data-step="attach"><b>1</b><span>Adjunta HTML o PDF SAP.</span></div>
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
           <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
         </div>
-        <aside class="save-html-tutorial" aria-label="Tutorial para guardar el inventario SAP">
-          <span class="tutorial-icon" aria-hidden="true">⌁</span><div><b>Al finalizar tu conteo</b><p>En la página de SAP haz <strong>clic derecho → Guardar como… → Página web completa (*.html)</strong>. Después adjunta aquí el archivo HTML.</p></div>
-        </aside>
-        <p id="stockNextAction" class="next-action" aria-live="polite">El HTML es la opción recomendada: lectura local, rápida y sin ejecutar contenido.</p>
+        <details class="save-html-tutorial"><summary>¿Cómo guardo el HTML?</summary><p>Al finalizar tu conteo: <strong>clic derecho → Guardar como… → Página web completa (*.html)</strong>. Después adjunta el archivo.</p></details>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el HTML SAP.</p>
         <div class="inventory-source-guide" aria-label="Formatos compatibles">
           <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa, rápida y local</span></div>
-          <div><b>Stock on Hand</b><span>Nombre Micros → WOE</span></div>
           <div><b>PDF SAP</b><span>Código SAP → Código Día + nombre de inventario</span></div>
         </div>
-        <label class="stock-store-field" for="stockStoreInput"><span>Nombre de tienda <small>opcional si viene dentro del PDF</small></span><input id="stockStoreInput" type="text" maxlength="100" placeholder="Ej. Starbucks MX Luna Park" autocomplete="organization"></label>
+        <label class="stock-store-field" for="stockStoreInput"><span>Tienda</span><input id="stockStoreInput" type="text" maxlength="100" placeholder="Ej. Luna Park" autocomplete="organization"></label>
         <div class="stock-upload-row">
           <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar HTML / PDF</button>
           <input id="stockPdfInput" class="visually-hidden" type="file" accept="text/html,.html,.htm,application/pdf,.pdf">
           <button id="stockExport" type="button" class="stock-export" disabled>2 · Exportar PDF cruzado</button>
+          <button id="stockExcel" type="button" class="stock-excel" disabled>Exportar Excel</button>
           <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
           <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
         </div>
-        <label class="stock-all-toggle" for="stockIncludeZero"><input id="stockIncludeZero" type="checkbox"><span><b>Mostrar también artículos en cero</b><small>Desactivado por defecto: el PDF exporta únicamente productos con Cantidad o $ Stock mayor a cero.</small></span></label>
-        <p class="stock-disclaimer"><b>Importante:</b> el HTML se procesa como texto en el navegador y no ejecuta scripts. Se toma la primera Cantidad y UMB junto al artículo; el archivo puede pesar hasta 35 MB.</p>
+        <input id="stockIncludeZero" type="checkbox" hidden>
         <div id="stockProgressWrap" class="stock-progress" hidden>
           <label for="stockProgress">Lectura del reporte</label>
           <progress id="stockProgress" max="100" value="0">0%</progress>
@@ -219,20 +222,20 @@
       <dialog id="stockConfirmDialog" class="stock-dialog" aria-labelledby="stockConfirmTitle" aria-describedby="stockConfirmIntro">
         <form method="dialog" class="stock-dialog-card">
           <button id="stockConfirmClose" class="stock-dialog-close" value="cancel" aria-label="Cerrar confirmación">×</button>
-          <div class="stock-dialog-grid">
+          <div id="stockConfirmGrid" class="stock-dialog-grid">
             <figure class="stock-dialog-visual">
               <img src="assets/stock_pdf_woe.jpeg" alt="Guía visual para capturar, revisar y comparar el Stock on Hand" loading="lazy" decoding="async">
               <figcaption>Guía operativa · revisa antes de generar.</figcaption>
             </figure>
             <section class="stock-dialog-content">
-              <span class="woe-kicker stock-kicker">Confirmación segura</span>
-              <h2 id="stockConfirmTitle">Confirma y exporta.</h2>
-              <p id="stockConfirmIntro">Valida tienda, fecha y hora. Los artículos sin cruce se conservarán como aviso.</p>
+              <span class="woe-kicker stock-kicker">Revisión final</span>
+              <h2 id="stockConfirmTitle">Datos listos</h2>
+              <p id="stockConfirmIntro">Confirma los datos antes de exportar.</p>
               <div id="stockConfirmSummary" class="stock-confirm-summary"></div>
-              <div class="stock-confirm-ready"><b>Listo para continuar</b><span>El PDF incluirá todos los artículos con cantidad diferente de cero, tengan o no cruce.</span></div>
               <p id="stockConfirmBlock" class="stock-confirm-block" hidden></p>
               <div class="stock-dialog-actions">
-                <button id="stockConfirmAccept" type="button" disabled>Confirmar y exportar PDF cruzado</button>
+                <button id="stockConfirmAccept" type="button" disabled>Exportar PDF</button>
+                <button id="stockConfirmExcel" class="ghost" type="button" disabled>Exportar Excel</button>
               </div>
             </section>
           </div>

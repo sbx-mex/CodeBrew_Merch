@@ -1,0 +1,11 @@
+{
+  "source": "Alsea(1).html",
+  "sourceSizeMb": 5.91,
+  "rowsRead": 1324,
+  "positiveRows": 223,
+  "uniqueSapCodes": 1324,
+  "matchedAgainstExcelSap": 1322,
+  "unmatchedSapCodes": ["159925", "159926"],
+  "policy": "Los códigos sin coincidencia permanecen Sin cruce; no se asignan datos inferidos.",
+  "status": "validated_with_2_pending_codes"
+}

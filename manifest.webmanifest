@@ -1,7 +1,7 @@
 {
-  "name": "CodeBrew Merch POS · WOE",
+  "name": "CodeBrew · Catálogo General",
   "short_name": "CodeBrew",
-  "description": "Catálogo visual MERCH, captura de piezas y cruce operativo Código Día a SAP.",
+  "description": "Catálogo general, revisión de Merch y exportación de inventario SAP a PDF y Excel.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -12,7 +12,7 @@
   "theme_color": "#006241",
   "shortcuts": [
     { "name": "Consulta MERCH", "short_name": "Consulta", "url": "./#consulta" },
-    { "name": "Catálogo y WOE", "short_name": "Catálogo", "url": "./#woe" },
+    { "name": "Catálogo General", "short_name": "Catálogo", "url": "./#woe" },
     { "name": "Etiquetado POS", "short_name": "Etiquetas", "url": "./#etiquetado" }
   ],
   "icons": [

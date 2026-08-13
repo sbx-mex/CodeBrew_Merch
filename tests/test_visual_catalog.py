@@ -74,6 +74,9 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertIn(token, html)
         self.assertIn("catalogVisibleLimit = 5", app)
         self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
+        self.assertIn("exportStockExcel", app)
+        self.assertIn("stockConfirmExcel", html)
+        self.assertIn("Catálogo General", html)
         for token in ("renderCatalog", "articleKey", "quantity", "Código Día", "Código SAP"):
             self.assertIn(token, app)
         self.assertNotIn("catalogPrice", app)
