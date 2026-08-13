@@ -10,6 +10,8 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PERFORMANCE_BUDGETS = {
@@ -60,6 +62,15 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def image_is_readable(path: Path) -> bool:
+    try:
+        with Image.open(path) as image:
+            image.verify()
+        return True
+    except (OSError, ValueError):
+        return False
+
+
 def audit(root: Path) -> dict:
     report = load_json(root / "data/import-report.json")
     catalog_report = load_json(root / "data/merch-catalog-report.json")
@@ -84,28 +95,31 @@ def audit(root: Path) -> dict:
         "4 pestañas operativas localizadas" if REQUIRED_SHEETS.issubset(present_sheets) else f"Faltan: {', '.join(sorted(REQUIRED_SHEETS - present_sheets))}",
     ))
     atlas_files = sorted((root / "assets/catalog/atlases").glob("*.webp"))
+    featured_files = sorted((root / "assets/catalog/featured").glob("*.webp"))
     engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
     visual_sources = sorted((root / "engines/visual-sources").glob("*.zip"))
     image_overrides = sorted((root / "engines/image-overrides").glob("*.*"))
     catalog_text = (root / "data/merch-catalog.js").read_text(encoding="utf-8")
     catalog_ok = (
         catalog_report.get("status") == "ok"
-        and catalog_report.get("version") == "premium-remastered-v2"
+        and catalog_report.get("version") == "premium-hd-direct-v3"
         and catalog_report.get("engineFiles") == len(engines) == 3
         and catalog_report.get("visualSourceFiles") == len(visual_sources) == 3
         and catalog_report.get("products", 0) > 0
         and catalog_report.get("withSourceImage", 0) > 800
-        and catalog_report.get("tilePixels", 0) >= 384
+        and catalog_report.get("tilePixels", 0) >= 512
         and catalog_report.get("moneyFieldsPublished") == 0
         and '"prices"' not in catalog_text
         and catalog_report.get("atlases") == len(atlas_files)
         and 0 < len(atlas_files) < 100
-        and all(path.stat().st_size < 25_000_000 for path in [*engines, *visual_sources, *image_overrides, *atlas_files])
+        and catalog_report.get("featuredImages") == len(featured_files) >= 1
+        and all(image_is_readable(path) for path in [*atlas_files, *featured_files])
+        and all(path.stat().st_size < 25_000_000 for path in [*engines, *visual_sources, *image_overrides, *atlas_files, *featured_files])
     )
     checks.append(check(
         "Catálogo visual",
         catalog_ok,
-        f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('withSourceImage', 0):,} imágenes fuente y {len(atlas_files)} atlas HD",
+        f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('withSourceImage', 0):,} imágenes fuente, {len(atlas_files)} atlas y {len(featured_files)} imagen directa HD",
     ))
     cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
     premium = catalog_report.get("visualSources", {}).get("premium-override", 0)
@@ -190,7 +204,7 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "engines/**" in workflow_update and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/atlases" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
+    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "engines/**" in workflow_update and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/atlases" in workflow_update and "assets/catalog/featured" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",

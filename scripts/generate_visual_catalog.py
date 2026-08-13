@@ -19,12 +19,12 @@ from pathlib import Path, PurePosixPath
 from openpyxl import load_workbook
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
-TILE = 384
-GRID = 4
+TILE = 512
+GRID = 3
 ATLAS_CAPACITY = GRID * GRID
 MAX_FILE_BYTES = 25_000_000
 MAX_UNCOMPRESSED = 150_000_000
-IMAGE_NOTE = "Imagen recreada de la Lista de Precio; es una aproximación visual."
+IMAGE_NOTE = "Las imágenes HD conservan la fuente disponible; cuando no existe fotografía se muestra una referencia aproximada."
 FIELD_ALIASES = {
     "skuIntl": {"sku intl"}, "codigoDia": {"codigo dia"},
     "descripcion": {"descripcion sci", "descripcion"}, "nombrePos": {"nombre pos"},
@@ -301,7 +301,7 @@ def parse_workbook(path: Path, priority: int, external: dict[tuple[str, str], by
         if candidates:
             visual_source, raw = max(candidates, key=lambda candidate: ((1, 0, 0) if candidate[0] == "premium-override" else (0, *image_score(candidate[1]))))
             digest = hashlib.sha256(raw).hexdigest()[:20]
-            visual_key = f"real:{digest}"
+            visual_key = f"direct:{codigo}:{digest}" if visual_source == "premium-override" else f"real:{digest}"
             visuals.setdefault(visual_key, raw)
             quality[visual_source] += 1
         else:
@@ -321,11 +321,34 @@ def parse_workbook(path: Path, priority: int, external: dict[tuple[str, str], by
     return products, visuals, {"file": path.name, "sheet": title, "rows": rows, "products": len(products), "visualSources": dict(quality)}
 
 
-def write_atlases(visuals: dict[str, bytes], output: Path) -> dict[str, dict]:
+def write_visuals(visuals: dict[str, bytes], output: Path, featured_output: Path) -> dict[str, dict]:
     output.mkdir(parents=True, exist_ok=True)
-    tiles = [(key, product_tile(raw), "remastered") for key, raw in sorted(visuals.items())]
+    featured_output.mkdir(parents=True, exist_ok=True)
+    descriptors: dict[str, dict] = {}
+    tiles = []
+    for key, raw in sorted(visuals.items()):
+        if not key.startswith("direct:"):
+            tiles.append((key, product_tile(raw), "remastered"))
+            continue
+        _, codigo, digest = key.split(":", 2)
+        destination = featured_output / f"dia-{slug(codigo, 18)}-{digest[:8]}.webp"
+        with Image.open(io.BytesIO(raw)) as source:
+            image = ImageOps.exif_transpose(source).convert("RGB")
+            if max(image.size) > 2200:
+                image.thumbnail((2200, 2200), Image.Resampling.LANCZOS)
+            image = image.filter(ImageFilter.UnsharpMask(radius=.8, percent=115, threshold=3))
+            encoded = io.BytesIO()
+            image.save(encoded, "WEBP", quality=96, method=6)
+            destination.write_bytes(encoded.getvalue())
+        with Image.open(destination) as saved:
+            saved.verify()
+        if destination.stat().st_size >= MAX_FILE_BYTES:
+            raise ValueError(f"Imagen HD mayor a 25 MB: {destination.name}")
+        descriptors[key] = {
+            "type": "direct", "src": f"assets/catalog/featured/{destination.name}",
+            "kind": "premium", "width": image.width, "height": image.height,
+        }
     tiles.extend((f"fallback:{category}", fallback_tile(category), "approximation") for category in ("mug", "tumbler", "cold-cup", "bottle", "brew", "accessory", "other"))
-    descriptors = {}
     for atlas_index in range(math.ceil(len(tiles) / ATLAS_CAPACITY)):
         atlas = Image.new("RGB", (TILE * GRID, TILE * GRID), "#fffdf9")
         for local_index, (key, tile, kind) in enumerate(tiles[atlas_index * ATLAS_CAPACITY:(atlas_index + 1) * ATLAS_CAPACITY]):
@@ -333,15 +356,19 @@ def write_atlases(visuals: dict[str, bytes], output: Path) -> dict[str, dict]:
             atlas.paste(tile, (column * TILE, row * TILE))
             descriptors[key] = {"atlas": f"assets/catalog/atlases/catalog-{atlas_index + 1:02d}.webp", "x": round(column * 100 / (GRID - 1), 6), "y": round(row * 100 / (GRID - 1), 6), "grid": GRID, "kind": kind}
         destination = output / f"catalog-{atlas_index + 1:02d}.webp"
-        atlas.save(destination, "WEBP", quality=92, method=6)
+        encoded = io.BytesIO()
+        atlas.save(encoded, "WEBP", quality=92, method=6)
+        destination.write_bytes(encoded.getvalue())
+        with Image.open(destination) as saved:
+            saved.verify()
         if destination.stat().st_size >= MAX_FILE_BYTES:
             raise ValueError(f"Atlas mayor a 25 MB: {destination.name}")
-    if len(list(output.glob("*.webp"))) >= 100:
+    if len(list(output.glob("*.webp"))) >= 100 or len(list(featured_output.glob("*.webp"))) >= 100:
         raise ValueError("La carpeta de atlas alcanzó 100 archivos")
     return descriptors
 
 
-def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_output: Path, report_output: Path, atlas_output: Path) -> dict:
+def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_output: Path, report_output: Path, atlas_output: Path, featured_output: Path) -> dict:
     def priority(path: Path) -> tuple[int, str]:
         name = normalize(path.stem)
         return (0 if "summer 2026" in name else 1 if "winter 2026" in name else 2, name)
@@ -360,28 +387,31 @@ def generate(engine_dir: Path, visual_source_dir: Path, overrides: Path, js_outp
             duplicate_count += 1
         else:
             deduplicated[fingerprint] = product
-    products = sorted(deduplicated.values(), key=lambda item: (item["priority"], int(item["codigoDia"]) if item["codigoDia"].isdigit() else 999999, item["displayName"]))
+    products = sorted(deduplicated.values(), key=lambda item: (item["visualSource"] != "premium-override", item["priority"], int(item["codigoDia"]) if item["codigoDia"].isdigit() else 999999, item["displayName"]))
     if atlas_output.exists():
         shutil.rmtree(atlas_output)
-    descriptors = write_atlases(visuals, atlas_output)
+    if featured_output.exists():
+        shutil.rmtree(featured_output)
+    descriptors = write_visuals(visuals, atlas_output, featured_output)
     source_counts = Counter()
     for product in products:
         product["visual"] = descriptors[product.pop("visualKey")]
         product.pop("priority", None)
         source_counts[product["visualSource"]] += 1
-        product["imageNote"] = IMAGE_NOTE
+        product["imageNote"] = "Imagen HD reconstruida desde la referencia original." if product["visualSource"] == "premium-override" else IMAGE_NOTE
     approximation_count = source_counts["approximation"]
     report = {
-        "status": "ok", "version": "premium-remastered-v2", "engineFiles": len(paths),
+        "status": "ok", "version": "premium-hd-direct-v3", "engineFiles": len(paths),
         "visualSourceFiles": len(visual_reports), "products": len(products), "duplicateRowsIgnored": duplicate_count,
         "withSourceImage": len(products) - approximation_count, "withApproximation": approximation_count,
         "uniqueVisuals": len(visuals), "atlases": len(list(atlas_output.glob("*.webp"))),
+        "featuredImages": len(list(featured_output.glob("*.webp"))),
         "tilePixels": TILE, "atlasGrid": GRID, "visualSources": dict(source_counts),
         "categories": dict(Counter(product["category"] for product in products)),
         "sources": sources, "visualSourceAudit": visual_reports, "imageNote": IMAGE_NOTE,
         "moneyFieldsPublished": 0,
     }
-    payload = {"version": "premium-remastered-v2", "products": products, "meta": report}
+    payload = {"version": "premium-hd-direct-v3", "products": products, "meta": report}
     js_output.parent.mkdir(parents=True, exist_ok=True); report_output.parent.mkdir(parents=True, exist_ok=True)
     js_output.write_text("window.MERCH_VISUAL_CATALOG=" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     report_output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -396,8 +426,9 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=Path("data/merch-catalog.js"))
     parser.add_argument("--report", type=Path, default=Path("data/merch-catalog-report.json"))
     parser.add_argument("--atlas-output", type=Path, default=Path("assets/catalog/atlases"))
+    parser.add_argument("--featured-output", type=Path, default=Path("assets/catalog/featured"))
     args = parser.parse_args()
-    print(json.dumps(generate(args.engine_dir, args.visual_source_dir, args.overrides, args.output, args.report, args.atlas_output), ensure_ascii=False))
+    print(json.dumps(generate(args.engine_dir, args.visual_source_dir, args.overrides, args.output, args.report, args.atlas_output, args.featured_output), ensure_ascii=False))
     return 0
 
 

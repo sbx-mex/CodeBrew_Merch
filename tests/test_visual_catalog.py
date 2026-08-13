@@ -6,6 +6,8 @@ import json
 import unittest
 from pathlib import Path
 
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,9 +41,10 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertTrue(product["displayName"])
             self.assertTrue(product["nameKey"])
             self.assertNotIn("prices", product)
-            atlas = ROOT / product["visual"]["atlas"]
-            self.assertTrue(atlas.is_file(), atlas)
-            self.assertLess(atlas.stat().st_size, 25_000_000)
+            visual = product["visual"]
+            asset = ROOT / (visual["src"] if visual.get("type") == "direct" else visual["atlas"])
+            self.assertTrue(asset.is_file(), asset)
+            self.assertLess(asset.stat().st_size, 25_000_000)
 
     def test_github_limits_are_respected(self) -> None:
         excluded = {".git", ".codebrew-build", "__pycache__"}
@@ -53,6 +56,13 @@ class VisualCatalogContractTests(unittest.TestCase):
                 self.assertLess(path.stat().st_size, 25_000_000, relative.as_posix())
             elif path.is_dir():
                 self.assertLess(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
+
+    def test_every_published_webp_is_readable(self) -> None:
+        images = list((ROOT / "assets/catalog/atlases").glob("*.webp")) + list((ROOT / "assets/catalog/featured").glob("*.webp"))
+        self.assertTrue(images)
+        for path in images:
+            with Image.open(path) as image:
+                image.verify()
 
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -71,7 +81,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertGreaterEqual(cross_checked, 500)
         item = next(product for product in self.products if product["codigoDia"] == "16999")
         self.assertEqual(item["visualSource"], "premium-override")
-        self.assertGreaterEqual(item["visual"]["grid"], 4)
+        self.assertEqual(item["visual"]["type"], "direct")
+        self.assertGreaterEqual(item["visual"]["width"], 1000)
+        self.assertGreaterEqual(item["visual"]["height"], 1000)
+        self.assertGreaterEqual(self.catalog["meta"]["tilePixels"], 512)
 
 
 if __name__ == "__main__":

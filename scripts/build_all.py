@@ -50,6 +50,7 @@ def main() -> int:
             "--output", str(STAGE / "merch-catalog.js"),
             "--report", str(STAGE / "merch-catalog-report.json"),
             "--atlas-output", str(STAGE / "atlases"),
+            "--featured-output", str(STAGE / "featured"),
         )
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
@@ -60,6 +61,10 @@ def main() -> int:
             shutil.rmtree(atlas_target)
         atlas_target.parent.mkdir(parents=True, exist_ok=True)
         (STAGE / "atlases").replace(atlas_target)
+        featured_target = ROOT / "assets/catalog/featured"
+        if featured_target.exists():
+            shutil.rmtree(featured_target)
+        (STAGE / "featured").replace(featured_target)
         run("scripts/audit_project.py")
     finally:
         if STAGE.exists():
