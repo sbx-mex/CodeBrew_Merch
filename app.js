@@ -2,9 +2,12 @@
   const $ = (id) => document.getElementById(id);
   const products = window.PRODUCTS || [];
   const woeCatalog = window.WOE_CATALOG || [];
+  const visualCatalog = window.MERCH_VISUAL_CATALOG?.products || [];
   const stockConfig = window.STOCK_CONFIG || {};
   const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Empieza con WOE, DIA, nombre o SKU.',woeReady:'Listado listo para validar y exportar.',stockEmpty:'Adjunta el Stock on Hand más actual.',stockReady:'Lectura lista para confirmar y exportar.'}};
   const woeSelection = new Map();
+  const catalogItemByKey = new Map();
+  let catalogCategory = 'all';
   let woePdfExported = false;
   let stockRows = [];
   let stockMeta = null;
@@ -226,17 +229,29 @@
     $('result').innerHTML = `<div class="not-card"><div class="title">Artículo no encontrado</div><p>Se buscó: <b>${q || 'sin lectura'}</b></p><p class="desc">Verifica SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.</p></div>`;
   }
 
-  const woeSearchRows = woeCatalog.map((item,index) => ({
-    item,index,
-    text:normalizeText([
-      item.idWoe,item.codigoDia,item.descripcionSap,
-      ...(item.micros||[]),
-      ...(item.merch||[]).flatMap(row => [row.descripcionSci,row.nombrePos,row.nombreInventario,row.skuIntl,row.skuPos,row.base])
-    ].join(' '))
-  }));
+  const woeByDay = new Map();
+  woeCatalog.forEach(item=>{const key=normalizeSku(item.codigoDia),rows=woeByDay.get(key)||[];if(key){rows.push(item);woeByDay.set(key,rows);}});
+  const visualByDay = new Map();
+  const visualWoeItems=[];
+  visualCatalog.forEach(product=>{
+    const day=normalizeSku(product.codigoDia),matches=woeByDay.get(day)||[];
+    const linked=matches.length?matches:[{idWoe:'',codigoDia:product.codigoDia,descripcionSap:'',micros:[],merch:[],validation:{sap:false,micros:false,merch:true},origin:'Catálogo visual',sourceRow:product.sourceRow}];
+    linked.forEach(match=>visualWoeItems.push({...match,visualProduct:product,quantity:1}));
+    const rows=visualByDay.get(day)||[];rows.push(product);visualByDay.set(day,rows);
+  });
+  const visualDays=new Set(visualCatalog.map(product=>normalizeSku(product.codigoDia)));
+  const combinedWoeItems=[...visualWoeItems,...woeCatalog.filter(item=>!visualDays.has(normalizeSku(item.codigoDia)))];
+  const woeSearchRows = combinedWoeItems.map((item,index) => {
+    const product=item.visualProduct||{};
+    return {item,index,text:normalizeText([
+      item.idWoe,item.codigoDia,item.descripcionSap,...(item.micros||[]),
+      ...(item.merch||[]).flatMap(row => [row.descripcionSci,row.nombrePos,row.nombreInventario,row.skuIntl,row.skuPos,row.base]),
+      product.displayName,product.descripcionSci,product.nombrePos,product.nombreInventario,product.skuIntl,product.skuPos,product.nameKey,product.articleKey,product.source
+    ].join(' '))};
+  });
   const woeExactIndex = new Map();
-  woeCatalog.forEach(item => {
-    [item.idWoe,item.codigoDia].forEach(value => {
+  combinedWoeItems.forEach(item => {
+    [item.idWoe,item.codigoDia,item.visualProduct?.skuIntl,item.visualProduct?.skuPos].forEach(value => {
       const key=normalizeSku(value);
       if(!key)return;
       const rows=woeExactIndex.get(key)||[];
@@ -245,7 +260,39 @@
   });
   let woeSuggestionTimer=null;
 
-  function woeKey(item,index=''){ return `${item.idWoe||'sin-woe'}|${item.codigoDia}|${item.sourceRow || item.origin || index}`; }
+  function woeKey(item,index=''){ return `${item.visualProduct?.articleKey||'sin-visual'}|${item.idWoe||'sin-sap'}|${item.codigoDia}|${item.sourceRow||item.origin||index}`; }
+  function visualProductFor(item){return item?.visualProduct||(visualByDay.get(normalizeSku(item?.codigoDia))||[])[0]||null;}
+  function visualStyle(product){const visual=product?.visual;if(!visual)return '';const atlas=String(visual.atlas||'').replace(/[^a-zA-Z0-9_./-]/g,'');return `--catalog-image:url(${atlas});--catalog-x:${Number(visual.x)||0}%;--catalog-y:${Number(visual.y)||0}%`;}
+  function articleName(item){const product=visualProductFor(item);return product?.displayName||product?.nombrePos||item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Artículo MERCH';}
+  function catalogPrice(product){const tiers=product?.prices||{};const key=Object.prototype.hasOwnProperty.call(tiers,'C2')?'C2':Object.keys(tiers)[0];return key?new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:2}).format(tiers[key]):'Precio por validar';}
+  function catalogItemKey(item){return woeKey(item,'catalog');}
+  function catalogCategoryLabel(value){return ({all:'Todo',mug:'Tazas',tumbler:'Tumblers','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
+  function openCatalogVisual(item){
+    const product=visualProductFor(item);if(!product)return;
+    $('catalogVisualImage').setAttribute('style',visualStyle(product));
+    $('catalogVisualImage').setAttribute('aria-label',`Vista ampliada de ${articleName(item)}`);
+    $('catalogVisualTitle').textContent=articleName(item);
+    $('catalogVisualDescription').textContent=product.descripcionSci||item.descripcionSap||'Descripción por validar';
+    $('catalogVisualCodes').innerHTML=`<div><small>Código Día</small><b>${escapeHtml(item.codigoDia||product.codigoDia||'—')}</b></div><div><small>Código SAP</small><b>${escapeHtml(item.idWoe||'Sin cruce')}</b></div><div><small>SKU POS</small><b>${escapeHtml(product.skuPos||'—')}</b></div><div><small>Precio</small><b>${escapeHtml(catalogPrice(product))}</b></div>`;
+    $('catalogVisualDialog').showModal();
+  }
+  function renderCatalog(raw=''){
+    const filters=$('catalogFilters'),grid=$('catalogGrid');if(!filters||!grid)return;
+    const categories=['all','mug','tumbler','cold-cup','bottle','brew','accessory','other'];
+    filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('');
+    const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean);
+    const matches=woeSearchRows.filter(row=>row.item.visualProduct&&(catalogCategory==='all'||row.item.visualProduct.category===catalogCategory)&&tokens.every(token=>row.text.includes(token)));
+    const unique=[];const seen=new Set();for(const row of matches){if(seen.has(row.item.visualProduct.articleKey))continue;seen.add(row.item.visualProduct.articleKey);unique.push(row.item);}
+    const visible=unique.slice(0,32);$('catalogSummary').textContent=`${unique.length.toLocaleString('es-MX')} coincidencia${unique.length===1?'':'s'}${unique.length>32?' · primeras 32':''}`;
+    grid.innerHTML=visible.length?visible.map(item=>{
+      const product=item.visualProduct,key=catalogItemKey(item),status=operationalWoeStatus(item);catalogItemByKey.set(key,item);
+      return `<article class="catalog-card"><button type="button" class="catalog-thumb" data-catalog-visual="${escapeHtml(key)}" style="${visualStyle(product)}" aria-label="Ampliar ${escapeHtml(articleName(item))}"></button><div class="catalog-card-body"><div class="catalog-card-top"><span class="catalog-source">${escapeHtml(product.source)}</span><span class="catalog-match ${status.kind==='ok'?'ok':'review'}">${status.kind==='ok'?'Cruce validado':'Revisar cruce'}</span></div><h3>${escapeHtml(articleName(item))}</h3><p class="catalog-card-description">${escapeHtml(product.descripcionSci||item.descripcionSap||'Descripción por validar')}</p><div class="catalog-codes"><div><small>Día</small><b>${escapeHtml(item.codigoDia||'—')}</b></div><div><small>SAP</small><b>${escapeHtml(item.idWoe||'Pendiente')}</b></div></div><div class="catalog-card-action"><div class="catalog-quantity"><button type="button" data-catalog-step="-1" data-catalog-key="${escapeHtml(key)}" aria-label="Restar pieza">−</button><input type="number" min="1" max="9999" value="1" data-catalog-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"><button type="button" data-catalog-step="1" data-catalog-key="${escapeHtml(key)}" aria-label="Agregar pieza">+</button></div><button type="button" class="catalog-add" data-catalog-add="${escapeHtml(key)}">Agregar · ${escapeHtml(catalogPrice(product))}</button></div></div></article>`;
+    }).join(''):'<div class="catalog-empty"><b>No encontramos artículos.</b><br>Prueba otra palabra, Código Día, SAP o categoría.</div>';
+    filters.querySelectorAll('[data-catalog-filter]').forEach(button=>button.addEventListener('click',()=>{catalogCategory=button.dataset.catalogFilter;renderCatalog($('woeSearch').value);}));
+    grid.querySelectorAll('[data-catalog-step]').forEach(button=>button.addEventListener('click',()=>{const input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogKey)}"]`);input.value=Math.max(1,Math.min(9999,(Number(input.value)||1)+Number(button.dataset.catalogStep)));}));
+    grid.querySelectorAll('[data-catalog-visual]').forEach(button=>button.addEventListener('click',()=>openCatalogVisual(catalogItemByKey.get(button.dataset.catalogVisual))));
+    grid.querySelectorAll('[data-catalog-add]').forEach(button=>button.addEventListener('click',()=>{const item=catalogItemByKey.get(button.dataset.catalogAdd),input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogAdd)}"]`);addWoeItem(item,true,Number(input?.value)||1);renderWoeResults();}));
+  }
   function splitWoeQueries(raw){ return String(raw||'').split(/[\n,;]+/).map(value=>value.trim()).filter(Boolean); }
   function findWoeMatches(raw,limit=12){
     const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input);
@@ -271,7 +318,7 @@
     const matches=findWoeMatches(query,8);
     box.innerHTML=matches.length?matches.map((item,index)=>`
       <button type="button" class="woe-suggestion" role="option" data-woe-suggestion="${index}">
-        <b>${escapeHtml(item.codigoDia)}</b><span>${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Sin descripción disponible')}</span><small>${item.idWoe?`WOE ${escapeHtml(item.idWoe)}`:'Sin cruce WOE'}</small>
+        <b>${escapeHtml(item.codigoDia)}</b><span>${escapeHtml(articleName(item))}</span><small>${item.idWoe?`SAP ${escapeHtml(item.idWoe)}`:'SAP por validar'}</small>
       </button>`).join(''):`<div class="woe-no-suggestion"><b>Sin coincidencia exacta.</b><br>Si es MERCH, intenta con SKU, Código DIA o una variante del nombre.</div>`;
     box.hidden=false;input.setAttribute('aria-expanded','true');
     box.querySelectorAll('[data-woe-suggestion]').forEach((button,index)=>button.addEventListener('click',()=>{
@@ -298,15 +345,16 @@
   }
 
   function persistWoeSelection(){
-    try{sessionStorage.setItem('codebrew-woe-indices',JSON.stringify(selectedWoeItems().map(({item})=>woeCatalog.indexOf(item)).filter(index=>index>=0)));}catch(error){}
+    try{sessionStorage.setItem('codebrew-woe-selection-v2',JSON.stringify(selectedWoeItems().map(({key,item})=>({key,quantity:Number(item.quantity)||1})).slice(0,100)));}catch(error){}
   }
 
   function restoreWoeSelection(){
-    try{const indices=JSON.parse(sessionStorage.getItem('codebrew-woe-indices')||'[]');if(Array.isArray(indices))indices.slice(0,100).forEach(index=>{const item=woeCatalog[Number(index)];if(item)addWoeItem(item,false);});}catch(error){}
+    try{const saved=JSON.parse(sessionStorage.getItem('codebrew-woe-selection-v2')||'[]');if(Array.isArray(saved))saved.slice(0,100).forEach(entry=>{const item=combinedWoeItems.find(candidate=>woeKey(candidate)===entry.key);if(item)addWoeItem(item,false,entry.quantity);});}catch(error){}
   }
 
-  function addWoeItem(item,render=true){
-    woePdfExported=false;woeSelection.set(woeKey(item,woeSelection.size),item);
+  function addWoeItem(item,render=true,quantity=1){
+    if(!item)return;const key=woeKey(item,woeSelection.size),existing=woeSelection.get(key),pieces=Math.max(1,Math.min(9999,Math.trunc(Number(quantity)||1)));
+    woePdfExported=false;woeSelection.set(key,{...item,quantity:existing?Math.min(9999,(Number(existing.quantity)||1)+pieces):pieces});
     if(render)renderWoeSelection();
   }
 
@@ -332,7 +380,7 @@
     $('woeExport').disabled=!items.length;
     persistWoeSelection();updateWoeFlow();
     if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
-    target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(item.descripcionSap||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||item.idWoe||'Sin cruce')}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
+    target.innerHTML=items.map(([key,item])=>`<span class="woe-chip"><span class="woe-chip-qty">${Number(item.quantity)||1}</span><b>${escapeHtml(item.codigoDia)}</b> · ${escapeHtml(articleName(item))}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
     target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);woePdfExported=false;renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
   }
 
@@ -355,11 +403,11 @@
   }
 
   function woePdfConfig(){
-    return window.WOE_PDF_CONFIG||{page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:82,tableBottom:754,footerY:778},columns:[{key:'descripcionSap',label:'DESCRIPCION SAP',width:270},{key:'nombreMicros',label:'NOMBRE MICROS',width:170},{key:'codigoDia',label:'#DIA',width:62},{key:'idWoe',label:'#SAP',width:62}],style:{titleSize:18,metaSize:8,headerSize:7.5,bodySize:7.8,lineHeight:9.2,cellPadding:5,maxLinesPerCell:4,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]}};
+    return window.WOE_PDF_CONFIG||{page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:82,tableBottom:754,footerY:778},columns:[{key:'descripcionSap',label:'DESCRIPCION SAP',width:226},{key:'nombreMicros',label:'NOMBRE MICROS',width:142},{key:'codigoDia',label:'#DIA',width:58},{key:'idWoe',label:'#SAP',width:58},{key:'qty',label:'PZAS',width:50}],style:{titleSize:18,metaSize:8,headerSize:7.5,bodySize:7.8,lineHeight:9.2,cellPadding:5,maxLinesPerCell:4,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]}};
   }
 
   function pdfWoeRows(){
-    return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item);return {descripcionSap:item.descripcionSap||'Sin descripcion SAP',nombreMicros:(item.micros||[]).join(' | ')||'Sin coincidencia Micros',codigoDia:item.codigoDia||'-',idWoe:item.idWoe||'-',statusKind:status.kind};});
+    return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item);return {descripcionSap:item.descripcionSap||articleName(item)||'Sin descripcion SAP',nombreMicros:(item.micros||[]).join(' | ')||item.visualProduct?.nombrePos||'Sin coincidencia Micros',codigoDia:item.codigoDia||'-',idWoe:item.idWoe||'-',qty:String(Number(item.quantity)||1),statusKind:status.kind};});
   }
 
   async function generateWoePdf(){
@@ -370,7 +418,7 @@
     await ensureJsPdf();
     const config=woePdfConfig(),page=config.page,style=config.style,columns=config.columns,{jsPDF}=window.jspdf;
     const doc=new jsPDF({orientation:page.orientation,unit:page.unit,format:page.format,compress:true,putOnlyUsedFonts:true});
-    const selected=rows.length,valid=rows.filter(row=>row.statusKind==='ok').length,review=selected-valid,date=new Intl.DateTimeFormat('es-MX',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
+    const selected=rows.length,pieces=rows.reduce((sum,row)=>sum+(Number(row.qty)||0),0),valid=rows.filter(row=>row.statusKind==='ok').length,review=selected-valid,date=new Intl.DateTimeFormat('es-MX',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
     const pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),tableLeft=page.margin,headerHeight=22;
 
     function safeLines(value,width){
@@ -381,7 +429,7 @@
     function drawHeader(){
       doc.setFillColor(...style.green);doc.roundedRect(page.margin,18,8,42,3,3,'F');
       doc.setTextColor(...style.dark);doc.setFont('helvetica','bold');doc.setFontSize(style.titleSize);doc.text('WOE - Lista de doble check',page.margin+16,33);
-      doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${selected} articulos | ${valid} validados | ${review} por revisar | ${date}`,page.margin+16,47);
+      doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${selected} articulos | ${pieces} piezas | ${valid} validados | ${review} por revisar | ${date}`,page.margin+16,47);
       doc.setTextColor(70,82,76);doc.text('Consulta operativa SAP + Micros. En MERCH el nombre puede variar; valida por SKU cuando aplique.',page.margin+16,59);
       let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-(page.margin*2),headerHeight,'F');
       doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);
@@ -412,7 +460,7 @@
     const totalPages=doc.getNumberOfPages();for(let number=1;number<=totalPages;number++){doc.setPage(number);drawFooter(number,totalPages);}
     doc.save(`WOE_Lista_Doble_Check_${new Date().toISOString().slice(0,10)}.pdf`);
     woePdfExported=true;updateWoeFlow();
-    $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos en carta vertical, con Descripción SAP, Nombre Micros, #DIA y #SAP.`;
+    $('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos y ${pieces} piezas, con cruce Día → SAP.`;
     }catch(error){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No fue posible generar el PDF. Conservamos tu listado para que puedas intentarlo nuevamente.';}
     finally{exportButton.disabled=false;exportButton.textContent=originalLabel;}
   }
@@ -420,12 +468,15 @@
   function renderWoeResults(){
     if(!woeSelection.size&&$('woeSearch').value.trim())addWoeQueries($('woeSearch').value);
     const rows=selectedWoeItems(),items=rows.map(row=>row.item),target=$('woeResults');
-    if(!items.length){target.innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='No hay registros seleccionados. Busca por WOE, Código DIA o nombre.';return;}
+    if(!items.length){target.innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='No hay registros seleccionados. Busca por artículo, Código Día, SAP o SKU.';return;}
     const reviewed=items.filter(item=>operationalWoeStatus(item).kind==='ok').length,needsReview=items.length-reviewed;
-    target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artículos</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Descripción SAP</th><th>Nombre Micros</th><th>#DIA</th><th>#SAP</th><th>Validación</th><th>Referencia opcional</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item);return `<tr><td data-label="Descripción SAP"><strong>${escapeHtml(item.descripcionSap||'Sin descripción SAP')}</strong></td><td data-label="Nombre Micros">${(item.micros||[]).length?(item.micros||[]).map(escapeHtml).join('<br>'):'<span class="woe-missing">Sin coincidencia</span>'}</td><td data-label="#DIA"><b class="woe-code">${escapeHtml(item.codigoDia||'—')}</b></td><td data-label="#SAP"><b>${escapeHtml(item.idWoe||'—')}</b></td><td data-label="Validación"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'✓':'!'} ${escapeHtml(status.label)}</span></td><td data-label="Referencia opcional">${merchReferenceHtml(item)}</td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar Código DIA ${escapeHtml(item.codigoDia)}">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
+    const pieces=items.reduce((sum,item)=>sum+(Number(item.quantity)||1),0);
+    target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artículos</span></div><div><strong>${pieces}</strong><span>piezas</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Visual</th><th>Artículo / Descripción SAP</th><th>#Día</th><th>#SAP</th><th>Piezas</th><th>Validación</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item),product=visualProductFor(item);return `<tr><td class="woe-visual-cell" data-label="Visual">${product?`<button type="button" class="woe-row-thumb" data-woe-visual="${escapeHtml(key)}" style="${visualStyle(product)}" aria-label="Ampliar ${escapeHtml(articleName(item))}"></button>`:'<span class="woe-merch-na">Sin imagen</span>'}</td><td data-label="Artículo"><strong>${escapeHtml(articleName(item))}</strong><small class="woe-table-detail">${escapeHtml(item.descripcionSap||product?.descripcionSci||'Descripción SAP por validar')}</small></td><td data-label="#Día"><b class="woe-code">${escapeHtml(item.codigoDia||'—')}</b></td><td data-label="#SAP"><b>${escapeHtml(item.idWoe||'—')}</b></td><td data-label="Piezas"><input class="woe-qty-input" type="number" min="1" max="9999" value="${Number(item.quantity)||1}" data-woe-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"></td><td data-label="Validación"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'✓':'!'} ${escapeHtml(status.label)}</span></td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar Código Día ${escapeHtml(item.codigoDia)}">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
     $('woeStatus').classList.toggle('warning',needsReview>0);
-    $('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados en SAP + Micros y ${needsReview} por revisar. MERCH no afecta este resultado.`:`<b>Listo:</b> los ${reviewed} artículos tienen cruce SAP + Micros. MERCH se muestra sólo cuando existe como referencia por SKU.`;
+    $('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} artículos validados y ${needsReview} por revisar. Total operativo: ${pieces} piezas.`:`<b>Listo:</b> ${reviewed} artículos con cruce Día → SAP. Total operativo: ${pieces} piezas.`;
     target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);woePdfExported=false;renderWoeSelection();renderWoeResults();}));
+    target.querySelectorAll('[data-woe-visual]').forEach(button=>button.addEventListener('click',()=>openCatalogVisual(woeSelection.get(button.dataset.woeVisual))));
+    target.querySelectorAll('[data-woe-qty]').forEach(input=>input.addEventListener('change',()=>{const item=woeSelection.get(input.dataset.woeQty);if(!item)return;item.quantity=Math.max(1,Math.min(9999,Math.trunc(Number(input.value)||1)));woePdfExported=false;renderWoeSelection();renderWoeResults();}));
   }
 
   const stockAliasRows=[];
@@ -1161,14 +1212,18 @@
     });
     let initialTab=location.hash.slice(1);try{if(!TAB_NAMES.includes(initialTab))initialTab=sessionStorage.getItem('codebrew-tab')||'consulta';}catch(error){initialTab='consulta';}showTab(initialTab,{updateHistory:false});
     window.addEventListener('hashchange',()=>showTab(location.hash.slice(1),{updateHistory:false}));
-    $('woeTotal').textContent=Number(window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
+    $('woeTotal').textContent=Number(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
     restoreWoeSelection();renderWoeSelection();updateStockFlow();
-    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woePdfExported=false;updateWoeFlow();woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
+    renderCatalog('');
+    $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;$('woeSearchClear').hidden=!value;woePdfExported=false;updateWoeFlow();renderCatalog(value);woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
     $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
     $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
-    $('woeSearchClear').addEventListener('click',()=>{clearTimeout(woeSuggestionTimer);$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');updateWoeFlow();$('woeSearch').focus();});
+    $('woeSearchClear').addEventListener('click',()=>{clearTimeout(woeSuggestionTimer);$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');renderCatalog('');updateWoeFlow();$('woeSearch').focus();});
     $('woeExport').addEventListener('click',generateWoePdf);
     $('woeClear').addEventListener('click',()=>{woeSelection.clear();woePdfExported=false;renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
+    $('catalogVisualClose').addEventListener('click',()=>$('catalogVisualDialog').close());
+    $('catalogVisualDialog').addEventListener('cancel',event=>{event.preventDefault();$('catalogVisualDialog').close();});
+    $('catalogVisualDialog').addEventListener('click',event=>{if(event.target===$('catalogVisualDialog'))$('catalogVisualDialog').close();});
     $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
     $('stockPdfInput').addEventListener('change',event=>loadStockPdf(event.target.files?.[0]));
     $('stockExport').addEventListener('click',generateStockPdf);
@@ -1215,7 +1270,7 @@
       closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
     });
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v21-operational-flow'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v22-visual-catalog'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

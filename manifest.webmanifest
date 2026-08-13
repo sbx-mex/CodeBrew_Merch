@@ -1,7 +1,7 @@
 {
   "name": "CodeBrew Merch POS · WOE",
   "short_name": "CodeBrew",
-  "description": "Consulta MERCH, valida SAP con Micros y revisa Stock on Hand como apoyo al conteo físico.",
+  "description": "Catálogo visual MERCH, captura de piezas y cruce operativo Código Día a SAP.",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -12,7 +12,7 @@
   "theme_color": "#006241",
   "shortcuts": [
     { "name": "Consulta MERCH", "short_name": "Consulta", "url": "./#consulta" },
-    { "name": "Buscador WOE", "short_name": "WOE", "url": "./#woe" },
+    { "name": "Catálogo y WOE", "short_name": "Catálogo", "url": "./#woe" },
     { "name": "Etiquetado POS", "short_name": "Etiquetas", "url": "./#etiquetado" }
   ],
   "icons": [

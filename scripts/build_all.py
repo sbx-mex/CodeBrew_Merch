@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Construye todos los datos de forma coordinada y ejecuta diez controles."""
+"""Construye todos los datos de forma coordinada y ejecuta la auditoría integral."""
 
 from __future__ import annotations
 
@@ -44,10 +44,22 @@ def main() -> int:
             "--report", str(STAGE / "import-report.json"),
             "--output", str(STAGE / "ui-config.js"),
         )
+        run(
+            "scripts/generate_visual_catalog.py",
+            "--engine-dir", "engines/merch-lists",
+            "--output", str(STAGE / "merch-catalog.js"),
+            "--report", str(STAGE / "merch-catalog-report.json"),
+            "--atlas-output", str(STAGE / "atlases"),
+        )
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
-        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js"):
+        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json"):
             (STAGE / name).replace(data / name)
+        atlas_target = ROOT / "assets/catalog/atlases"
+        if atlas_target.exists():
+            shutil.rmtree(atlas_target)
+        atlas_target.parent.mkdir(parents=True, exist_ok=True)
+        (STAGE / "atlases").replace(atlas_target)
         run("scripts/audit_project.py")
     finally:
         if STAGE.exists():

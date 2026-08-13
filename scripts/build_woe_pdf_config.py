@@ -12,10 +12,11 @@ PAGE_WIDTH = 612
 PAGE_HEIGHT = 792
 MARGIN = 24
 COLUMNS = (
-    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 270},
-    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 170},
-    {"key": "codigoDia", "label": "#DIA", "width": 62},
-    {"key": "idWoe", "label": "#SAP", "width": 62},
+    {"key": "descripcionSap", "label": "DESCRIPCION SAP", "width": 226},
+    {"key": "nombreMicros", "label": "NOMBRE MICROS", "width": 142},
+    {"key": "codigoDia", "label": "#DIA", "width": 58},
+    {"key": "idWoe", "label": "#SAP", "width": 58},
+    {"key": "qty", "label": "PZAS", "width": 80},
 )
 
 
@@ -31,7 +32,7 @@ def build(report_path: Path) -> dict:
         )
     woe = report.get("woe", {})
     return {
-        "version": "letter-portrait-v2",
+        "version": "letter-portrait-v3-quantity",
         "page": {
             "orientation": "portrait",
             "format": "letter",

@@ -1,10 +1,10 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-10T00:45:42+00:00",
+  "auditedAtUtc": "2026-08-13T02:14:33+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "d74af3d31ee42b43addcfdeeb4c6097aa5eddebf706e75a106ba8763e8470dce",
-  "checksTotal": 10,
-  "checksOk": 10,
+  "checksTotal": 12,
+  "checksOk": 12,
   "warnings": 0,
   "errors": 0,
   "checks": [
@@ -19,6 +19,11 @@
       "detail": "4 pestañas operativas localizadas"
     },
     {
+      "name": "Catálogo visual",
+      "status": "ok",
+      "detail": "1,019 artículos, 3 motores y 12 atlas compactos"
+    },
+    {
       "name": "Integridad WOE",
       "status": "ok",
       "detail": "2,244 relaciones; 751 cruces SAP + Micros"
@@ -26,12 +31,12 @@
     {
       "name": "Exportación PDF",
       "status": "ok",
-      "detail": "WOE 4 columnas + Stock Premium de 7 columnas; ambos en carta vertical y dentro del margen"
+      "detail": "WOE con piezas + Stock Premium; ambos en carta vertical y dentro del margen"
     },
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "97 controles con ID único, navegación por teclado y progreso accesible"
+      "detail": "106 controles con ID único, navegación por teclado y progreso accesible"
     },
     {
       "name": "Referencias locales",
@@ -46,7 +51,7 @@
     {
       "name": "Caché y modo offline",
       "status": "ok",
-      "detail": "12 recursos esenciales; Excel excluido del arranque"
+      "detail": "15 recursos esenciales; Excel excluido del arranque"
     },
     {
       "name": "Workflows y obsoletos",
@@ -54,27 +59,36 @@
       "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
     },
     {
+      "name": "Límites GitHub",
+      "status": "ok",
+      "detail": "Ningún archivo alcanza 25 MB y ninguna carpeta contiene 100 archivos"
+    },
+    {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "1299 KB auditados en archivos críticos"
+      "detail": "2035 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 18408,
+      "index.html": 19706,
       "styles.css": 29204,
-      "app.js": 90531,
+      "catalog.css": 9270,
+      "app.js": 99696,
       "data/products.js": 356315,
       "data/woe.js": 833682,
+      "data/merch-catalog.js": 734058,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 546
     },
     "budgets": {
-      "index.html": 25000,
-      "styles.css": 40000,
-      "app.js": 92000,
+      "index.html": 35000,
+      "styles.css": 45000,
+      "catalog.css": 30000,
+      "app.js": 125000,
       "data/products.js": 500000,
       "data/woe.js": 1200000,
+      "data/merch-catalog.js": 1000000,
       "data/stock-config.js": 15000,
       "data/ui-config.js": 10000
     }

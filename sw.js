@@ -1,16 +1,19 @@
-const CACHE_NAME = 'codebrew-merch-v21-operational-flow-2026-08-10';
+const CACHE_NAME = 'codebrew-merch-v22-visual-catalog-2026-08-13';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
+  './catalog.css',
   './app.js',
   './manifest.webmanifest',
   './data/products.js',
   './data/woe.js',
+  './data/merch-catalog.js',
   './data/woe-pdf-config.js',
   './data/stock-config.js',
   './data/ui-config.js',
   './data/app-audit.js',
+  './assets/catalog/catalog-hero.webp',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
@@ -50,7 +53,7 @@ self.addEventListener('fetch', event => {
     return;
   }
   const path = requestUrl.pathname;
-  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/stock-config.js') || path.endsWith('/data/ui-config.js') || path.endsWith('/data/app-audit.js');
+  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/merch-catalog.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/stock-config.js') || path.endsWith('/data/ui-config.js') || path.endsWith('/data/app-audit.js');
   event.respondWith(
     (isGeneratedData ? Promise.race([fetch(event.request),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),2500))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {

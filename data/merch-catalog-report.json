@@ -1,0 +1,43 @@
+{
+  "status": "ok",
+  "engineFiles": 3,
+  "products": 1019,
+  "duplicateRowsIgnored": 28,
+  "withExcelImage": 700,
+  "withApproximation": 319,
+  "uniqueVisuals": 714,
+  "atlases": 12,
+  "categories": {
+    "other": 161,
+    "cold-cup": 274,
+    "tumbler": 395,
+    "mug": 122,
+    "bottle": 51,
+    "brew": 8,
+    "accessory": 8
+  },
+  "sources": [
+    {
+      "file": "SUMMER_2026_WK33_C2.xlsx",
+      "sheet": "Table 1",
+      "rows": 436,
+      "products": 288,
+      "productsWithImage": 256
+    },
+    {
+      "file": "CORE_WINTER_2026.xlsx",
+      "sheet": "Table 1",
+      "rows": 93,
+      "products": 69,
+      "productsWithImage": 68
+    },
+    {
+      "file": "GENERICO_SUMMER_II_2025.xlsx",
+      "sheet": "Table 1",
+      "rows": 985,
+      "products": 690,
+      "productsWithImage": 394
+    }
+  ],
+  "imageNote": "Imagen recreada de la Lista de Precio; es una aproximación visual."
+}

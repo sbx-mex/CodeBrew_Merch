@@ -9,7 +9,7 @@ import json
 import re
 from pathlib import Path
 
-ALLOWLIST = (Path("products.js"), Path("icon-512.png"))
+ALLOWLIST = (Path("products.js"), Path("icon-512.png"), Path("VALIDACION_CORRECCION.md"))
 TEXT_SUFFIXES = {".html", ".js", ".css", ".json", ".webmanifest", ".md", ".yml", ".yaml", ".py"}
 SKIP_PARTS = {".git", "__pycache__"}
 METADATA_FILES = {

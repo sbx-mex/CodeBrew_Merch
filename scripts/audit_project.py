@@ -13,17 +13,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PERFORMANCE_BUDGETS = {
-    "index.html": 25_000,
-    "styles.css": 40_000,
-    "app.js": 92_000,
+    "index.html": 35_000,
+    "styles.css": 45_000,
+    "catalog.css": 30_000,
+    "app.js": 125_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
+    "data/merch-catalog.js": 1_000_000,
     "data/stock-config.js": 15_000,
     "data/ui-config.js": 10_000,
 }
 REQUIRED_SHEETS = {"Base_Campaña", "Discovery", "Homologados", "Essentials"}
-OBSOLETE_ALLOWLIST = (Path("products.js"), Path("icon-512.png"))
-GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js", "data/ui-config.js"}
+OBSOLETE_ALLOWLIST = (Path("products.js"), Path("icon-512.png"), Path("VALIDACION_CORRECCION.md"))
+GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js", "data/ui-config.js", "data/merch-catalog.js", "data/merch-catalog-report.json"}
 
 
 class HtmlAuditParser(HTMLParser):
@@ -60,6 +62,7 @@ def sha256(path: Path) -> str:
 
 def audit(root: Path) -> dict:
     report = load_json(root / "data/import-report.json")
+    catalog_report = load_json(root / "data/merch-catalog-report.json")
     manifest = load_json(root / "manifest.webmanifest")
     html = (root / "index.html").read_text(encoding="utf-8")
     parser = HtmlAuditParser()
@@ -79,6 +82,21 @@ def audit(root: Path) -> dict:
         "Estructura MERCH",
         REQUIRED_SHEETS.issubset(present_sheets),
         "4 pestañas operativas localizadas" if REQUIRED_SHEETS.issubset(present_sheets) else f"Faltan: {', '.join(sorted(REQUIRED_SHEETS - present_sheets))}",
+    ))
+    atlas_files = sorted((root / "assets/catalog/atlases").glob("*.webp"))
+    engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
+    catalog_ok = (
+        catalog_report.get("status") == "ok"
+        and catalog_report.get("engineFiles") == len(engines) == 3
+        and catalog_report.get("products", 0) > 0
+        and catalog_report.get("atlases") == len(atlas_files)
+        and 0 < len(atlas_files) < 100
+        and all(path.stat().st_size < 25_000_000 for path in [*engines, *atlas_files])
+    )
+    checks.append(check(
+        "Catálogo visual",
+        catalog_ok,
+        f"{catalog_report.get('products', 0):,} artículos, {len(engines)} motores y {len(atlas_files)} atlas compactos",
     ))
     woe = report.get("woe", {})
     woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
@@ -102,7 +120,8 @@ def audit(root: Path) -> dict:
         pdf_config.get("audit", {}).get("fit") is True
         and pdf_config.get("page", {}).get("format") == "letter"
         and pdf_config.get("page", {}).get("orientation") == "portrait"
-        and export_keys == ["descripcionSap", "nombreMicros", "codigoDia", "idWoe"]
+        and pdf_config.get("version") == "letter-portrait-v3-quantity"
+        and export_keys == ["descripcionSap", "nombreMicros", "codigoDia", "idWoe", "qty"]
         and stock_config.get("audit", {}).get("fit") is True
         and stock_config.get("page", {}).get("format") == "letter"
         and stock_config.get("page", {}).get("orientation") == "portrait"
@@ -118,13 +137,13 @@ def audit(root: Path) -> dict:
     checks.append(check(
         "Exportación PDF",
         export_ok,
-        "WOE 4 columnas + Stock Premium de 7 columnas; ambos en carta vertical y dentro del margen",
+        "WOE con piezas + Stock Premium; ambos en carta vertical y dentro del margen",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
+    required_ids = {"mainContent", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "catalogFilters", "catalogSummary", "catalogGrid", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockAttach", "stockPdfInput", "stockProgress", "stockExport", "stockResults", "stockConfirmDialog", "stockConfirmAccept"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "openCatalogVisual", "quantity")
     checks.append(check(
         "Navegación e interfaz",
         not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html,
@@ -155,13 +174,27 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "data/ui-config.js" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
+    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/atlases" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",
         workflow_ok,
         f"Actualización y limpieza protegidas; {len(cleanup_candidates)} candidatos controlados",
         warning=bool(cleanup_candidates),
+    ))
+    project_files = [path for path in root.rglob("*") if path.is_file() and not any(part in {".git", ".codebrew-build", "__pycache__"} for part in path.relative_to(root).parts)]
+    oversized = [path.relative_to(root).as_posix() for path in project_files if path.stat().st_size >= 25_000_000]
+    crowded = []
+    for directory in [root, *(path for path in root.rglob("*") if path.is_dir())]:
+        if any(part in {".git", ".codebrew-build", "__pycache__"} for part in directory.relative_to(root).parts):
+            continue
+        count = sum(child.is_file() for child in directory.iterdir())
+        if count >= 100:
+            crowded.append(f"{directory.relative_to(root).as_posix() or '.'} ({count})")
+    checks.append(check(
+        "Límites GitHub",
+        not oversized and not crowded,
+        "Ningún archivo alcanza 25 MB y ninguna carpeta contiene 100 archivos" if not oversized and not crowded else f"Grandes: {oversized}; carpetas: {crowded}",
     ))
     sizes = {path: (root / path).stat().st_size for path in PERFORMANCE_BUDGETS}
     over_budget = {path: size for path, size in sizes.items() if size > PERFORMANCE_BUDGETS[path]}

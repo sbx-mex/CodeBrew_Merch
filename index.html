@@ -9,8 +9,10 @@
   <title>CodeBrew 2.0 · Merch POS</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="catalog.css" />
   <script src="data/products.js" defer></script>
   <script src="data/woe.js" defer></script>
+  <script src="data/merch-catalog.js" defer></script>
   <script src="data/woe-pdf-config.js" defer></script>
   <script src="data/stock-config.js" defer></script>
   <script src="data/ui-config.js" defer></script>
@@ -142,12 +144,12 @@
 
     <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0">
       <section class="panel woe-hero">
-        <div>
-          <span class="woe-kicker">Catálogo operativo</span>
-          <h2>Crea tu listado WOE</h2>
-          <p>Busca, agrega y valida varios artículos en una sola vista. Exporta únicamente lo necesario en PDF carta vertical.</p>
+        <div class="woe-hero-copy">
+          <span class="woe-kicker">Catálogo visual · Cruce operativo</span>
+          <h2>Encuentra, cuenta y valida.</h2>
+          <p>Busca un artículo MERCH por nombre, Código Día, SAP o SKU. Confirma cuántas piezas tienes y valida el cruce antes de exportar.</p>
         </div>
-        <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos auditados</span></div>
+        <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos del catálogo</span></div>
       </section>
 
       <section class="panel woe-search-panel">
@@ -157,20 +159,26 @@
           <div data-step="export"><b>3</b><span>Valida y genera tu PDF carta vertical.</span></div>
         </div>
         <p id="woeNextAction" class="next-action" aria-live="polite">Empieza con WOE, DIA, nombre o SKU.</p>
-        <label for="woeSearch">Buscar por ID WOE, Código DIA, descripción SAP, nombre Micros o SKU MERCH</label>
+        <label for="woeSearch">Buscar en el catálogo</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
-            <input id="woeSearch" placeholder="Ej. 149213, 730 o Cafe Espresso" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <input id="woeSearch" placeholder="Nombre del artículo, Código Día, SAP o SKU" autocomplete="off" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
             <button id="woeSearchClear" class="search-clear" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
-          <button id="woeAdd" type="button">Agregar</button>
+          <button id="woeAdd" type="button">Agregar coincidencia</button>
         </div>
-        <p id="woeHelp" class="hint">Pega varios valores separados por coma o renglón. Si es MERCH, prueba también por SKU o una variante del nombre: puede aparecer distinto entre catálogos.</p>
+        <p id="woeHelp" class="hint">También puedes pegar varios códigos separados por coma o renglón. El cruce siempre parte de Código Día y muestra Código y Descripción SAP.</p>
+        <div class="catalog-toolbar">
+          <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
+          <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
+        </div>
+        <div id="catalogGrid" class="catalog-grid" aria-label="Catálogo de artículos MERCH"></div>
+        <p class="catalog-image-note">Imagen recreada de la Lista de Precio; es una aproximación visual.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
-          <span class="woe-pdf-note">PDF carta vertical · 4 datos operativos</span>
+          <span class="woe-pdf-note">PDF carta vertical · incluye piezas</span>
           <button id="woeExport" type="button" disabled>Generar PDF</button>
           <button id="woeClear" type="button" class="ghost">Limpiar listado</button>
         </div>
@@ -178,6 +186,18 @@
 
       <section id="woeStatus" class="woe-status" aria-live="polite">Escribe un dato para comenzar.</section>
       <section id="woeResults" class="woe-results" aria-label="Resultados WOE"></section>
+
+      <dialog id="catalogVisualDialog" class="catalog-dialog" aria-labelledby="catalogVisualTitle">
+        <button id="catalogVisualClose" class="catalog-dialog-close" type="button" aria-label="Cerrar imagen">×</button>
+        <div id="catalogVisualImage" class="catalog-dialog-image" role="img"></div>
+        <div class="catalog-dialog-copy">
+          <span class="woe-kicker">Vista ampliada</span>
+          <h2 id="catalogVisualTitle">Artículo MERCH</h2>
+          <p id="catalogVisualDescription"></p>
+          <div id="catalogVisualCodes" class="catalog-dialog-codes"></div>
+          <small>Imagen recreada de la Lista de Precio; es una aproximación visual.</small>
+        </div>
+      </dialog>
 
       <section id="stockPanel" class="panel stock-panel" aria-labelledby="stockTitle" aria-busy="false">
         <div class="stock-head">
