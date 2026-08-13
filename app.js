@@ -382,6 +382,7 @@
   function renderWoeSelection(){
     const target=$('woeSelection'),items=[...woeSelection.entries()];
     $('woeSelectedCount').textContent=items.length;
+    if($('tabWoeCount'))$('tabWoeCount').textContent=items.length;
     $('woeExport').disabled=!items.length;
     persistWoeSelection();updateWoeFlow();
     if(!items.length){target.innerHTML='<span class="woe-empty-selection">Sin elementos seleccionados.</span>';return;}
@@ -879,6 +880,29 @@
     if(updateHistory&&location.hash!==`#${target}`)history.pushState({tab:target},'',`#${target}`);
   }
 
+  function setActiveWoeSection(id){
+    document.querySelectorAll('[data-woe-nav]').forEach(link=>{
+      const active=link.dataset.woeNav===id;
+      link.classList.toggle('active',active);
+      if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');
+    });
+  }
+
+  function setupWoeNavigation(){
+    document.querySelectorAll('[data-woe-nav],.back-to-catalog').forEach(link=>link.addEventListener('click',event=>{
+      event.preventDefault();
+      const id=link.dataset.woeNav||link.getAttribute('href').slice(1),target=$(id);
+      showTab('woe');setActiveWoeSection(id);
+      requestAnimationFrame(()=>target?.scrollIntoView({behavior:'smooth',block:'start'}));
+    }));
+    if(!('IntersectionObserver' in window))return;
+    const observer=new IntersectionObserver(entries=>{
+      const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(visible)setActiveWoeSection(visible.target.id);
+    },{rootMargin:'-220px 0px -55% 0px',threshold:[0,.15,.4]});
+    ['woeCatalog','woeResults','stockPanel'].forEach(id=>{const section=$(id);if(section)observer.observe(section);});
+  }
+
   function renderAuditHealth(){
     const target=$('appHealth'),audit=window.APP_AUDIT;
     if(!target)return;
@@ -1317,6 +1341,7 @@
     });
     let initialTab=location.hash.slice(1);try{if(!TAB_NAMES.includes(initialTab))initialTab=sessionStorage.getItem('codebrew-tab')||'consulta';}catch(error){initialTab='consulta';}showTab(initialTab,{updateHistory:false});
     window.addEventListener('hashchange',()=>showTab(location.hash.slice(1),{updateHistory:false}));
+    setupWoeNavigation();
     $('woeTotal').textContent=Number(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length).toLocaleString('es-MX');
     restoreWoeSelection();renderWoeSelection();updateStockFlow();
     renderCatalog('');
@@ -1378,7 +1403,7 @@
     });
     window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory-detail'));
     renderCart();
-    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v23-remastered-catalog'));
+    if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v27-navigation-cleanup'));
   }
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

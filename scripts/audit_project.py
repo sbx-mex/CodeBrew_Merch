@@ -26,7 +26,12 @@ PERFORMANCE_BUDGETS = {
     "data/ui-config.js": 10_000,
 }
 REQUIRED_SHEETS = {"Base_Campaña", "Discovery", "Homologados", "Essentials"}
-OBSOLETE_ALLOWLIST = (Path("products.js"), Path("icon-512.png"), Path("VALIDACION_CORRECCION.md"))
+OBSOLETE_ALLOWLIST = (
+    Path("products.js"),
+    Path("icon-512.png"),
+    Path("VALIDACION_CORRECCION.md"),
+    Path("ELIMINAR_OBSOLETOS.txt"),
+)
 GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js", "data/ui-config.js", "data/merch-catalog.js", "data/merch-catalog-report.json"}
 
 
@@ -216,7 +221,17 @@ def audit(root: Path) -> dict:
         sw_ok,
         f"{len(shell_refs)} recursos esenciales; Excel excluido del arranque" if sw_ok else f"Recursos faltantes: {', '.join(missing_shell)}",
     ))
-    workflow_ok = all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6")) and "engines/**" in workflow_update and "scripts/build_all.py" in workflow_update and "scripts/build_ui_config.py" in workflow_update and "scripts/generate_visual_catalog.py" in workflow_update and "data/merch-catalog.js" in workflow_update and "assets/catalog/images" in workflow_update and "assets/catalog/featured" in workflow_update and "unittest discover" in workflow_update and "scripts/cleanup_obsolete.py" in workflow_cleanup and "github.event_name == 'push'" in workflow_cleanup
+    workflow_ok = (
+        all(token in workflow_update + workflow_cleanup for token in ("actions/checkout@v5", "actions/setup-python@v6"))
+        and "engines/**" in workflow_update
+        and "scripts/build_all.py" in workflow_update
+        and "unittest discover" in workflow_update
+        and "git add --all assets/catalog" in workflow_update
+        and "workflow_run:" in workflow_cleanup
+        and "github.event.workflow_run.conclusion == 'success'" in workflow_cleanup
+        and "pip install --requirement scripts/requirements.txt" in workflow_cleanup
+        and "scripts/cleanup_obsolete.py --apply" in workflow_cleanup
+    )
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
         "Workflows y obsoletos",

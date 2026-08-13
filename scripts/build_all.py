@@ -11,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 STAGE = ROOT / ".codebrew-build"
+STATIC_ASSETS = (ROOT / "assets/catalog/catalog-hero.webp",)
 
 
 def run(*arguments: str) -> None:
@@ -24,7 +25,14 @@ def validate_stage() -> None:
         raise RuntimeError(f"Construcción incompleta: {missing}")
 
 
+def validate_static_assets() -> None:
+    missing = [path.relative_to(ROOT).as_posix() for path in STATIC_ASSETS if not path.is_file()]
+    if missing:
+        raise RuntimeError(f"Recursos estáticos faltantes: {', '.join(missing)}")
+
+
 def main() -> int:
+    validate_static_assets()
     if STAGE.exists():
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)

@@ -19,46 +19,6 @@
   <script src="data/app-audit.js" defer></script>
   <script src="app.js" defer></script>
 
-  <style>
-    .release-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 18px;
-      padding: 9px 16px;
-      border: 1.5px solid rgba(255, 214, 88, .95);
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .10);
-      color: #fff8d9;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: .01em;
-      box-shadow: 0 6px 18px rgba(0,0,0,.12);
-      white-space: nowrap;
-    }
-    .release-badge::before {
-      content: "★";
-      color: #ffd84d;
-      font-size: 15px;
-      line-height: 1;
-    }
-    @media (max-width: 760px) {
-      .hero {
-        align-items: flex-start;
-        height: auto;
-        min-height: 92px;
-        flex-wrap: wrap;
-      }
-      .release-badge {
-        margin-left: 72px;
-        margin-top: -8px;
-        font-size: 12px;
-        padding: 7px 12px;
-        max-width: calc(100vw - 96px);
-        white-space: normal;
-      }
-    }
-  </style>
 </head>
 <body>
   <a class="skip-link" href="#mainContent">Saltar al contenido</a>
@@ -74,9 +34,9 @@
   </header>
 
   <nav class="tabs" aria-label="Pestañas" role="tablist">
-    <button id="tabConsulta" class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true">Consulta</button>
-    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false">WOE</button>
-    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false">Etiquetado</button>
+    <button id="tabConsulta" class="tab active" data-tab="consulta" role="tab" aria-controls="consulta" aria-selected="true"><span>Consulta</span><small>Precio y POS</small></button>
+    <button id="tabWoe" class="tab" data-tab="woe" role="tab" aria-controls="woe" aria-selected="false"><span>Catálogo y WOE</span><small><b id="tabWoeCount">0</b> seleccionados</small></button>
+    <button id="tabEtiquetado" class="tab" data-tab="etiquetado" role="tab" aria-controls="etiquetado" aria-selected="false"><span>Etiquetas</span><small>Preparar PDF</small></button>
   </nav>
 
   <main id="mainContent">
@@ -143,6 +103,11 @@
     </section>
 
     <section id="woe" class="tabpage" role="tabpanel" aria-labelledby="tabWoe" tabindex="0">
+      <nav class="woe-section-nav" aria-label="Navegación del catálogo y WOE">
+        <a class="active" href="#woeCatalog" data-woe-nav="woeCatalog"><span>1</span> Explorar catálogo</a>
+        <a href="#woeResults" data-woe-nav="woeResults"><span>2</span> Revisar listado</a>
+        <a href="#stockPanel" data-woe-nav="stockPanel"><span>3</span> Cruzar inventario</a>
+      </nav>
       <section class="panel woe-hero">
         <div class="woe-hero-copy">
           <span class="woe-kicker">Catálogo visual · Cruce operativo</span>
@@ -152,7 +117,7 @@
         <div class="woe-counter"><strong id="woeTotal">0</strong><span>artículos del catálogo</span></div>
       </section>
 
-      <section class="panel woe-search-panel">
+      <section id="woeCatalog" class="panel woe-search-panel">
         <div id="woeFlow" class="woe-mini-guide operational-flow" aria-label="Progreso del listado WOE">
           <div data-step="search"><b>1</b><span>Busca por WOE, DIA, nombre o SKU MERCH.</span></div>
           <div data-step="select"><b>2</b><span>Agrega cada artículo; la tabla se actualiza al instante.</span></div>
@@ -210,6 +175,7 @@
           </div>
           <span class="stock-private">Lectura local · el PDF no se envía</span>
         </div>
+        <a class="back-to-catalog" href="#woeCatalog">← Volver al catálogo</a>
         <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
           <div data-step="attach"><b>1</b><span>Adjunta Stock on Hand o PDF SAP.</span></div>
           <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
