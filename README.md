@@ -9,7 +9,7 @@ PWA para consultar artículos MERCH, capturar piezas y validar el cruce operativ
 - `engines/visual-sources/*.zip`: exportaciones HTML de las listas; permiten confirmar por fila que cada foto corresponde al Código Día y SKU internacional.
 - `engines/image-overrides/`: reconstrucciones premium excepcionales nombradas con su Código Día, por ejemplo `16999.png`.
 - `scripts/generate_products.py`: construye el cruce operativo.
-- `scripts/generate_visual_catalog.py`: normaliza artículos, crea llaves estables y compacta las imágenes en atlas WebP.
+- `scripts/generate_visual_catalog.py`: normaliza artículos, crea llaves estables, genera atlas WebP de 512 px y publica reconstrucciones premium como imágenes HD directas sin volver a reducirlas.
 
 Llaves generadas:
 

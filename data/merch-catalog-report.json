@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "version": "premium-remastered-v2",
+  "version": "premium-hd-direct-v3",
   "engineFiles": 3,
   "visualSourceFiles": 3,
   "products": 1019,
@@ -8,21 +8,22 @@
   "withSourceImage": 813,
   "withApproximation": 206,
   "uniqueVisuals": 827,
-  "atlases": 53,
-  "tilePixels": 384,
-  "atlasGrid": 4,
+  "atlases": 93,
+  "featuredImages": 1,
+  "tilePixels": 512,
+  "atlasGrid": 3,
   "visualSources": {
+    "premium-override": 1,
     "excel": 686,
     "html-row": 126,
-    "approximation": 206,
-    "premium-override": 1
+    "approximation": 206
   },
   "categories": {
+    "bottle": 51,
     "other": 161,
     "cold-cup": 274,
     "tumbler": 395,
     "mug": 122,
-    "bottle": 51,
     "brew": 8,
     "accessory": 8
   },
@@ -90,6 +91,6 @@
       "rowsWithoutImage": 6
     }
   ],
-  "imageNote": "Imagen recreada de la Lista de Precio; es una aproximación visual.",
+  "imageNote": "Las imágenes HD conservan la fuente disponible; cuando no existe fotografía se muestra una referencia aproximada.",
   "moneyFieldsPublished": 0
 }
