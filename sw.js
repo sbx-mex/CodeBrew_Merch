@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v36-intuitive-count-sap-2026-08-13';
+const CACHE_NAME = 'codebrew-v37-pos-mirror-w33-2026-08-14';
 const APP_SHELL = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const APP_SHELL = [
   './data/stock-config.js',
   './data/ui-config.js',
   './data/app-audit.js',
+  './data/pos-operational-overrides.js',
   './data/tool-menu.json',
   './data/tools/consulta.json',
   './data/tools/catalog.json',
@@ -61,7 +62,7 @@ self.addEventListener('fetch', event => {
     return;
   }
   const path = requestUrl.pathname;
-  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/merch-catalog.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/stock-config.js') || path.endsWith('/data/ui-config.js') || path.endsWith('/data/app-audit.js') || path.endsWith('/data/tool-menu.json') || path.includes('/data/tools/');
+  const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/merch-catalog.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/stock-config.js') || path.endsWith('/data/ui-config.js') || path.endsWith('/data/app-audit.js') || path.endsWith('/data/pos-operational-overrides.js') || path.endsWith('/data/tool-menu.json') || path.includes('/data/tools/');
   event.respondWith(
     (isGeneratedData ? Promise.race([fetch(event.request),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),2500))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {
