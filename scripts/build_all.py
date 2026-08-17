@@ -19,7 +19,7 @@ def run(*arguments: str) -> None:
 
 
 def validate_stage() -> None:
-    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json")
+    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json")
     missing = [name for name in required if not (STAGE / name).is_file()]
     if missing or not (STAGE / "images").is_dir() or not (STAGE / "featured").is_dir():
         raise RuntimeError(f"Construcción incompleta: {missing}")
@@ -60,17 +60,26 @@ def main() -> int:
             "--output", str(STAGE / "ui-config.js"),
         )
         run(
-            "scripts/generate_visual_catalog.py",
+            "scripts/generate_manual_catalog.py",
             "--engine-dir", "engines/merch-lists",
             "--output", str(STAGE / "merch-catalog.js"),
             "--report", str(STAGE / "merch-catalog-report.json"),
-            "--image-output", str(STAGE / "images"),
-            "--featured-output", str(STAGE / "featured"),
         )
+        run(
+            "scripts/integrate_uploaded_images.py",
+            "--catalog", str(STAGE / "merch-catalog.js"),
+            "--report", str(STAGE / "merch-catalog-report.json"),
+            "--active-list", "data/merch-active-products.json",
+            "--operational-products", str(STAGE / "products.js"),
+            "--source-dir", "assets/catalog/images",
+            "--image-output", str(STAGE / "images"),
+            "--coverage-output", str(STAGE / "photo-coverage.json"),
+        )
+        (STAGE / "featured").mkdir(exist_ok=True)
         validate_stage()
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
-        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json"):
+        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json"):
             (STAGE / name).replace(data / name)
         image_target = ROOT / "assets/catalog/images"
         if image_target.exists():

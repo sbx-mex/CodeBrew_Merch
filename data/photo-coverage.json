@@ -1,0 +1,661 @@
+{
+  "status": "ok",
+  "version": "manual-upload-v2",
+  "source": "assets/catalog/images/lote-01..04",
+  "matchOrder": [
+    "skuIntl",
+    "codigoDia",
+    "skuPos",
+    "displayName",
+    "nombreInventario",
+    "nombrePos"
+  ],
+  "duplicateProtection": "one-photo-per-article",
+  "lots": [
+    {
+      "folder": "lote-01",
+      "images": 10
+    },
+    {
+      "folder": "lote-02",
+      "images": 10
+    },
+    {
+      "folder": "lote-03",
+      "images": 10
+    },
+    {
+      "folder": "lote-04",
+      "images": 7
+    }
+  ],
+  "totals": {
+    "imageFiles": 37,
+    "matchedImageFiles": 37,
+    "unmatchedImageFiles": 0,
+    "matchedProducts": 40,
+    "activeProducts": 891,
+    "activeWithPhoto": 36,
+    "activeMissingPhoto": 855,
+    "secondaryProducts": 136,
+    "appendedOperationalProducts": 8
+  },
+  "files": [
+    {
+      "file": "lote-01/011170102.jpeg",
+      "identifier": "11170102",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16643--pos-58701",
+          "codigoDia": "16643",
+          "skuIntl": "11170102",
+          "skuPos": "58701",
+          "displayName": "DiscoveryCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170147.jpeg",
+      "identifier": "11170147",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16688--pos-58728",
+          "codigoDia": "16688",
+          "skuIntl": "11170147",
+          "skuPos": "58728",
+          "displayName": "Disc2ozMxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170149.jpeg",
+      "identifier": "11170149",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16689--pos-58726",
+          "codigoDia": "16689",
+          "skuIntl": "11170149",
+          "skuPos": "58726",
+          "displayName": "Disc2ozCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170174.jpeg",
+      "identifier": "11170174",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16681--pos-58739",
+          "codigoDia": "16681",
+          "skuIntl": "11170174",
+          "skuPos": "58739",
+          "displayName": "DiscCC24MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170187.jpeg",
+      "identifier": "11170187",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16601--pos-58743",
+          "codigoDia": "16601",
+          "skuIntl": "11170187",
+          "skuPos": "58743",
+          "displayName": "ToteBag MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011176710.jpeg",
+      "identifier": "11176710",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16664--pos-58791",
+          "codigoDia": "16664",
+          "skuIntl": "11176710",
+          "skuPos": "58791",
+          "displayName": "Sp26CC24Dome",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178919.jpeg",
+      "identifier": "11178919",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16922--pos-58811",
+          "codigoDia": "16922",
+          "skuIntl": "11178919",
+          "skuPos": "58811",
+          "displayName": "Sp26Mug14Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16531.jpeg",
+      "identifier": "16531",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16531--pos-58769",
+          "codigoDia": "16531",
+          "skuIntl": "NA",
+          "skuPos": "58769",
+          "displayName": "Sp26NEBlack",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16531--pos-58775",
+          "codigoDia": "16531",
+          "skuIntl": "NA",
+          "skuPos": "58775",
+          "displayName": "Sp26NEWhite",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16532.jpeg",
+      "identifier": "16532",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16532--pos-58771",
+          "codigoDia": "16532",
+          "skuIntl": "NA",
+          "skuPos": "58771",
+          "displayName": "Sp26NECrossB",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16532--pos-58773",
+          "codigoDia": "16532",
+          "skuIntl": "NA",
+          "skuPos": "58773",
+          "displayName": "Sp26NELlavero",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16955.jpeg",
+      "identifier": "16955",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16955--pos-58842",
+          "codigoDia": "16955",
+          "skuIntl": "NA",
+          "skuPos": "58842",
+          "displayName": "WC26NESBX",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16955--pos-58840",
+          "codigoDia": "16955",
+          "skuIntl": "NA",
+          "skuPos": "58840",
+          "displayName": "WC26NESiren",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178922.jpeg",
+      "identifier": "11178922",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16879--pos-58831",
+          "codigoDia": "16879",
+          "skuIntl": "11178922",
+          "skuPos": "58831",
+          "displayName": "WC26Tu16Flower",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178928.jpeg",
+      "identifier": "11178928",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16880--pos-58817",
+          "codigoDia": "16880",
+          "skuIntl": "11178928",
+          "skuPos": "58817",
+          "displayName": "WC26CC24Road",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178930.jpeg",
+      "identifier": "11178930",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16882--pos-58824",
+          "codigoDia": "16882",
+          "skuIntl": "11178930",
+          "skuPos": "58824",
+          "displayName": "WC26CC24Pride",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178933.jpeg",
+      "identifier": "11178933",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16881--pos-50736",
+          "codigoDia": "16881",
+          "skuIntl": "11178933",
+          "skuPos": "50736",
+          "displayName": "SII25CC24Gamer",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178935.jpeg",
+      "identifier": "11178935",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16920--pos-50738",
+          "codigoDia": "16920",
+          "skuIntl": "11178935",
+          "skuPos": "50738",
+          "displayName": "SII26Tu10Gam",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178937.jpeg",
+      "identifier": "11178937",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16901--pos-58819",
+          "codigoDia": "16901",
+          "skuIntl": "11178937",
+          "skuPos": "58819",
+          "displayName": "WC26Mug12Stan",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178938.jpeg",
+      "identifier": "11178938",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16898--pos-58810",
+          "codigoDia": "16898",
+          "skuIntl": "11178938",
+          "skuPos": "58810",
+          "displayName": "Sp26Tu16Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178941.jpeg",
+      "identifier": "11178941",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16900--pos-50739",
+          "codigoDia": "16900",
+          "skuIntl": "11178941",
+          "skuPos": "50739",
+          "displayName": "SII26SS16Studded",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178943.jpeg",
+      "identifier": "11178943",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16918--pos-58802",
+          "codigoDia": "16918",
+          "skuIntl": "11178943",
+          "skuPos": "58802",
+          "displayName": "Sp26SS20Orange",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-02/011178945.jpeg",
+      "identifier": "11178945",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16924--pos-58835",
+          "codigoDia": "16924",
+          "skuIntl": "11178945",
+          "skuPos": "58835",
+          "displayName": "WC26Stan20IceF",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178946.jpg",
+      "identifier": "11178946",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16913--pos-58814",
+          "codigoDia": "16913",
+          "skuIntl": "11178946",
+          "skuPos": "58814",
+          "displayName": "WC26SS20Twist",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178948.jpeg",
+      "identifier": "11178948",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16915--pos-58821",
+          "codigoDia": "16915",
+          "skuIntl": "11178948",
+          "skuPos": "58821",
+          "displayName": "WC26StanHand20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178952.jpeg",
+      "identifier": "11178952",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16875--pos-58828",
+          "codigoDia": "16875",
+          "skuIntl": "11178952",
+          "skuPos": "58828",
+          "displayName": "WC26SSCC24Grad",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178956.jpeg",
+      "identifier": "11178956",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16916--pos-50735",
+          "codigoDia": "16916",
+          "skuIntl": "11178956",
+          "skuPos": "50735",
+          "displayName": "SII26Quencher30P",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178957_1.jpg",
+      "identifier": "11178957",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16919--pos-58820",
+          "codigoDia": "16919",
+          "skuIntl": "11178957",
+          "skuPos": "58820",
+          "displayName": "WC26StanQuen30",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178959.jpeg",
+      "identifier": "11178959",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16897--pos-58816",
+          "codigoDia": "16897",
+          "skuIntl": "11178959",
+          "skuPos": "58816",
+          "displayName": "WC26CCSS24Puffy",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178969.jpeg",
+      "identifier": "11178969",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16910--pos-58827",
+          "codigoDia": "16910",
+          "skuIntl": "11178969",
+          "skuPos": "58827",
+          "displayName": "WC26SS16Pink",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178971.jpeg",
+      "identifier": "11178971",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16911--pos-58829",
+          "codigoDia": "16911",
+          "skuIntl": "11178971",
+          "skuPos": "58829",
+          "displayName": "WC26SS16Charm",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011178973.jpg",
+      "identifier": "11178973",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16925--pos-58815",
+          "codigoDia": "16925",
+          "skuIntl": "11178973",
+          "skuPos": "58815",
+          "displayName": "WC26SS16Lid",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-03/011179005.jpeg",
+      "identifier": "11179005",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16906--pos-58823",
+          "codigoDia": "16906",
+          "skuIntl": "11179005",
+          "skuPos": "58823",
+          "displayName": "WC26SS30Pride",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/11186646.jpg",
+      "identifier": "11186646",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16997--pos-50751",
+          "codigoDia": "16997",
+          "skuIntl": "11186646",
+          "skuPos": "50751",
+          "displayName": "SII26SS12Charm",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/11186650.jpg",
+      "identifier": "11186650",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16995--pos-50755",
+          "codigoDia": "16995",
+          "skuIntl": "11186650",
+          "skuPos": "50755",
+          "displayName": "SII26SS16Pleat",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/11186658.jpg",
+      "identifier": "11186658",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16998--pos-50753",
+          "codigoDia": "16998",
+          "skuIntl": "11186658",
+          "skuPos": "50753",
+          "displayName": "SII26SS20Hand",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/11186659.jpg",
+      "identifier": "11186659",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16999--pos-50754",
+          "codigoDia": "16999",
+          "skuIntl": "11186659",
+          "skuPos": "50754",
+          "displayName": "SII26BTLSS20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/17359.jpg",
+      "identifier": "17359",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17359--pos-50749",
+          "codigoDia": "17359",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/17360.jpg",
+      "identifier": "17360",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17360--pos-50749",
+          "codigoDia": "17360",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-04/17362.jpg",
+      "identifier": "17362",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17362--pos-50749",
+          "codigoDia": "17362",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
+          "stockPriority": "secondary"
+        }
+      ]
+    }
+  ]
+}

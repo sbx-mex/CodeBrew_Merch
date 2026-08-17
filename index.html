@@ -157,7 +157,7 @@
         <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>
         <div id="catalogGrid" class="catalog-grid mode-merch-content" aria-label="Vista visual destacada del catálogo"></div>
         <button id="catalogLoadMore" class="catalog-load-more ghost mode-merch-content" type="button" hidden>Ver más artículos</button>
-        <p class="catalog-image-note mode-merch-content">Cinco referencias visuales por vista. Escribe cualquier artículo para explorar el catálogo completo.</p>
+        <p class="catalog-image-note mode-merch-content">Una sola foto por artículo, sin vista ampliada. Busca por nombre, SKU o Código Día.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">
           <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
@@ -169,18 +169,6 @@
 
       <section id="woeStatus" class="woe-status mode-catalog-only mode-merch-only" aria-live="polite">Escribe un dato para comenzar.</section>
       <section id="woeResults" class="woe-results mode-catalog-only mode-merch-only" aria-label="Resultados WOE"></section>
-
-      <dialog id="catalogVisualDialog" class="catalog-dialog" aria-labelledby="catalogVisualTitle">
-        <button id="catalogVisualClose" class="catalog-dialog-close" type="button" aria-label="Cerrar imagen">×</button>
-        <div id="catalogVisualImage" class="catalog-dialog-image" role="img"></div>
-        <div class="catalog-dialog-copy">
-          <span class="woe-kicker">Vista ampliada</span>
-          <h2 id="catalogVisualTitle">Artículo</h2>
-          <p id="catalogVisualDescription"></p>
-          <div id="catalogVisualCodes" class="catalog-dialog-codes"></div>
-          <small>Imagen recreada de la Lista de Precio; es una aproximación visual.</small>
-        </div>
-      </dialog>
 
       <section id="stockPanel" class="panel stock-panel mode-export-only" aria-labelledby="stockTitle" aria-busy="false">
         <div id="stockPrintHeader" class="stock-print-header" aria-hidden="true"></div>

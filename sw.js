@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v37-pos-mirror-w33-2026-08-14';
+const CACHE_NAME = 'codebrew-v39-photo-sync-2026-08-17';
 const APP_SHELL = [
   './',
   './index.html',
@@ -63,8 +63,9 @@ self.addEventListener('fetch', event => {
   }
   const path = requestUrl.pathname;
   const isGeneratedData = path.endsWith('/data/products.js') || path.endsWith('/data/woe.js') || path.endsWith('/data/merch-catalog.js') || path.endsWith('/data/woe-pdf-config.js') || path.endsWith('/data/stock-config.js') || path.endsWith('/data/ui-config.js') || path.endsWith('/data/app-audit.js') || path.endsWith('/data/pos-operational-overrides.js') || path.endsWith('/data/tool-menu.json') || path.includes('/data/tools/');
+  const isCatalogImage = path.includes('/assets/catalog/images/');
   event.respondWith(
-    (isGeneratedData ? Promise.race([fetch(event.request),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),2500))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
+    ((isGeneratedData || isCatalogImage) ? Promise.race([fetch(event.request),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),2500))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));

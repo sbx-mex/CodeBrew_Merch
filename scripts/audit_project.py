@@ -18,7 +18,7 @@ PERFORMANCE_BUDGETS = {
     "index.html": 35_000,
     "styles.css": 45_000,
     "catalog.css": 30_000,
-    "app.js": 125_000,
+    "app.js": 126_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/merch-catalog.js": 1_000_000,
@@ -99,11 +99,15 @@ def audit(root: Path) -> dict:
         REQUIRED_SHEETS.issubset(present_sheets),
         "4 pestañas operativas localizadas" if REQUIRED_SHEETS.issubset(present_sheets) else f"Faltan: {', '.join(sorted(REQUIRED_SHEETS - present_sheets))}",
     ))
-    restored_files = sorted((root / "assets/catalog/images").rglob("*.webp"))
+    published_image_suffixes = {".jpg", ".jpeg", ".png", ".webp"}
+    restored_files = sorted(
+        path for path in (root / "assets/catalog/images").rglob("*")
+        if path.is_file() and path.suffix.lower() in published_image_suffixes
+    )
     featured_files = sorted((root / "assets/catalog/featured").glob("*.webp"))
     engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
     visual_sources = sorted((root / "engines/visual-sources").glob("*.zip"))
-    image_overrides = sorted((root / "engines/image-overrides").glob("*.*"))
+    image_overrides = sorted((root / "engines/image-overrides").rglob("*.*"))
     catalog_text = (root / "data/merch-catalog.js").read_text(encoding="utf-8")
     catalog_payload = json.loads(catalog_text.split("=", 1)[1].strip().rstrip(";"))
     catalog_products = catalog_payload.get("products", [])
@@ -116,7 +120,8 @@ def audit(root: Path) -> dict:
         path.relative_to(root).as_posix()
         for path in [*restored_files, *featured_files]
     }
-    clean_reset = catalog_report.get("imageMode") == "clean-reset" or catalog_payload.get("meta", {}).get("imageMode") == "clean-reset"
+    image_mode = catalog_report.get("imageMode") or catalog_payload.get("meta", {}).get("imageMode")
+    clean_reset = image_mode == "clean-reset"
     common_catalog_ok = (
         catalog_report.get("status") == "ok"
         and catalog_report.get("engineFiles") == len(engines) == 3
@@ -127,7 +132,32 @@ def audit(root: Path) -> dict:
         and catalog_report.get("atlases") == 0
         and all(path.stat().st_size < 25_000_000 for path in [*engines, *visual_sources, *image_overrides, *restored_files, *featured_files])
     )
-    if clean_reset:
+    if image_mode == "manual-upload":
+        coverage = load_json(root / "data/photo-coverage.json")
+        active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
+        secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
+        products_with_photo = [product for product in catalog_products if product.get("visual")]
+        active_with_photo = sum(product.get("stockPriority") == "active" for product in products_with_photo)
+        lot_dirs = sorted(path for path in (root / "assets/catalog/images").iterdir() if path.is_dir())
+        catalog_ok = (
+            common_catalog_ok
+            and [lot.name for lot in lot_dirs] == [f"lote-{number:02d}" for number in range(1, 5)]
+            and all(0 < sum(child.is_file() for child in lot.iterdir()) < 100 for lot in lot_dirs)
+            and all(image_is_readable(path) for path in restored_files)
+            and referenced_visuals.issubset(published_visuals)
+            and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("imageFiles")
+            and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
+            and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
+            and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
+            and coverage.get("duplicateProtection") == "one-photo-per-article"
+            and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
+            and all(product.get("visualSource") == "pending-upload" for product in catalog_products if not product.get("visual"))
+            and active_count == catalog_report.get("activeStockProducts") == catalog_payload.get("meta", {}).get("activeStockProducts")
+            and active_with_photo == catalog_report.get("activeWithPhoto") == catalog_payload.get("meta", {}).get("activeWithPhoto")
+            and secondary_count == catalog_report.get("secondaryProducts") == catalog_payload.get("meta", {}).get("secondaryProducts")
+        )
+        catalog_detail = f"{len(catalog_products):,} artículos; {len(restored_files)} fotos en 4 lotes; todos los archivos relacionados y {active_with_photo} artículos activos con foto"
+    elif clean_reset:
         active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
         secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
         catalog_ok = (
@@ -154,13 +184,28 @@ def audit(root: Path) -> dict:
         )
         catalog_detail = f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('restoredImageFiles', 0):,} fotografías restauradas individualmente y {len(featured_files)} imagen HD"
     checks.append(check("Catálogo visual", catalog_ok, catalog_detail))
-    cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
-    premium = catalog_report.get("visualSources", {}).get("premium-override", 0)
-    checks.append(check(
-        "Doble auditoría visual",
-        cross_checked >= 500 and premium >= 1 and catalog_report.get("visualSourceAudit"),
-        f"{cross_checked:,} imágenes cotejadas Excel/HTML; {premium} reconstrucción premium verificada",
-    ))
+    if image_mode == "manual-upload":
+        coverage = load_json(root / "data/photo-coverage.json")
+        coverage_ok = (
+            coverage.get("status") == "ok"
+            and coverage.get("version") == "manual-upload-v2"
+            and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
+            and all(row.get("status") == "matched" for row in coverage.get("files", []))
+            and {"skuIntl", "codigoDia", "skuPos", "displayName"}.issubset(coverage.get("matchOrder", []))
+        )
+        checks.append(check(
+            "Control de fotos",
+            coverage_ok,
+            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas; cruce por SKU, Código Día o nombre",
+        ))
+    else:
+        cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
+        premium = catalog_report.get("visualSources", {}).get("premium-override", 0)
+        checks.append(check(
+            "Doble auditoría visual",
+            cross_checked >= 500 and premium >= 1 and catalog_report.get("visualSourceAudit"),
+            f"{cross_checked:,} imágenes cotejadas Excel/HTML; {premium} reconstrucción premium verificada",
+        ))
     woe = report.get("woe", {})
     woe_ok = woe.get("catalogRows", 0) > 0 and woe.get("microsRows", 0) > 0 and woe.get("microsCountGroups", 0) > 0 and woe.get("exactSapDuplicatesIgnored", 0) == 0
     checks.append(check(
@@ -204,13 +249,13 @@ def audit(root: Path) -> dict:
         "WOE + Stock On Hand + HTML/PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogVisualDialog", "catalogVisualImage", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
+    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "openCatalogVisual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html,
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html,
         f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",

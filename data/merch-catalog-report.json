@@ -1,107 +1,71 @@
 {
   "status": "ok",
-  "version": "faithful-restoration-v4",
+  "version": "manual-catalog-v1",
   "engineFiles": 3,
   "visualSourceFiles": 3,
-  "products": 1019,
+  "products": 1027,
   "duplicateRowsIgnored": 28,
-  "withSourceImage": 0,
+  "withSourceImage": 40,
   "withApproximation": 0,
-  "uniqueVisuals": 827,
+  "uniqueVisuals": 0,
   "atlases": 0,
   "featuredImages": 0,
-  "restoredImageFiles": 0,
-  "canvasPixels": 768,
-  "contentPixels": 660,
-  "restorationAudit": {
-    "premium": 1,
-    "restored": 826,
-    "restoredFromThumbnail": 816,
-    "approximationAssets": 7,
-    "published": 809
-  },
-  "visualSources": {
-    "premium-override": 1,
-    "excel": 686,
-    "html-row": 126,
-    "approximation": 206
-  },
+  "restoredImageFiles": 37,
+  "publishedImageFiles": 37,
+  "moneyFieldsPublished": 0,
+  "imageMode": "manual-upload",
   "categories": {
-    "bottle": 51,
-    "other": 161,
+    "other": 169,
     "cold-cup": 274,
     "tumbler": 395,
     "mug": 122,
-    "brew": 8,
+    "bottle": 51,
     "accessory": 8
   },
   "sources": [
     {
       "file": "SUMMER_2026_WK33_C2.xlsx",
       "sheet": "Table 1",
-      "rows": 436,
-      "products": 288,
-      "visualSources": {
-        "crossChecked": 204,
-        "crossReview": 25,
-        "premium-override": 1,
-        "html-row": 22,
-        "crossConsistent": 179,
-        "excel": 255,
-        "approximation": 10
-      }
+      "rows": 438,
+      "products": 288
     },
     {
       "file": "CORE_WINTER_2026.xlsx",
       "sheet": "Table 1",
       "rows": 93,
-      "products": 69,
-      "visualSources": {
-        "crossChecked": 66,
-        "crossConsistent": 63,
-        "excel": 68,
-        "crossReview": 3,
-        "html-row": 1
-      }
+      "products": 69
     },
     {
       "file": "GENERICO_SUMMER_II_2025.xlsx",
       "sheet": "Table 1",
       "rows": 985,
-      "products": 690,
-      "visualSources": {
-        "crossChecked": 305,
-        "crossReview": 62,
-        "html-row": 104,
-        "crossConsistent": 243,
-        "excel": 381,
-        "approximation": 205
-      }
+      "products": 690
     }
   ],
-  "visualSourceAudit": [
+  "visualSourceAudit": [],
+  "imageNote": "Una fotografía manual por artículo.",
+  "matchedImageFiles": 37,
+  "unmatchedImageFiles": 0,
+  "activeStockProducts": 891,
+  "activeWithPhoto": 36,
+  "activeMissingPhoto": 855,
+  "secondaryProducts": 136,
+  "manualImageLots": [
     {
-      "file": "CORE_WINTER_2026_visual.zip",
-      "rows": 67,
-      "mappedImages": 67,
-      "rowsWithoutImage": 0
+      "folder": "lote-01",
+      "images": 10
     },
     {
-      "file": "GENERICO_SUMMER_II_2025_visual.zip",
-      "rows": 680,
-      "mappedImages": 417,
-      "rowsWithoutImage": 263
+      "folder": "lote-02",
+      "images": 10
     },
     {
-      "file": "SUMMER_2026_WK33_visual.zip",
-      "rows": 232,
-      "mappedImages": 226,
-      "rowsWithoutImage": 6
+      "folder": "lote-03",
+      "images": 10
+    },
+    {
+      "folder": "lote-04",
+      "images": 7
     }
-  ],
-  "imageNote": "Fotografía restaurada desde la fuente original; se preservan forma, color y diseño del artículo.",
-  "moneyFieldsPublished": 0,
-  "imageMode": "clean-reset",
-  "activeStockProducts": 886,
-  "secondaryProducts": 133
+  ]
 }

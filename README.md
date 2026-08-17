@@ -7,16 +7,19 @@ PWA operativa con tres accesos: **Catálogo General**, **Revisión de Merch** y 
 - `Lista_Precios_Base.xlsx`: motor operativo SAP, Micros, Discovery y homologaciones.
 - `engines/merch-lists/*.xlsx`: listas visuales independientes. El proceso descubre entre 1 y 99 archivos sin depender de un nombre fijo.
 - `engines/visual-sources/*.zip`: exportaciones HTML de las listas; permiten confirmar por fila que cada foto corresponde al Código Día y SKU internacional.
+- `assets/catalog/images/lote-01..04/`: cuatro carpetas persistentes; cada una debe contener de 1 a 99 archivos.
 - `engines/image-overrides/`: reconstrucciones premium excepcionales nombradas con su Código Día, por ejemplo `16999.png`.
 - `scripts/generate_products.py`: construye el cruce operativo.
-- `scripts/generate_visual_catalog.py`: normaliza artículos, crea llaves estables y restaura cada fotografía por separado en un lienzo uniforme de 768 × 768 px; no usa atlas al ampliar.
+- `scripts/generate_manual_catalog.py`: normaliza los artículos sin procesar miles de imágenes; mantiene rápida la actualización.
+- `scripts/integrate_uploaded_images.py`: conserva los cuatro lotes y cruza cada foto por SKU internacional, Código Día, SKU POS o nombre único.
+- `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación, priorizada por los artículos con existencia; filtra `CON FOTO` o `FALTA FOTO`.
 
 Llaves generadas:
 
 - `articleKey`: `dia-{codigo-dia}--pos-{sku-pos-o-nombre}`.
 - `nameKey`: nombre del artículo normalizado, sin acentos ni caracteres especiales.
 
-Cada imagen disponible se coteja entre Excel y HTML, se elige la fuente con mayor resolución y se remasteriza sin cambiar el producto. Si ninguna fuente trae foto, se utiliza una referencia por categoría. **Imagen recreada de la Lista de Precio; es una aproximación visual.**
+Las fotos manuales tienen prioridad y permanecen después de cada compilación. El cruce revisa tanto las listas visuales como `Lista_Precios_Base.xlsx`; los artículos operativos ausentes de las listas visuales se incorporan al catálogo cuando su SKU o Código Día coincide. Si un archivo sigue sin relación, se conserva en su lote y se marca en `data/photo-coverage.json`; nunca se asigna por semejanza visual o por suposición.
 
 El catálogo es exclusivamente una herramienta interna de conteo: no publica precios ni campos monetarios.
 
@@ -26,7 +29,10 @@ El catálogo es exclusivamente una herramienta interna de conteo: no publica pre
 2. Reemplaza también la exportación HTML comprimida correspondiente en `engines/visual-sources/` cuando esté disponible.
 3. Conserva los encabezados `CÓDIGO DIA`, `Imagen`, `Descripción SCI`, `NOMBRE POS`, `NOMBRE INVENTARIO` y `SKU POS`.
 4. Sube el cambio a `main`.
-5. El workflow valida dos veces la relación artículo-imagen, regenera el catálogo y publica únicamente si todo pasa.
+5. Para agregar fotos, usa exactamente `lote-01` a `lote-04`, con menos de 100 imágenes en cada una. Nombra cada archivo con SKU internacional, Código Día, SKU POS o nombre exacto del artículo.
+6. El workflow regenera el catálogo, reaplica las fotos manuales, audita la relación y publica únicamente si todo pasa.
+
+Para actualizar una foto ya existente, reemplaza el archivo conservando su nombre. El integrador bloquea nombres repetidos, contenido duplicado y más de una foto asignada al mismo artículo. La interfaz muestra cada imagen una sola vez y no abre una segunda vista ampliada.
 
 Las filas pueden aumentar o disminuir. El cruce se reconstruye completo en cada ejecución; no depende del número de fila anterior.
 
@@ -54,8 +60,8 @@ El PDF agrega `Conteo` desde `Catalogo Micros` y compacta cada registro a un sol
 
 - Ningún archivo puede alcanzar 25 MB.
 - Ninguna carpeta puede contener 100 archivos.
-- Las imágenes de 384 px se agrupan en atlas de 16; así permanecen nítidas y ninguna carpeta alcanza 100 archivos.
-- El catálogo carga 48 artículos por bloque mediante `Ver más artículos` y filtra por nombre, Día, SAP, SKU y categoría.
+- El catálogo usa una foto directa por artículo, sin atlas ni duplicados.
+- Revisión de Merch carga cinco artículos por bloque mediante `Ver más artículos` y filtra por nombre, Día, SAP, SKU y categoría.
 
 ## Auditoría y limpieza
 

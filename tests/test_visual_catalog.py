@@ -35,14 +35,17 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(keys), len(set(keys)))
         self.assertTrue(all(key.startswith("dia-") and "--pos-" in key for key in keys))
 
-    def test_every_product_has_operational_fields_and_clean_visual_state(self) -> None:
+    def test_every_product_has_operational_fields_and_photo_state(self) -> None:
         for product in self.products:
             self.assertTrue(product["codigoDia"])
             self.assertTrue(product["displayName"])
             self.assertTrue(product["nameKey"])
             self.assertNotIn("prices", product)
-            self.assertIsNone(product.get("visual"))
-            self.assertEqual(product.get("visualSource"), "pending-upload")
+            if product.get("visual"):
+                self.assertEqual(product.get("visualSource"), "manual-upload")
+                self.assertTrue(product["visual"]["src"].startswith("assets/catalog/images/lote-"))
+            else:
+                self.assertEqual(product.get("visualSource"), "pending-upload")
             self.assertIn(product.get("stockPriority"), {"active", "secondary"})
 
     def test_github_limits_are_respected(self) -> None:
@@ -56,17 +59,23 @@ class VisualCatalogContractTests(unittest.TestCase):
             elif path.is_dir():
                 self.assertLess(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
 
-    def test_catalog_image_directories_are_clean(self) -> None:
-        restored = list((ROOT / "assets/catalog/images").rglob("*.webp")) if (ROOT / "assets/catalog/images").exists() else []
+    def test_four_manual_image_lots_are_integrated(self) -> None:
+        lots = sorted(path for path in (ROOT / "assets/catalog/images").iterdir() if path.is_dir())
+        restored = [path for lot in lots for path in lot.iterdir() if path.is_file()]
         featured = list((ROOT / "assets/catalog/featured").glob("*.webp")) if (ROOT / "assets/catalog/featured").exists() else []
-        self.assertEqual(restored, [])
+        self.assertEqual([lot.name for lot in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
+        self.assertEqual([sum(path.is_file() for path in lot.iterdir()) for lot in lots], [10, 10, 10, 7])
+        self.assertEqual(len(restored), 37)
         self.assertEqual(featured, [])
-        self.assertEqual(self.catalog["meta"].get("imageMode"), "clean-reset")
+        self.assertEqual(self.catalog["meta"].get("imageMode"), "manual-upload")
+        self.assertEqual(self.catalog["meta"].get("matchedImageFiles"), 37)
+        self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), 0)
+        self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
-        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogLoadMore", "catalogVisualDialog", "microsCatalogResults", "merch-catalog.js"):
+        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogLoadMore", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
         self.assertNotIn("microsGroupFilter", html)
         self.assertNotIn("microsFamilyFilter", html)
@@ -79,8 +88,13 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertIn(token, app)
         self.assertNotIn("catalogPrice", app)
         self.assertNotIn("Agregar · $", app)
+        self.assertNotIn("catalogVisualDialog", html)
+        self.assertNotIn("openCatalogVisual", app)
+        self.assertNotIn("data-catalog-visual", app)
+        self.assertNotIn("data-woe-visual", app)
+        self.assertNotIn("Ampliar", app)
 
-    def test_stock_priority_and_visual_reset(self) -> None:
+    def test_stock_priority_and_photo_priority(self) -> None:
         active = [product for product in self.products if product.get("stockPriority") == "active"]
         secondary = [product for product in self.products if product.get("stockPriority") == "secondary"]
         self.assertTrue(active)
@@ -89,7 +103,9 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(self.catalog["meta"].get("secondaryProducts"), len(secondary))
         first_secondary = next((i for i, product in enumerate(self.products) if product.get("stockPriority") == "secondary"), len(self.products))
         self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
-        self.assertTrue(all(product.get("visual") is None for product in self.products))
+        active_with_photo = [product for product in active if product.get("visual")]
+        self.assertEqual(len(active_with_photo), self.catalog["meta"].get("activeWithPhoto"))
+        self.assertGreaterEqual(len(active_with_photo), 32)
 
 
 if __name__ == "__main__":
