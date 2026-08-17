@@ -12,8 +12,8 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 40,
-      "accepted": 40,
+      "images": 41,
+      "accepted": 41,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -40,11 +40,11 @@
     }
   ],
   "totals": {
-    "imageFiles": 40,
+    "imageFiles": 41,
     "publishedImageFiles": 40,
     "matchedImageFiles": 40,
     "unmatchedImageFiles": 0,
-    "duplicateImageFilesIgnored": 0,
+    "duplicateImageFilesIgnored": 1,
     "matchedProducts": 44,
     "activeProducts": 891,
     "activeWithPhoto": 40,
@@ -722,6 +722,17 @@
           "stockPriority": "active"
         }
       ]
+    },
+    {
+      "file": null,
+      "uploadedFrom": "lote-01/16919.jpeg",
+      "identifier": "16919",
+      "status": "ignored-duplicate-article",
+      "matchedBy": "codigoDia",
+      "kept": [
+        "lote-01/011178957_1.jpg"
+      ],
+      "products": []
     },
     {
       "file": "lote-01/16923.jpeg",
