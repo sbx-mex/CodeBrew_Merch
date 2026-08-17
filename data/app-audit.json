@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-17T04:02:55+00:00",
+  "auditedAtUtc": "2026-08-17T04:10:33+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "e5af91a84d638cfd48db3201bf87699899024dc811fb8cc9de5d436dcf02eeaf",
   "checksTotal": 14,
@@ -76,7 +76,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2241 KB auditados en archivos críticos"
+      "detail": "2242 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -87,7 +87,7 @@
       "app.js": 124351,
       "data/products.js": 358517,
       "data/woe.js": 1123974,
-      "data/merch-catalog.js": 611621,
+      "data/merch-catalog.js": 612226,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },

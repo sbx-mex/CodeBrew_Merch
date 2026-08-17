@@ -53,10 +53,46 @@
   "manualImageLots": [
     {
       "folder": "lote-01",
-      "images": 37,
+      "images": 44,
       "accepted": 37,
-      "duplicatesIgnored": 0,
-      "ignoredFiles": []
+      "duplicatesIgnored": 7,
+      "ignoredFiles": [
+        {
+          "file": "11186646.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/011186646.jpeg"
+        },
+        {
+          "file": "11186650.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/011186650.jpeg"
+        },
+        {
+          "file": "11186658.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/011186658.jpeg"
+        },
+        {
+          "file": "11186659.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/011186659.jpeg"
+        },
+        {
+          "file": "17359.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/017359.jpeg"
+        },
+        {
+          "file": "17360.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/017357.jpeg"
+        },
+        {
+          "file": "17362.jpg",
+          "reason": "duplicate-content",
+          "kept": "lote-01/017358.jpeg"
+        }
+      ]
     },
     {
       "folder": "lote-02",
