@@ -106,37 +106,54 @@ def audit(root: Path) -> dict:
     image_overrides = sorted((root / "engines/image-overrides").glob("*.*"))
     catalog_text = (root / "data/merch-catalog.js").read_text(encoding="utf-8")
     catalog_payload = json.loads(catalog_text.split("=", 1)[1].strip().rstrip(";"))
+    catalog_products = catalog_payload.get("products", [])
     referenced_visuals = {
-        product.get("visual", {}).get("src", "")
-        for product in catalog_payload.get("products", [])
-        if product.get("visual", {}).get("src")
+        visual.get("src", "")
+        for product in catalog_products
+        if (visual := (product.get("visual") or {})).get("src")
     }
     published_visuals = {
         path.relative_to(root).as_posix()
         for path in [*restored_files, *featured_files]
     }
-    catalog_ok = (
+    clean_reset = catalog_report.get("imageMode") == "clean-reset" or catalog_payload.get("meta", {}).get("imageMode") == "clean-reset"
+    common_catalog_ok = (
         catalog_report.get("status") == "ok"
-        and catalog_report.get("version") == "faithful-restoration-v4"
         and catalog_report.get("engineFiles") == len(engines) == 3
         and catalog_report.get("visualSourceFiles") == len(visual_sources) == 3
         and catalog_report.get("products", 0) > 0
-        and catalog_report.get("withSourceImage", 0) > 800
-        and catalog_report.get("canvasPixels", 0) >= 768
         and catalog_report.get("moneyFieldsPublished") == 0
         and '"prices"' not in catalog_text
         and catalog_report.get("atlases") == 0
-        and catalog_report.get("restoredImageFiles") >= 800
-        and catalog_report.get("featuredImages") == len(featured_files) >= 1
-        and all(image_is_readable(path) for path in [*restored_files, *featured_files])
-        and referenced_visuals == published_visuals
         and all(path.stat().st_size < 25_000_000 for path in [*engines, *visual_sources, *image_overrides, *restored_files, *featured_files])
     )
-    checks.append(check(
-        "Catálogo visual",
-        catalog_ok,
-        f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('restoredImageFiles', 0):,} fotografías restauradas individualmente y {len(featured_files)} imagen HD",
-    ))
+    if clean_reset:
+        active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
+        secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
+        catalog_ok = (
+            common_catalog_ok
+            and not referenced_visuals
+            and not published_visuals
+            and all(product.get("visual") is None for product in catalog_products)
+            and all(product.get("visualSource") == "pending-upload" for product in catalog_products)
+            and active_count > 0
+            and active_count == catalog_report.get("activeStockProducts") == catalog_payload.get("meta", {}).get("activeStockProducts")
+            and secondary_count == catalog_report.get("secondaryProducts") == catalog_payload.get("meta", {}).get("secondaryProducts")
+        )
+        catalog_detail = f"{len(catalog_products):,} artículos; catálogo visual limpio; {active_count:,} con prioridad de inventario"
+    else:
+        catalog_ok = (
+            common_catalog_ok
+            and catalog_report.get("version") == "faithful-restoration-v4"
+            and catalog_report.get("withSourceImage", 0) > 800
+            and catalog_report.get("canvasPixels", 0) >= 768
+            and catalog_report.get("restoredImageFiles") >= 800
+            and catalog_report.get("featuredImages") == len(featured_files) >= 1
+            and all(image_is_readable(path) for path in [*restored_files, *featured_files])
+            and referenced_visuals == published_visuals
+        )
+        catalog_detail = f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('restoredImageFiles', 0):,} fotografías restauradas individualmente y {len(featured_files)} imagen HD"
+    checks.append(check("Catálogo visual", catalog_ok, catalog_detail))
     cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
     premium = catalog_report.get("visualSources", {}).get("premium-override", 0)
     checks.append(check(

@@ -170,47 +170,25 @@ let exact = products.find(p => [p.nombrePos,p.nombreInventario,p.botonPos,p.skuP
 if (exact) return exact;
 return products.find(p => normalizeText(`${p.nombrePos} ${p.nombreInventario} ${p.descripcion} ${p.botonPos} ${p.skuPos}`).includes(q)) || null;
 }
-function correctSkuText(value){
-return String(value || '')
-.replace(/[OoQqD]/g,'0')
-.replace(/[Il|!]/g,'1')
-.replace(/[Ss]/g,'5')
-.replace(/[Bb]/g,'8')
-.replace(/[Zz]/g,'2')
-.replace(/[Gg]/g,'6');
-}
+function correctSkuText(value){return String(value||'').replace(/[OoQqD]/g,'0').replace(/[Il|!]/g,'1').replace(/[Ss]/g,'5').replace(/[Bb]/g,'8').replace(/[Zz]/g,'2').replace(/[Gg]/g,'6')}
 function extractSku(text){
-const raw = String(text || '');
-const prepared = correctSkuText(raw)
+const raw=String(text||'');
+const prepared=correctSkuText(raw)
 .replace(/S\s*K\s*U/ig,'SKU')
 .replace(/#/g,' # ')
 .replace(/[^A-Za-z0-9#:\-\s]/g,' ');
-const skuPatterns = [
+const skuPatterns=[
 /SKU\s*#?\s*[:\-]?\s*(0?[0-9][0-9\s\-]{6,16})/i,
 /SKV\s*#?\s*[:\-]?\s*(0?[0-9][0-9\s\-]{6,16})/i,
 /#\s*(0?[0-9][0-9\s\-]{6,16})/i
 ];
-for (const pattern of skuPatterns) {
-const found = prepared.match(pattern);
-if (found) {
-const sku = normalizeSku(found[1]);
-if (sku.length >= 7 && sku.length <= 10) return sku;
-}
-}
-const candidates = prepared.match(/0?[0-9][0-9\s\-]{6,16}/g) || [];
-const scored = candidates
-.map(v => normalizeSku(v))
-.filter(v => v.length >= 7 && v.length <= 10)
-.sort((a,b) => {
-const aKnown = numericIndex.has(a) ? 1 : 0;
-const bKnown = numericIndex.has(b) ? 1 : 0;
-if (aKnown !== bKnown) return bKnown - aKnown;
-return Math.abs(8 - a.length) - Math.abs(8 - b.length);
-});
-return scored[0] || '';
+for(const pattern of skuPatterns){const found=prepared.match(pattern);if(found){const sku=normalizeSku(found[1]);if(sku.length>=7&&sku.length<=10)return sku}}
+const candidates=prepared.match(/0?[0-9][0-9\s\-]{6,16}/g)||[];
+const scored=candidates.map(v=>normalizeSku(v)).filter(v=>v.length>=7&&v.length<=10).sort((a,b)=>Number(numericIndex.has(b))-Number(numericIndex.has(a))||Math.abs(8-a.length)-Math.abs(8-b.length));
+return scored[0]||'';
 }
 function qrDataUrl(value, size=260){
-const text = String(value || '').trim();
+const text=String(value||'').trim();
 if (!text || !window.QRious) return '';
 const qr = new QRious({ value: text, size, level: 'H', padding: 8 });
 return qr.toDataURL('image/png');
@@ -335,7 +313,7 @@ const merchMode=appMode==='merch',categories=['all','tumbler','mug','merchandise
 filters.hidden=!merchMode;if(merchMode){if(!categories.includes(catalogCategory))catalogCategory='all';filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('')}else filters.innerHTML='';
 const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${appMode}|${catalogCategory}|${microsCount}|${query}`;
 if(signature!==catalogRenderSignature){catalogVisibleLimit=5;catalogRenderSignature=signature;}
-const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const rank=i=>Number(i.operationalValidation?.sapMicros)*100+Number(i.validation?.sap)*20+Number((Number(i.qty??i.stock??i.stockOnHand??i.units??0)||0)>0)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&tokens.every(token=>row.text.includes(token))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
+const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const rank=i=>Number(i.visualProduct?.stockPriority==='active')*1000+Number(i.operationalValidation?.sapMicros)*100+Number(i.validation?.sap)*20+Number((Number(i.qty??i.stock??i.stockOnHand??i.units??0)||0)>0)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&tokens.every(token=>row.text.includes(token))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
 const matches=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))&&matchesCatalogCategory(row.item.visualProduct,catalogCategory));
 const unique=[];const seen=new Set();for(const row of matches){if(seen.has(row.item.visualProduct.articleKey))continue;seen.add(row.item.visualProduct.articleKey);unique.push(row.item);}unique.sort((a,b)=>Number(b.visualProduct.stockPriority==='active')-Number(a.visualProduct.stockPriority==='active')||Number(operationalWoeStatus(b).kind==='ok')-Number(operationalWoeStatus(a).kind==='ok')||articleName(a).localeCompare(articleName(b),'es'));
 const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore');$('catalogSummary').textContent=`Mostrando ${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
@@ -367,7 +345,7 @@ return woeSearchRows
 .map(row=>{
 if((merchMode&&!isMerchItem(row.item))||!tokens.every(token=>row.text.includes(token)))return null;
 const sap=normalizeText(row.item.descripcionSap),micros=normalizeText((row.item.micros||[]).join(' '));
-let score=(row.item.idWoe?12:0)+tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
+let score=Number(row.item.visualProduct?.stockPriority==='active')*100+(row.item.idWoe?12:0)+tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
 if(sap===query||micros===query)score+=30;
 return {item:row.item,score};
 })
@@ -930,7 +908,7 @@ const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.
 }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
 finally{button.disabled=false;button.textContent=original;}
 }
-function search(raw){ const p = findProduct(raw); p ? renderProduct(p, raw) : renderNotFound(raw); }
+function search(raw){const p=findProduct(raw);p?renderProduct(p,raw):renderNotFound(raw)}
 function applyAppMode(){
 document.body.classList.remove('home-mode','workspace-open','mode-catalog','mode-merch','mode-export','mode-consulta','mode-etiquetado');
 if(!appMode){document.body.classList.add('home-mode');renderToolContext();return;}
