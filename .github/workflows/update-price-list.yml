@@ -49,6 +49,9 @@ jobs:
       - name: Construir y auditar motores
         run: python scripts/build_all.py
 
+      - name: Mantener catálogo visual limpio
+        run: python scripts/cleanup_catalog_images.py --active-list data/merch-active-products.json --apply
+
       - name: Ejecutar pruebas funcionales
         run: python -m unittest discover -s tests -p "test_*.py"
 
