@@ -1,8 +1,8 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-17T08:57:59+00:00",
-  "sourceModifiedAtUtc": "2026-08-17T08:57:59+00:00",
+  "generatedAtUtc": "2026-08-17T09:05:58+00:00",
+  "sourceModifiedAtUtc": "2026-08-17T09:05:58+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26GlCCColor",
   "totalValidProducts": 961,
@@ -86,7 +86,7 @@
       ],
       "records": 716,
       "valid": 714,
-      "emptyRows": 1,
+      "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
@@ -125,9 +125,9 @@
   "woe": {
     "sapRows": 1705,
     "sapHeaderRow": 1,
-    "catalogRows": 2375,
+    "catalogRows": 2374,
     "sapCatalogRows": 1698,
-    "orphanCatalogRows": 677,
+    "orphanCatalogRows": 676,
     "uniqueWoe": 1698,
     "uniqueDiaSap": 1698,
     "exactSapDuplicatesIgnored": 0,
@@ -173,9 +173,9 @@
     "microsCountGroups": 12,
     "withMicros": 1162,
     "withMerch": 908,
-    "withoutSap": 677,
-    "operationalSapMicrosMatch": 960,
-    "operationalNeedsReview": 1415,
+    "withoutSap": 676,
+    "operationalSapMicrosMatch": 961,
+    "operationalNeedsReview": 1413,
     "completeTripleMatch": 208
   }
 }
