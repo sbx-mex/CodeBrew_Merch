@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-17T02:31:48+00:00",
+  "auditedAtUtc": "2026-08-17T02:43:52+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "ad243fa08810ae2a66577ed1a65990702a42f33842e8c6fe4bc16d98541f961b",
+  "sourceSha256": "e5af91a84d638cfd48db3201bf87699899024dc811fb8cc9de5d436dcf02eeaf",
   "checksTotal": 13,
   "checksOk": 13,
   "warnings": 0,
@@ -11,7 +11,7 @@
     {
       "name": "Motor Excel",
       "status": "ok",
-      "detail": "956 artículos MERCH válidos"
+      "detail": "962 artículos MERCH válidos"
     },
     {
       "name": "Estructura MERCH",
@@ -21,7 +21,7 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,019 artículos, 809 fotografías restauradas individualmente y 1 imagen HD"
+      "detail": "1,019 artículos; catálogo visual limpio; 886 con prioridad de inventario"
     },
     {
       "name": "Doble auditoría visual",
@@ -71,7 +71,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2473 KB auditados en archivos críticos"
+      "detail": "2233 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -80,9 +80,9 @@
       "styles.css": 43421,
       "catalog.css": 11273,
       "app.js": 124964,
-      "data/products.js": 356315,
-      "data/woe.js": 1122950,
-      "data/merch-catalog.js": 849199,
+      "data/products.js": 358517,
+      "data/woe.js": 1123974,
+      "data/merch-catalog.js": 600352,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },

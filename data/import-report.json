@@ -1,11 +1,11 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-17T02:31:48+00:00",
-  "sourceModifiedAtUtc": "2026-08-17T02:31:48+00:00",
+  "generatedAtUtc": "2026-08-17T02:43:52+00:00",
+  "sourceModifiedAtUtc": "2026-08-17T02:43:52+00:00",
   "latestItemCell": "Base_Campaña!D2",
-  "latestItem": "SII26BTLSS20",
-  "totalValidProducts": 956,
+  "latestItem": "SII26GlCCColor",
+  "totalValidProducts": 962,
   "sheets": [
     {
       "sheet": "Base_Campaña",
@@ -18,23 +18,23 @@
         "SKU POS",
         "C2"
       ],
-      "records": 120,
-      "valid": 118,
+      "records": 126,
+      "valid": 124,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 63,
+          "row": 69,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 64,
+          "row": 70,
           "reason": "sin identificador útil o sin precio"
         }
       ],
       "duplicateHeaders": [],
       "campaigns": {
-        "Summer": 17,
+        "Summer": 23,
         "World Cup": 28,
         "Spring": 38,
         "Winter": 34
@@ -135,7 +135,7 @@
     "microsFamilies": 22,
     "microsCountGroups": 12,
     "withMicros": 1165,
-    "withMerch": 905,
+    "withMerch": 911,
     "withoutSap": 890,
     "operationalSapMicrosMatch": 751,
     "operationalNeedsReview": 1492,
