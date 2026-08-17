@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Integra lotes manuales de fotos por SKU internacional, SKU POS o Código Día."""
+"""Integra y ordena fotos manuales exclusivamente por Código Día o SKU internacional."""
 
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ from PIL import Image
 
 SUPPORTED_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_BYTES = 25_000_000
+MAX_IMAGES_PER_LOT = 100
+LOT_NAMES = tuple(f"lote-{number:02d}" for number in range(1, 5))
 
 
 def normalize_name(value: object) -> str:
@@ -91,18 +93,18 @@ def image_dimensions(path: Path) -> tuple[int, int]:
 
 
 def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
-    lots = sorted(path for path in source_dir.iterdir() if path.is_dir())
-    expected = [f"lote-{number:02d}" for number in range(1, 5)]
-    if [lot.name for lot in lots] != expected:
-        raise ValueError(f"Se requieren exactamente estas 4 carpetas: {', '.join(expected)}")
+    source_dir.mkdir(parents=True, exist_ok=True)
+    lots = [source_dir / name for name in LOT_NAMES]
+    for lot in lots:
+        lot.mkdir(exist_ok=True)
     images: list[Path] = []
     lot_report: list[dict] = []
     seen_keys: dict[str, Path] = {}
     seen_hashes: dict[str, Path] = {}
     for lot in lots:
         lot_images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
-        if not 0 < len(lot_images) < 100:
-            raise ValueError(f"{lot.name}: debe contener entre 1 y 99 imágenes")
+        if len(lot_images) > MAX_IMAGES_PER_LOT:
+            raise ValueError(f"{lot.name}: admite como máximo {MAX_IMAGES_PER_LOT} imágenes")
         for image in lot_images:
             key = normalize_name(re.sub(r"_\d+$", "", image.stem))
             if key in seen_keys:
@@ -118,26 +120,25 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
 
 
 def build_indices(products: list[dict]) -> dict[str, dict[str, list[dict]]]:
-    fields = ("skuIntl", "codigoDia", "skuPos", "displayName", "nombreInventario", "nombrePos")
+    fields = ("codigoDia", "skuIntl")
     indices = {field: defaultdict(list) for field in fields}
     for product in products:
         for field in fields:
-            key = identifier(product.get(field)) if field in {"skuIntl", "codigoDia", "skuPos"} else normalize_name(product.get(field))
+            key = identifier(product.get(field))
             if key:
                 indices[field][key].append(product)
     return indices
 
 
-def add_operational_products(products: list[dict], operational_path: Path, image_keys: set[str], image_name_keys: set[str]) -> int:
+def add_operational_products(products: list[dict], operational_path: Path, image_keys: set[str]) -> int:
     indices = build_indices(products)
     existing_article_keys = {product.get("articleKey") for product in products}
     added = 0
     for row in load_operational_products(operational_path):
-        matching_fields = [field for field in ("skuIntl", "codigoDia", "skuPos") if identifier(row.get(field)) in image_keys]
-        matching_fields.extend(field for field in ("nombreInventario", "nombrePos", "displayName") if normalize_name(row.get(field)) in image_name_keys)
+        matching_fields = [field for field in ("codigoDia", "skuIntl") if identifier(row.get(field)) in image_keys]
         if not matching_fields:
             continue
-        if any(indices[field].get(identifier(row.get(field)) if field in {"skuIntl", "codigoDia", "skuPos"} else normalize_name(row.get(field))) for field in matching_fields):
+        if any(indices[field].get(identifier(row.get(field))) for field in matching_fields):
             continue
         display_name = row.get("nombreInventario") or row.get("nombrePos") or row.get("descripcion") or "Artículo"
         codigo = str(row.get("codigoDia") or "").strip()
@@ -163,8 +164,8 @@ def add_operational_products(products: list[dict], operational_path: Path, image
         }
         products.append(product)
         existing_article_keys.add(article_key)
-        for field in ("skuIntl", "codigoDia", "skuPos", "displayName", "nombreInventario", "nombrePos"):
-            key = identifier(product.get(field)) if field in {"skuIntl", "codigoDia", "skuPos"} else normalize_name(product.get(field))
+        for field in ("codigoDia", "skuIntl"):
+            key = identifier(product.get(field))
             if key:
                 indices[field][key].append(product)
         added += 1
@@ -184,12 +185,7 @@ def integrate(
     products = payload.get("products", [])
     active_names = load_active_names(active_list)
     images, lots = discover_images(source_dir)
-    appended_products = add_operational_products(
-        products,
-        operational_products,
-        {image_identifier(path) for path in images},
-        {normalize_name(re.sub(r"_\d+$", "", path.stem)) for path in images},
-    )
+    appended_products = add_operational_products(products, operational_products, {image_identifier(path) for path in images})
     indices = build_indices(products)
 
     for product in products:
@@ -204,29 +200,24 @@ def integrate(
     if image_output.exists():
         shutil.rmtree(image_output)
     image_output.mkdir(parents=True)
+    output_lots = [image_output / name for name in LOT_NAMES]
+    for lot in output_lots:
+        lot.mkdir()
 
     file_rows: list[dict] = []
     matched_files = 0
     matched_products: set[str] = set()
     assigned_files: dict[str, Path] = {}
-    for source in images:
+    used_output_lots: set[str] = set()
+    for image_number, source in enumerate(images):
         key = image_identifier(source)
-        name_key = normalize_name(re.sub(r"_\d+$", "", source.stem))
         match_field = ""
         matches: list[dict] = []
-        for field in ("skuIntl", "codigoDia", "skuPos"):
+        for field in ("codigoDia", "skuIntl"):
             if key and indices[field].get(key):
                 match_field = field
                 matches = indices[field][key]
                 break
-        if not matches:
-            for field in ("displayName", "nombreInventario", "nombrePos"):
-                candidates = indices[field].get(name_key, [])
-                article_keys = {candidate.get("articleKey") for candidate in candidates}
-                if len(article_keys) == 1:
-                    match_field = field
-                    matches = candidates
-                    break
 
         for product in matches:
             article_key = product.get("articleKey")
@@ -235,7 +226,9 @@ def integrate(
                 raise ValueError(f"El artículo {article_key} tiene más de una foto: {previous} y {source}")
             assigned_files[article_key] = source
 
-        relative = source.relative_to(source_dir)
+        target_lot = LOT_NAMES[image_number // MAX_IMAGES_PER_LOT]
+        relative = Path(target_lot) / source.name
+        used_output_lots.add(target_lot)
         destination = image_output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
@@ -260,6 +253,7 @@ def integrate(
 
         file_rows.append({
             "file": relative.as_posix(),
+            "uploadedFrom": source.relative_to(source_dir).as_posix(),
             "identifier": key,
             "status": "matched" if matches else "unmatched",
             "matchedBy": match_field or None,
@@ -272,6 +266,10 @@ def integrate(
                 "stockPriority": product.get("stockPriority"),
             } for product in matches],
         })
+
+    for lot in output_lots:
+        if lot.name not in used_output_lots:
+            (lot / ".gitkeep").write_text("", encoding="utf-8")
 
     products.sort(key=lambda product: (
         product.get("stockPriority") != "active",
@@ -322,10 +320,11 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v2",
+        "version": "manual-upload-v3",
         "source": "assets/catalog/images/lote-01..04",
-        "matchOrder": ["skuIntl", "codigoDia", "skuPos", "displayName", "nombreInventario", "nombrePos"],
+        "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
+        "packing": "fill-lote-01-first-then-02-03-04",
         "lots": lots,
         "totals": totals,
         "files": file_rows,

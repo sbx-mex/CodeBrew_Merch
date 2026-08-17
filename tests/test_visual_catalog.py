@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import csv
+import tempfile
 import unittest
 from pathlib import Path
 
 from PIL import Image
+from scripts.integrate_uploaded_images import discover_images
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,20 +60,29 @@ class VisualCatalogContractTests(unittest.TestCase):
             if path.is_file():
                 self.assertLess(path.stat().st_size, 25_000_000, relative.as_posix())
             elif path.is_dir():
-                self.assertLess(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
+                self.assertLessEqual(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
 
     def test_four_manual_image_lots_are_integrated(self) -> None:
         lots = sorted(path for path in (ROOT / "assets/catalog/images").iterdir() if path.is_dir())
-        restored = [path for lot in lots for path in lot.iterdir() if path.is_file()]
+        restored = [path for lot in lots for path in lot.iterdir() if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}]
         featured = list((ROOT / "assets/catalog/featured").glob("*.webp")) if (ROOT / "assets/catalog/featured").exists() else []
         self.assertEqual([lot.name for lot in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
-        self.assertEqual([sum(path.is_file() for path in lot.iterdir()) for lot in lots], [10, 10, 10, 7])
-        self.assertEqual(len(restored), 37)
+        counts = [sum(path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"} for path in lot.iterdir()) for lot in lots]
+        self.assertTrue(all(count <= 100 for count in counts))
+        self.assertTrue(all(not counts[index] or counts[index - 1] == 100 for index in range(1, len(counts))))
         self.assertEqual(featured, [])
         self.assertEqual(self.catalog["meta"].get("imageMode"), "manual-upload")
-        self.assertEqual(self.catalog["meta"].get("matchedImageFiles"), 37)
+        self.assertEqual(self.catalog["meta"].get("matchedImageFiles"), len(restored))
         self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), 0)
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
+
+    def test_missing_empty_lots_are_created_in_a_clean_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "images"
+            images, lots = discover_images(source)
+            self.assertEqual(images, [])
+            self.assertEqual([row["folder"] for row in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
+            self.assertTrue(all((source / row["folder"]).is_dir() for row in lots))
 
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -94,6 +106,15 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
 
+    def test_photo_list_has_one_row_per_codigo_dia(self) -> None:
+        with (ROOT / "data/Listado_Codigo_Dia_Fotos.csv").open("r", encoding="utf-8-sig", newline="") as stream:
+            rows = list(csv.DictReader(stream))
+        codes = {str(product.get("codigoDia")) for product in self.products if product.get("codigoDia")}
+        self.assertEqual(len(rows), len(codes))
+        self.assertEqual(len({row["CÓDIGO DÍA"] for row in rows}), len(rows))
+        self.assertTrue(all(row["CÓDIGO DÍA"] for row in rows))
+        self.assertEqual({row["ESTADO FOTO"] for row in rows}.difference({"CON FOTO", "FALTA FOTO"}), set())
+
     def test_stock_priority_and_photo_priority(self) -> None:
         active = [product for product in self.products if product.get("stockPriority") == "active"]
         secondary = [product for product in self.products if product.get("stockPriority") == "secondary"]
@@ -105,7 +126,6 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
         active_with_photo = [product for product in active if product.get("visual")]
         self.assertEqual(len(active_with_photo), self.catalog["meta"].get("activeWithPhoto"))
-        self.assertGreaterEqual(len(active_with_photo), 32)
 
 
 if __name__ == "__main__":

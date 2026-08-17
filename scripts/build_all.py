@@ -93,6 +93,12 @@ def main() -> int:
         if featured_target.exists():
             shutil.rmtree(featured_target)
         (STAGE / "featured").replace(featured_target)
+        run(
+            "scripts/export_photo_control.py",
+            "--catalog", "data/merch-catalog.js",
+            "--xlsx", "Control_Fotos_CodeBrew.xlsx",
+            "--csv", "data/Listado_Codigo_Dia_Fotos.csv",
+        )
         run("scripts/audit_project.py")
     finally:
         if STAGE.exists():

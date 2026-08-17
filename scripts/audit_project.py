@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import re
@@ -11,6 +12,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from PIL import Image
+from openpyxl import load_workbook
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,6 +87,7 @@ def audit(root: Path) -> dict:
     parser.feed(html)
     workflow_update = (root / ".github/workflows/update-price-list.yml").read_text(encoding="utf-8")
     workflow_cleanup = (root / ".github/workflows/cleanup-obsolete.yml").read_text(encoding="utf-8")
+    workflow_image_audit = (root / ".github/workflows/cleanup-catalog-images.yml").read_text(encoding="utf-8")
     sw_text = (root / "sw.js").read_text(encoding="utf-8")
 
     checks: list[dict] = []
@@ -142,7 +145,7 @@ def audit(root: Path) -> dict:
         catalog_ok = (
             common_catalog_ok
             and [lot.name for lot in lot_dirs] == [f"lote-{number:02d}" for number in range(1, 5)]
-            and all(0 < sum(child.is_file() for child in lot.iterdir()) < 100 for lot in lot_dirs)
+            and all(sum(child.is_file() and child.suffix.lower() in published_image_suffixes for child in lot.iterdir()) <= 100 for lot in lot_dirs)
             and all(image_is_readable(path) for path in restored_files)
             and referenced_visuals.issubset(published_visuals)
             and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("imageFiles")
@@ -184,14 +187,39 @@ def audit(root: Path) -> dict:
         )
         catalog_detail = f"{catalog_report.get('products', 0):,} artículos, {catalog_report.get('restoredImageFiles', 0):,} fotografías restauradas individualmente y {len(featured_files)} imagen HD"
     checks.append(check("Catálogo visual", catalog_ok, catalog_detail))
+    control_csv = root / "data/Listado_Codigo_Dia_Fotos.csv"
+    control_xlsx = root / "Control_Fotos_CodeBrew.xlsx"
+    codes = {str(product.get("codigoDia")) for product in catalog_products if product.get("codigoDia")}
+    codes_with_photo = {str(product.get("codigoDia")) for product in catalog_products if product.get("codigoDia") and product.get("visual")}
+    csv_rows: list[dict] = []
+    if control_csv.is_file():
+        with control_csv.open("r", encoding="utf-8-sig", newline="") as stream:
+            csv_rows = list(csv.DictReader(stream))
+    workbook_sheets: list[str] = []
+    if control_xlsx.is_file():
+        workbook = load_workbook(control_xlsx, read_only=True, data_only=False)
+        workbook_sheets = workbook.sheetnames
+        workbook.close()
+    control_ok = (
+        len(csv_rows) == len(codes)
+        and workbook_sheets == ["Control de fotos"]
+        and all(row.get("CÓDIGO DÍA") for row in csv_rows)
+        and sum(row.get("ESTADO FOTO") == "CON FOTO" for row in csv_rows) == len(codes_with_photo)
+    )
+    checks.append(check(
+        "Listado y Excel de fotos",
+        control_ok,
+        f"{len(csv_rows)} códigos Día; {sum(row.get('ESTADO FOTO') == 'CON FOTO' for row in csv_rows)} con foto; una pestaña de control",
+    ))
     if image_mode == "manual-upload":
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v2"
+            and coverage.get("version") == "manual-upload-v3"
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and all(row.get("status") == "matched" for row in coverage.get("files", []))
-            and {"skuIntl", "codigoDia", "skuPos", "displayName"}.issubset(coverage.get("matchOrder", []))
+            and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
+            and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
         )
         checks.append(check(
             "Control de fotos",
@@ -289,10 +317,14 @@ def audit(root: Path) -> dict:
         and "scripts/build_all.py" in workflow_update
         and "unittest discover" in workflow_update
         and "git add --all assets/catalog" in workflow_update
+        and "cleanup_catalog_images.py --apply" not in workflow_update
         and "workflow_run:" in workflow_cleanup
         and "github.event.workflow_run.conclusion == 'success'" in workflow_cleanup
         and "pip install --requirement scripts/requirements.txt" in workflow_cleanup
         and "scripts/cleanup_obsolete.py --apply" in workflow_cleanup
+        and "contents: read" in workflow_image_audit
+        and "--apply" not in workflow_image_audit
+        and "git push" not in workflow_image_audit
     )
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(
@@ -313,7 +345,7 @@ def audit(root: Path) -> dict:
             # Una carpeta temporal de publicación puede desaparecer durante
             # el recorrido; no forma parte del artefacto final.
             continue
-        if count >= 100:
+        if count > 100:
             crowded.append(f"{directory.relative_to(root).as_posix() or '.'} ({count})")
     checks.append(check(
         "Límites GitHub",
