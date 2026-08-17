@@ -11,7 +11,7 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 17
+      "images": 27
     },
     {
       "folder": "lote-02",
@@ -27,13 +27,13 @@
     }
   ],
   "totals": {
-    "imageFiles": 17,
-    "matchedImageFiles": 17,
+    "imageFiles": 27,
+    "matchedImageFiles": 27,
     "unmatchedImageFiles": 0,
-    "matchedProducts": 20,
+    "matchedProducts": 30,
     "activeProducts": 891,
-    "activeWithPhoto": 17,
-    "activeMissingPhoto": 874,
+    "activeWithPhoto": 26,
+    "activeMissingPhoto": 865,
     "secondaryProducts": 136,
     "appendedOperationalProducts": 8
   },
@@ -153,6 +153,176 @@
           "skuIntl": "11178919",
           "skuPos": "58811",
           "displayName": "Sp26Mug14Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178922.jpeg",
+      "uploadedFrom": "lote-01/011178922.jpeg",
+      "identifier": "11178922",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16879--pos-58831",
+          "codigoDia": "16879",
+          "skuIntl": "11178922",
+          "skuPos": "58831",
+          "displayName": "WC26Tu16Flower",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178928.jpeg",
+      "uploadedFrom": "lote-01/011178928.jpeg",
+      "identifier": "11178928",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16880--pos-58817",
+          "codigoDia": "16880",
+          "skuIntl": "11178928",
+          "skuPos": "58817",
+          "displayName": "WC26CC24Road",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178930.jpeg",
+      "uploadedFrom": "lote-01/011178930.jpeg",
+      "identifier": "11178930",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16882--pos-58824",
+          "codigoDia": "16882",
+          "skuIntl": "11178930",
+          "skuPos": "58824",
+          "displayName": "WC26CC24Pride",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178933.jpeg",
+      "uploadedFrom": "lote-01/011178933.jpeg",
+      "identifier": "11178933",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16881--pos-50736",
+          "codigoDia": "16881",
+          "skuIntl": "11178933",
+          "skuPos": "50736",
+          "displayName": "SII25CC24Gamer",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178935.jpeg",
+      "uploadedFrom": "lote-01/011178935.jpeg",
+      "identifier": "11178935",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16920--pos-50738",
+          "codigoDia": "16920",
+          "skuIntl": "11178935",
+          "skuPos": "50738",
+          "displayName": "SII26Tu10Gam",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178937.jpeg",
+      "uploadedFrom": "lote-01/011178937.jpeg",
+      "identifier": "11178937",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16901--pos-58819",
+          "codigoDia": "16901",
+          "skuIntl": "11178937",
+          "skuPos": "58819",
+          "displayName": "WC26Mug12Stan",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178938.jpeg",
+      "uploadedFrom": "lote-01/011178938.jpeg",
+      "identifier": "11178938",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16898--pos-58810",
+          "codigoDia": "16898",
+          "skuIntl": "11178938",
+          "skuPos": "58810",
+          "displayName": "Sp26Tu16Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178941.jpeg",
+      "uploadedFrom": "lote-01/011178941.jpeg",
+      "identifier": "11178941",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16900--pos-50739",
+          "codigoDia": "16900",
+          "skuIntl": "11178941",
+          "skuPos": "50739",
+          "displayName": "SII26SS16Studded",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178943.jpeg",
+      "uploadedFrom": "lote-01/011178943.jpeg",
+      "identifier": "11178943",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16918--pos-58802",
+          "codigoDia": "16918",
+          "skuIntl": "11178943",
+          "skuPos": "58802",
+          "displayName": "Sp26SS20Orange",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178945.jpeg",
+      "uploadedFrom": "lote-01/011178945.jpeg",
+      "identifier": "11178945",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16924--pos-58835",
+          "codigoDia": "16924",
+          "skuIntl": "11178945",
+          "skuPos": "58835",
+          "displayName": "WC26Stan20IceF",
           "stockPriority": "active"
         }
       ]

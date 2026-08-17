@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-17T03:56:21+00:00",
+  "auditedAtUtc": "2026-08-17T03:57:09+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "e5af91a84d638cfd48db3201bf87699899024dc811fb8cc9de5d436dcf02eeaf",
   "checksTotal": 14,
@@ -21,17 +21,17 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,027 artículos; 17 fotos en 4 lotes; todos los archivos relacionados y 17 artículos activos con foto"
+      "detail": "1,027 artículos; 27 fotos en 4 lotes; todos los archivos relacionados y 26 artículos activos con foto"
     },
     {
       "name": "Listado y Excel de fotos",
       "status": "ok",
-      "detail": "990 códigos Día; 17 con foto; una pestaña de control"
+      "detail": "990 códigos Día; 27 con foto; una pestaña de control"
     },
     {
       "name": "Control de fotos",
       "status": "ok",
-      "detail": "17 fotos relacionadas; cruce por SKU, Código Día o nombre"
+      "detail": "27 fotos relacionadas; cruce por SKU, Código Día o nombre"
     },
     {
       "name": "Integridad WOE",
@@ -76,7 +76,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2236 KB auditados en archivos críticos"
+      "detail": "2238 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -87,7 +87,7 @@
       "app.js": 123591,
       "data/products.js": 358517,
       "data/woe.js": 1123974,
-      "data/merch-catalog.js": 607530,
+      "data/merch-catalog.js": 609470,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
