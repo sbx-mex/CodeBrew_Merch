@@ -320,7 +320,7 @@ def integrate(
         "restoredImageFiles": published_files,
         "publishedImageFiles": published_files,
         "matchedImageFiles": matched_files,
-        "unmatchedImageFiles": len(images) - matched_files,
+        "unmatchedImageFiles": unmatched_files,
         "activeStockProducts": active_count,
         "activeWithPhoto": active_with_photo,
         "activeMissingPhoto": active_count - active_with_photo,
@@ -340,7 +340,7 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v4",
+        "version": "manual-upload-v5",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",

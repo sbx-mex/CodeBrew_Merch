@@ -77,10 +77,15 @@
 .catalog-quantity input { width: 100%; height: 40px; padding: 0; border: 0; border-radius: 0; text-align: center; font-weight: 900; appearance: textfield; }
 .catalog-quantity input::-webkit-inner-spin-button { appearance: none; }
 .catalog-add { min-height: 42px; padding: 9px 12px; border-radius: 13px; font-size: 12px; }
-.catalog-photo-request { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; align-items: center; margin: -3px 0 12px; padding: 9px 10px; border: 1px solid #d9e6e0; border-radius: 12px; background: #f5faf7; color: #456158; }
-.catalog-photo-request span { font-size: 10px; font-weight: 800; }
-.catalog-photo-request a { padding: 5px 8px; border-radius: 999px; background: #e1f2ea; color: #006241; font-size: 10px; font-weight: 900; text-decoration: none; white-space: nowrap; }
-.catalog-photo-request small { grid-column: 1 / -1; color: #718079; font-size: 9px; line-height: 1.25; }
+.catalog-photo-request { margin: -3px 0 12px; }
+.catalog-photo-request a { display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 9px; align-items: center; min-height: 46px; padding: 8px 10px; border: 1px solid #b9d9cb; border-radius: 12px; background: #eef8f3; color: #006241; text-decoration: none; transition: background .16s ease, border-color .16s ease, transform .16s ease; }
+.catalog-photo-request a:hover { border-color: #79b49b; background: #e3f3eb; transform: translateY(-1px); }
+.catalog-photo-request a:focus-visible { outline: 3px solid rgba(0,98,65,.2); outline-offset: 2px; }
+.catalog-photo-request svg { width: 24px; height: 24px; fill: currentColor; }
+.catalog-photo-request span { min-width: 0; }
+.catalog-photo-request b,.catalog-photo-request small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.catalog-photo-request b { font-size: 10px; font-weight: 900; }
+.catalog-photo-request small { margin-top: 2px; color: #527266; font-size: 9px; line-height: 1.2; }
 .catalog-card.has-photo { border-color: #b8d8ca; }
 .catalog-image-note { margin: 12px 2px 18px; color: #7a756c; font-size: 11px; font-style: italic; }
 .catalog-load-more { display: block; width: min(360px,100%); margin: 22px auto 6px; border: 1px solid #9fc4b4; background: #f4faf7; color: #006241; font-weight: 900; }

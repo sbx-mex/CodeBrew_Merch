@@ -96,6 +96,18 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
             self.assertEqual(sum(row["duplicatesIgnored"] for row in lots), 1)
 
+    def test_duplicate_content_with_another_name_is_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "images"
+            for number in range(1, 5):
+                (source / f"lote-{number:02d}").mkdir(parents=True, exist_ok=True)
+            image = Image.new("RGB", (20, 20), "green")
+            image.save(source / "lote-01/16999.jpg")
+            image.save(source / "lote-03/11157547.jpg")
+            images, lots = discover_images(source)
+            self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
+            self.assertEqual(lots[2]["ignoredFiles"][0]["reason"], "duplicate-content")
+
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -119,7 +131,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("Ampliar", app)
         self.assertNotIn("woeSearchClear", html + app)
         self.assertIn("missingPhotoWhatsappUrl", app)
-        self.assertIn("https://wa.me/?text=", app)
+        self.assertIn("https://wa.me/message/ENKDSAHYHIGAN1", app)
+        self.assertIn("Código Día:", app)
+        self.assertIn("SKU Intl:", app)
+        self.assertIn("tomar o adjuntar una foto clara", app)
+        self.assertIn("Enviar foto por WhatsApp", app)
         self.assertIn("catalog-photo-request", app)
 
     def test_photo_list_has_one_row_per_codigo_dia(self) -> None:

@@ -19,7 +19,7 @@ Llaves generadas:
 
 Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva y se marca en `data/photo-coverage.json`; nunca se asigna por nombre, semejanza visual o suposición.
 
-En Revisión de Merch, los artículos con fotografía aparecen primero. Sólo las tarjetas sin foto muestran un acceso discreto a WhatsApp con la descripción, Código Día y SKU internacional ya escritos; la persona únicamente adjunta una foto legible. No se publica ningún número telefónico dentro del proyecto.
+En Revisión de Merch, los artículos con fotografía aparecen primero. Sólo las tarjetas sin foto muestran una acción compacta **Enviar foto por WhatsApp**. Abre el acceso privado configurado y prepara un mensaje con la descripción, Código Día y SKU internacional del artículo; la persona toma o adjunta la foto legible antes de enviarlo. WhatsApp no permite que una página web active la cámara ni adjunte una fotografía sin intervención de la persona.
 
 El catálogo es exclusivamente una herramienta interna de conteo: no publica precios ni campos monetarios.
 

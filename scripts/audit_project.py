@@ -107,6 +107,9 @@ def audit(root: Path) -> dict:
         path for path in (root / "assets/catalog/images").rglob("*")
         if path.is_file() and path.suffix.lower() in published_image_suffixes
     )
+    restored_keys = [re.sub(r"_\d+$", "", path.stem).casefold() for path in restored_files]
+    restored_hashes = [sha256(path) for path in restored_files]
+    unique_restored_files = len(restored_keys) == len(set(restored_keys)) and len(restored_hashes) == len(set(restored_hashes))
     featured_files = sorted((root / "assets/catalog/featured").glob("*.webp"))
     engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
     visual_sources = sorted((root / "engines/visual-sources").glob("*.zip"))
@@ -147,6 +150,7 @@ def audit(root: Path) -> dict:
             and [lot.name for lot in lot_dirs] == [f"lote-{number:02d}" for number in range(1, 5)]
             and all(sum(child.is_file() and child.suffix.lower() in published_image_suffixes for child in lot.iterdir()) <= 100 for lot in lot_dirs)
             and all(image_is_readable(path) for path in restored_files)
+            and unique_restored_files
             and referenced_visuals.issubset(published_visuals)
             and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("publishedImageFiles")
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
@@ -154,6 +158,7 @@ def audit(root: Path) -> dict:
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
+            and coverage.get("version") == "manual-upload-v5"
             and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
             and all(product.get("visualSource") == "pending-upload" for product in catalog_products if not product.get("visual"))
             and active_count == catalog_report.get("activeStockProducts") == catalog_payload.get("meta", {}).get("activeStockProducts")
@@ -216,7 +221,7 @@ def audit(root: Path) -> dict:
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v4"
+            and coverage.get("version") == "manual-upload-v5"
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and all(row.get("status") in {"matched", "ignored-duplicate-article"} for row in coverage.get("files", []))
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
@@ -281,7 +286,7 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/?text=", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/message/ENKDSAHYHIGAN1", "Código Día:", "SKU Intl:", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     checks.append(check(
         "Navegación e interfaz",
         not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "woeSearchClear" not in html + app_text,
