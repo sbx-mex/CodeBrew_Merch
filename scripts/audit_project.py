@@ -218,11 +218,19 @@ def audit(root: Path) -> dict:
         workbook = load_workbook(control_xlsx, read_only=True, data_only=False)
         workbook_sheets = workbook.sheetnames
         workbook.close()
+    photo_flags = [row.get("ESTADO FOTO") == "CON FOTO" for row in csv_rows]
+    photographed_stock = [
+        float(row.get("EXISTENCIA") or 0)
+        for row in csv_rows
+        if row.get("ESTADO FOTO") == "CON FOTO" and row.get("PRIORIDAD") == "ACTIVO"
+    ]
     control_ok = (
         len(csv_rows) == len(codes)
         and workbook_sheets == ["Control de fotos"]
         and all(row.get("CÓDIGO DÍA") for row in csv_rows)
         and sum(row.get("ESTADO FOTO") == "CON FOTO" for row in csv_rows) == len(codes_with_photo)
+        and photo_flags == sorted(photo_flags, reverse=True)
+        and photographed_stock == sorted(photographed_stock, reverse=True)
     )
     checks.append(check(
         "Listado y Excel de fotos",
@@ -303,7 +311,7 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "stockFirst?4000:1000", "catalog-missing-visual", "catalogVisibleLimit = 5", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 5", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",

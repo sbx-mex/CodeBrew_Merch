@@ -72,7 +72,7 @@ def control_rows(payload: dict) -> list[list[object]]:
             ", ".join(matches),
         ])
     rows.sort(key=lambda row: (
-        row[0] != "FALTA FOTO",
+        row[0] != "CON FOTO",
         row[8] != "ACTIVO",
         -float(row[1] or 0),
         not bool(row[3]),
@@ -96,7 +96,7 @@ def write_xlsx(path: Path, rows: list[list[object]]) -> None:
     sheet.title = "Control de fotos"
     sheet.sheet_view.showGridLines = False
     sheet.merge_cells("A1:M1")
-    sheet["A1"] = "CONTROL DE FOTOS · PENDIENTES POR EXISTENCIA"
+    sheet["A1"] = "CONTROL DE FOTOS · DISPONIBLES PRIMERO"
     sheet["A1"].fill = PatternFill("solid", fgColor=GREEN)
     sheet["A1"].font = Font(color="FFFFFF", bold=True, size=18)
     sheet["A1"].alignment = Alignment(horizontal="center", vertical="center")
@@ -118,7 +118,7 @@ def write_xlsx(path: Path, rows: list[list[object]]) -> None:
                 cell.border = Border(bottom=Side(style="thin", color="BFD6CC"))
 
     sheet.merge_cells("A6:M6")
-    sheet["A6"] = "Primero aparecen los artículos con existencia y foto pendiente, ordenados de mayor a menor. Nombra la foto con Código Día o SKU internacional."
+    sheet["A6"] = "Primero aparecen los artículos CON FOTO, ordenados por existencia de mayor a menor. Después se muestran claramente los pendientes como FALTA FOTO."
     sheet["A6"].fill = PatternFill("solid", fgColor="FFF3D6")
     sheet["A6"].font = Font(color="6A4A00", italic=True)
     sheet["A6"].alignment = Alignment(wrap_text=True)

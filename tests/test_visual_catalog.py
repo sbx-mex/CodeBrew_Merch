@@ -157,7 +157,7 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("catalog-photo-request", app)
         self.assertIn("catalog-missing-visual", app)
         self.assertIn("photoState=hasPhoto?'':", app)
-        self.assertIn("stockFirst?4000:1000", app)
+        self.assertIn("visual?.src))*100000000", app)
         self.assertIn("stockQuantity", app)
         self.assertIn("normalizeSearchText", app)
         self.assertIn("renderWoeSuggestions(input.value)", app)
@@ -183,6 +183,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len({row["CÓDIGO DÍA"] for row in rows}), len(rows))
         self.assertTrue(all(row["CÓDIGO DÍA"] for row in rows))
         self.assertEqual({row["ESTADO FOTO"] for row in rows}.difference({"CON FOTO", "FALTA FOTO"}), set())
+        photo_flags = [row["ESTADO FOTO"] == "CON FOTO" for row in rows]
+        self.assertEqual(photo_flags, sorted(photo_flags, reverse=True))
+        photo_stock = [float(row["EXISTENCIA"] or 0) for row in rows if row["ESTADO FOTO"] == "CON FOTO" and row["PRIORIDAD"] == "ACTIVO"]
+        self.assertEqual(photo_stock, sorted(photo_stock, reverse=True))
 
     def test_stock_priority_and_photo_priority(self) -> None:
         active = [product for product in self.products if product.get("stockPriority") == "active"]
@@ -195,11 +199,14 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
         active_with_photo = [product for product in active if product.get("visual")]
         self.assertEqual(len(active_with_photo), self.catalog["meta"].get("activeWithPhoto"))
+        first_missing = next((index for index, product in enumerate(self.products) if not product.get("visual")), len(self.products))
+        self.assertTrue(all(product.get("visual") for product in self.products[:first_missing]))
+        photographed = [product for product in self.products if product.get("visual")]
+        photographed_quantities = [float(product.get("stockQuantity") or 0) for product in photographed if product.get("stockPriority") == "active"]
+        self.assertEqual(photographed_quantities, sorted(photographed_quantities, reverse=True))
         active_missing = [product for product in active if not product.get("visual")]
         quantities = [float(product.get("stockQuantity") or 0) for product in active_missing]
         self.assertEqual(quantities, sorted(quantities, reverse=True))
-        first_missing = next((index for index, product in enumerate(self.products) if not product.get("visual")), len(self.products))
-        self.assertTrue(all(product.get("visual") for product in self.products[:first_missing]))
 
 
 if __name__ == "__main__":

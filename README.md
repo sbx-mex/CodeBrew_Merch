@@ -11,7 +11,7 @@ PWA operativa con tres accesos: **Catálogo General**, **Revisión de Merch** y 
 - `scripts/generate_products.py`: construye el cruce operativo.
 - `scripts/generate_manual_catalog.py`: normaliza los artículos sin procesar miles de imágenes; mantiene rápida la actualización.
 - `scripts/integrate_uploaded_images.py`: cruza únicamente por Código Día o SKU internacional y llena primero `lote-01`, después `lote-02`, `lote-03` y `lote-04`.
-- `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación; muestra primero `FALTA FOTO`, después existencia activa de mayor a menor y finalmente el cruce SAP.
+- `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación; muestra primero `CON FOTO` por existencia de mayor a menor y después los artículos `FALTA FOTO`.
 
 Llaves generadas:
 
@@ -20,7 +20,7 @@ Llaves generadas:
 
 Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva y se marca en `data/photo-coverage.json`; nunca se asigna por nombre, semejanza visual o suposición.
 
-En Revisión de Merch, el orden considera existencia real y disponibilidad de foto. Sólo las tarjetas sin foto muestran una acción compacta **Enviar foto por WhatsApp**. El buscador permanece abierto al seleccionar una coincidencia y cruza Código Día, SAP, SKU internacional, Micros y todas las pestañas operativas, incluso si el artículo aún no tiene ficha visual.
+En Revisión de Merch, los artículos con foto aparecen primero y se ordenan por existencia de mayor a menor. Después se muestran los pendientes con el estado visible **Foto pendiente**. Sólo esas tarjetas muestran la acción compacta **Enviar foto por WhatsApp**. El buscador permanece abierto al seleccionar una coincidencia y cruza Código Día, SAP, SKU internacional, Micros y todas las pestañas operativas, incluso si el artículo aún no tiene ficha visual.
 
 El catálogo es exclusivamente una herramienta interna de conteo: no publica precios ni campos monetarios.
 
