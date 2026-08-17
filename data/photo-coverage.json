@@ -21,14 +21,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 54,
+    "images": 55,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 54,
-      "accepted": 54,
+      "images": 55,
+      "accepted": 55,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -55,15 +55,15 @@
     }
   ],
   "totals": {
-    "imageFiles": 54,
-    "publishedImageFiles": 54,
-    "matchedImageFiles": 54,
+    "imageFiles": 55,
+    "publishedImageFiles": 55,
+    "matchedImageFiles": 55,
     "unmatchedImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 58,
+    "matchedProducts": 59,
     "activeProducts": 1017,
-    "activeWithPhoto": 54,
-    "activeMissingPhoto": 963,
+    "activeWithPhoto": 55,
+    "activeMissingPhoto": 962,
     "secondaryProducts": 169,
     "appendedOperationalProducts": 83,
     "appendedWoeProducts": 84
@@ -787,6 +787,23 @@
           "skuIntl": "11160995",
           "skuPos": "52481",
           "displayName": "COR26BTL20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16378.jpeg",
+      "uploadedFrom": "lote-01/16378.jpeg",
+      "identifier": "16378",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16378--pos-52336",
+          "codigoDia": "16378",
+          "skuIntl": "NA",
+          "skuPos": "52336",
+          "displayName": "COR25CircCup",
           "stockPriority": "active"
         }
       ]
