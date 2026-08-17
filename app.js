@@ -8,7 +8,7 @@ const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Busca por SAP, Día, S
 const woeSelection = new Map();
 const catalogItemByKey = new Map();
 let catalogCategory = 'all';
-let catalogVisibleLimit = 5,microsCount='all';
+let catalogVisibleLimit = 5,microsCount='all',catalogSearchFrame=0;
 let appMode = '';
 let catalogRenderSignature = '';
 let woePdfExported = false;
@@ -334,6 +334,7 @@ results.innerHTML=!showResults?'':rows.length?`<div class="micros-results-head">
 results.querySelectorAll('[data-micros-add]').forEach(button=>button.addEventListener('click',()=>{addWoeItem(catalogItemByKey.get(button.dataset.microsAdd),true,1);renderWoeResults();}));
 }
 }
+function scheduleCatalogRender(value){cancelAnimationFrame(catalogSearchFrame);catalogSearchFrame=requestAnimationFrame(()=>{catalogSearchFrame=0;renderCatalog(value);});}
 function splitWoeQueries(raw){ return String(raw||'').split(/[\n,;]+/).map(value=>value.trim()).filter(Boolean); }
 function findWoeMatches(raw,limit=12){
 const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input);
@@ -1345,7 +1346,7 @@ renderToolContext();
 restoreWoeSelection();renderWoeSelection();updateStockFlow();
 renderCatalog('');
 $('catalogLoadMore').addEventListener('click',()=>{catalogVisibleLimit+=5;renderCatalog($('woeSearch').value);});
-$('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woePdfExported=false;updateWoeFlow();renderCatalog(value);woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),90);});
+$('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woePdfExported=false;updateWoeFlow();scheduleCatalogRender(value);woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),100);});
 $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
 $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
 $('woeExport').addEventListener('click',generateWoePdf);
@@ -1406,7 +1407,7 @@ closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','lab
 });
 window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory-detail'));
 renderCart();
-if('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=codebrew-v33-fast-nav'));
+if('serviceWorker' in navigator)window.addEventListener('load',async()=>{const hadController=Boolean(navigator.serviceWorker.controller);let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||refreshing)return;refreshing=true;const status=$('connectionStatus');if(status)status.textContent='Actualizando…';location.reload();});try{const registration=await navigator.serviceWorker.register('sw.js?v=codebrew-v46-smart-refresh',{updateViaCache:'none'});registration.update();}catch(error){/* Sin conexión: conserva la versión funcional almacenada. */}});
 }
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();

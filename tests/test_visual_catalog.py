@@ -124,6 +124,7 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
+        sw = (ROOT / "sw.js").read_text(encoding="utf-8")
         for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogLoadMore", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
         self.assertNotIn("microsGroupFilter", html)
@@ -157,6 +158,16 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("catalog-missing-visual", app)
         self.assertIn("photoState=hasPhoto?'':", app)
         self.assertIn("stockFirst?4000:1000", app)
+        self.assertIn("scheduleCatalogRender", app)
+        self.assertIn("updateViaCache:'none'", app)
+        self.assertIn("controllerchange", app)
+        self.assertIn("registration.update()", app)
+        self.assertNotIn("localStorage.clear", app)
+        self.assertNotIn("document.cookie", app)
+        for token in ("inputmode=\"search\"", "enterkeyhint=\"search\"", "spellcheck=\"false\""):
+            self.assertIn(token, html)
+        for token in ("key.startsWith('codebrew-')", "isCoreResource", "freshFirst", "cache:'no-cache'"):
+            self.assertIn(token, sw)
         for token in ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel"):
             self.assertNotIn(token, app)
 
