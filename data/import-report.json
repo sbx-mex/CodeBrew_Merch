@@ -1,14 +1,15 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-17T05:35:00+00:00",
-  "sourceModifiedAtUtc": "2026-08-17T05:35:00+00:00",
+  "generatedAtUtc": "2026-08-17T06:13:24+00:00",
+  "sourceModifiedAtUtc": "2026-08-17T06:13:24+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26GlCCColor",
   "totalValidProducts": 962,
   "sheets": [
     {
       "sheet": "Base_Campaña",
+      "headerRow": 1,
       "headers": [
         "SKU INTL",
         "CÓDIGO DIA",
@@ -42,6 +43,7 @@
     },
     {
       "sheet": "Discovery",
+      "headerRow": 1,
       "headers": [
         "SKU INTL",
         "CÓDIGO DIA",
@@ -67,6 +69,7 @@
     },
     {
       "sheet": "Homologados",
+      "headerRow": 1,
       "headers": [
         "SKU INTL",
         "CÓDIGO DIA",
@@ -100,6 +103,7 @@
     },
     {
       "sheet": "Essentials",
+      "headerRow": 1,
       "headers": [
         "SKU INTL",
         "CÓDIGO DIA",
@@ -119,26 +123,59 @@
     }
   ],
   "woe": {
-    "sapRows": 1353,
-    "catalogRows": 2243,
-    "sapCatalogRows": 1353,
-    "orphanCatalogRows": 890,
-    "uniqueWoe": 1342,
-    "uniqueDiaSap": 1350,
+    "sapRows": 1705,
+    "sapHeaderRow": 1,
+    "catalogRows": 2375,
+    "sapCatalogRows": 1698,
+    "orphanCatalogRows": 677,
+    "uniqueWoe": 1698,
+    "uniqueDiaSap": 1698,
     "exactSapDuplicatesIgnored": 0,
-    "multiWoeRelations": 11,
-    "multiDiaRelations": 3,
+    "invalidSapRows": [
+      {
+        "row": 293,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 333,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 774,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 985,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1389,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1390,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1520,
+        "reason": "falta Codigo DIA"
+      }
+    ],
+    "multiWoeRelations": 0,
+    "multiDiaRelations": 0,
     "microsRows": 1165,
+    "microsHeaderRow": 1,
+    "invalidMicrosRows": [],
     "uniqueDiaMicros": 1162,
     "microsUnitsPopulated": 0,
     "microsGroups": 7,
     "microsFamilies": 22,
     "microsCountGroups": 12,
-    "withMicros": 1165,
-    "withMerch": 911,
-    "withoutSap": 890,
-    "operationalSapMicrosMatch": 751,
-    "operationalNeedsReview": 1492,
-    "completeTripleMatch": 210
+    "withMicros": 1162,
+    "withMerch": 908,
+    "withoutSap": 677,
+    "operationalSapMicrosMatch": 960,
+    "operationalNeedsReview": 1415,
+    "completeTripleMatch": 208
   }
 }
