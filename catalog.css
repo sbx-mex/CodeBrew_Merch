@@ -58,7 +58,8 @@
 .catalog-card.needs-photo .catalog-thumb { background: linear-gradient(145deg,#fafcfb,#edf4f1); }
 .catalog-missing-visual { display: grid; justify-items: center; gap: 7px; color: #718079; }
 .catalog-missing-visual svg { width: 30px; height: 30px; fill: #9aaca4; }
-.catalog-missing-visual span { font-size: 10px; font-weight: 900; letter-spacing: .02em; }
+.catalog-missing-visual strong { font-size: 11px; font-weight: 900; letter-spacing: .02em; }
+.catalog-missing-visual small { color: #718079; font-size: 9px; }
 .catalog-card-body { padding: 14px; }
 .catalog-card.is-featured { border-color: #76aa92; box-shadow: 0 22px 52px rgba(0,98,65,.14); }
 .catalog-card.is-featured .catalog-thumb { background-color: #fff; }

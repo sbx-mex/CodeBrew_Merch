@@ -193,7 +193,9 @@ def integrate(
 
     for product in products:
         active = product_is_active(product, active_names) if active_names else product.get("stockPriority") == "active"
+        day_key = identifier(product.get("codigoDia"))
         product["stockPriority"] = "active" if active else "secondary"
+        product["photoUploadName"] = f"{day_key}.jpg" if day_key else ""
         product["visualSource"] = "pending-upload"
         product["visual"] = None
         product["imageNote"] = "Foto pendiente de carga."
@@ -340,7 +342,7 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v5",
+        "version": "manual-upload-v6",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",

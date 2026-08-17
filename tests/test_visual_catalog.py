@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 from PIL import Image
-from scripts.integrate_uploaded_images import discover_images
+from scripts.integrate_uploaded_images import discover_images, identifier
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +43,8 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertTrue(product["codigoDia"])
             self.assertTrue(product["displayName"])
             self.assertTrue(product["nameKey"])
+            day_key = identifier(product["codigoDia"])
+            self.assertEqual(product.get("photoUploadName"), f"{day_key}.jpg" if day_key else "")
             self.assertNotIn("prices", product)
             if product.get("visual"):
                 self.assertEqual(product.get("visualSource"), "manual-upload")
@@ -131,14 +133,15 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("Ampliar", app)
         self.assertNotIn("woeSearchClear", html + app)
         self.assertIn("missingPhotoWhatsappUrl", app)
-        self.assertIn("https://wa.me/message/ENKDSAHYHIGAN1", app)
+        self.assertIn("https://wa.me/525521104575", app)
         self.assertIn("Código Día:", app)
-        self.assertIn("SKU Intl:", app)
-        self.assertIn("tomar o adjuntar una foto clara", app)
+        self.assertIn("Nombre sugerido del archivo:", app)
+        self.assertIn("Toma una foto completa y legible del termo", app)
         self.assertIn("Enviar foto por WhatsApp", app)
         self.assertIn("catalog-photo-request", app)
         self.assertIn("catalog-missing-visual", app)
-        self.assertIn("const photoState=hasPhoto?'':", app)
+        self.assertIn("photoState=hasPhoto?'':", app)
+        self.assertIn("stockFirst?4000:1000", app)
         for token in ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel"):
             self.assertNotIn(token, app)
 

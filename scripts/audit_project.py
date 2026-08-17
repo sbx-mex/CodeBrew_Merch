@@ -78,6 +78,15 @@ def image_is_readable(path: Path) -> bool:
         return False
 
 
+def expected_photo_upload_name(value: object) -> str:
+    key = re.sub(r"[^a-z0-9]", "", str(value or "").casefold())
+    if not key or key in {"na", "none"}:
+        return ""
+    if key.isdigit():
+        key = key.lstrip("0") or "0"
+    return f"{key}.jpg"
+
+
 def audit(root: Path) -> dict:
     report = load_json(root / "data/import-report.json")
     catalog_report = load_json(root / "data/merch-catalog-report.json")
@@ -158,7 +167,8 @@ def audit(root: Path) -> dict:
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
-            and coverage.get("version") == "manual-upload-v5"
+            and coverage.get("version") == "manual-upload-v6"
+            and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
             and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
             and all(product.get("visualSource") == "pending-upload" for product in catalog_products if not product.get("visual"))
             and active_count == catalog_report.get("activeStockProducts") == catalog_payload.get("meta", {}).get("activeStockProducts")
@@ -221,7 +231,7 @@ def audit(root: Path) -> dict:
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v5"
+            and coverage.get("version") == "manual-upload-v6"
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and all(row.get("status") in {"matched", "ignored-duplicate-article"} for row in coverage.get("files", []))
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
@@ -286,7 +296,7 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/message/ENKDSAHYHIGAN1", "Código Día:", "SKU Intl:", "catalog-missing-visual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "https://wa.me/525521104575", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "stockFirst?4000:1000", "catalog-missing-visual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",

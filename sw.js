@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v42-premium-cards-2026-08-17';
+const CACHE_NAME = 'codebrew-v44-direct-photo-chat-2026-08-17';
 const APP_SHELL = [
   './',
   './index.html',
