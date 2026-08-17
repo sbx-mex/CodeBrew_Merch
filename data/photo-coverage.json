@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "version": "manual-upload-v8-stock-ranked",
+  "version": "manual-upload-v9-pending-safe",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
@@ -8,6 +8,7 @@
   ],
   "duplicateProtection": "one-photo-per-article",
   "duplicatePolicy": "keep-first-lot-ignore-later",
+  "unmatchedPolicy": "preserve-and-report-do-not-guess",
   "packing": "fill-lote-01-first-then-02-03-04",
   "crossCheck": [
     "SAP",
@@ -59,6 +60,7 @@
     "publishedImageFiles": 56,
     "matchedImageFiles": 56,
     "unmatchedImageFiles": 0,
+    "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
     "matchedProducts": 60,
     "activeProducts": 1017,

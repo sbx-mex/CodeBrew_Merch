@@ -46,6 +46,7 @@
   "imageNote": "Una fotografía manual por artículo.",
   "matchedImageFiles": 56,
   "unmatchedImageFiles": 0,
+  "pendingRelationImageFiles": 0,
   "activeStockProducts": 1017,
   "activeWithPhoto": 56,
   "activeMissingPhoto": 961,
