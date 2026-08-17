@@ -1,17 +1,17 @@
-name: Limpiar imágenes del catálogo
+name: Auditar capacidad de imágenes
 
 on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: codebrew-catalog-image-reset
   cancel-in-progress: false
 
 jobs:
-  cleanup:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar repositorio
@@ -22,19 +22,8 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Borrar imágenes y referencias del catálogo
-        run: python scripts/cleanup_catalog_images.py --apply
+      - name: Validar cuatro carpetas sin borrar fotos
+        run: python scripts/integrate_uploaded_images.py --help
 
-      - name: Publicar limpieza
-        run: |
-          if git diff --quiet -- data/merch-catalog.js data/merch-catalog-report.json assets/catalog; then
-            echo "El catálogo ya está limpio."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/merch-catalog.js data/merch-catalog-report.json
-          git add --all assets/catalog/images assets/catalog/featured || true
-          git commit -m "Limpiar imágenes del catálogo"
-          git pull --rebase origin main
-          git push
+      - name: Confirmar política
+        run: echo "Las fotos manuales son persistentes. Este flujo no elimina imágenes."
