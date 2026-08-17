@@ -5,12 +5,12 @@
   "visualSourceFiles": 3,
   "products": 1019,
   "duplicateRowsIgnored": 28,
-  "withSourceImage": 813,
-  "withApproximation": 206,
+  "withSourceImage": 0,
+  "withApproximation": 0,
   "uniqueVisuals": 827,
   "atlases": 0,
-  "featuredImages": 1,
-  "restoredImageFiles": 809,
+  "featuredImages": 0,
+  "restoredImageFiles": 0,
   "canvasPixels": 768,
   "contentPixels": 660,
   "restorationAudit": {
@@ -100,5 +100,8 @@
     }
   ],
   "imageNote": "Fotografía restaurada desde la fuente original; se preservan forma, color y diseño del artículo.",
-  "moneyFieldsPublished": 0
+  "moneyFieldsPublished": 0,
+  "imageMode": "clean-reset",
+  "activeStockProducts": 886,
+  "secondaryProducts": 133
 }

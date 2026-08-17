@@ -35,16 +35,15 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(keys), len(set(keys)))
         self.assertTrue(all(key.startswith("dia-") and "--pos-" in key for key in keys))
 
-    def test_every_product_has_operational_fields_and_visual(self) -> None:
+    def test_every_product_has_operational_fields_and_clean_visual_state(self) -> None:
         for product in self.products:
             self.assertTrue(product["codigoDia"])
             self.assertTrue(product["displayName"])
             self.assertTrue(product["nameKey"])
             self.assertNotIn("prices", product)
-            visual = product["visual"]
-            asset = ROOT / (visual["src"] if visual.get("type") == "direct" else visual["atlas"])
-            self.assertTrue(asset.is_file(), asset)
-            self.assertLess(asset.stat().st_size, 25_000_000)
+            self.assertIsNone(product.get("visual"))
+            self.assertEqual(product.get("visualSource"), "pending-upload")
+            self.assertIn(product.get("stockPriority"), {"active", "secondary"})
 
     def test_github_limits_are_respected(self) -> None:
         excluded = {".git", ".codebrew-build", "__pycache__"}
@@ -57,15 +56,12 @@ class VisualCatalogContractTests(unittest.TestCase):
             elif path.is_dir():
                 self.assertLess(sum(child.is_file() for child in path.iterdir()), 100, relative.as_posix())
 
-    def test_every_published_webp_is_readable_and_uniform(self) -> None:
-        restored = list((ROOT / "assets/catalog/images").rglob("*.webp"))
-        images = restored + list((ROOT / "assets/catalog/featured").glob("*.webp"))
-        self.assertTrue(images)
-        for path in images:
-            with Image.open(path) as image:
-                image.verify()
-                if path in restored:
-                    self.assertEqual(image.size, (768, 768), path)
+    def test_catalog_image_directories_are_clean(self) -> None:
+        restored = list((ROOT / "assets/catalog/images").rglob("*.webp")) if (ROOT / "assets/catalog/images").exists() else []
+        featured = list((ROOT / "assets/catalog/featured").glob("*.webp")) if (ROOT / "assets/catalog/featured").exists() else []
+        self.assertEqual(restored, [])
+        self.assertEqual(featured, [])
+        self.assertEqual(self.catalog["meta"].get("imageMode"), "clean-reset")
 
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -84,35 +80,16 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("catalogPrice", app)
         self.assertNotIn("Agregar · $", app)
 
-    def test_double_image_audit_and_premium_override(self) -> None:
-        meta = self.catalog["meta"]
-        cross_checked = sum(source["visualSources"].get("crossChecked", 0) for source in meta["sources"])
-        self.assertGreaterEqual(meta["withSourceImage"], 800)
-        self.assertGreaterEqual(cross_checked, 500)
-        item = next(product for product in self.products if product["codigoDia"] == "16999")
-        self.assertEqual(item["visualSource"], "premium-override")
-        self.assertEqual(item["visual"]["type"], "direct")
-        self.assertGreaterEqual(item["visual"]["width"], 1000)
-        self.assertGreaterEqual(item["visual"]["height"], 1000)
-        self.assertGreaterEqual(self.catalog["meta"]["canvasPixels"], 768)
-
-    def test_all_source_photos_are_individual_restorations(self) -> None:
-        meta = self.catalog["meta"]
-        self.assertEqual(meta["atlases"], 0)
-        self.assertGreaterEqual(meta["restoredImageFiles"], 800)
-        self.assertGreaterEqual(meta["restorationAudit"]["restored"], meta["restoredImageFiles"])
-        self.assertEqual(meta["restorationAudit"]["published"], meta["restoredImageFiles"])
-        for product in self.products:
-            self.assertEqual(product["visual"]["type"], "direct")
-            self.assertIn("src", product["visual"])
-
-    def test_no_orphan_or_duplicate_published_images(self) -> None:
-        referenced = {product["visual"]["src"] for product in self.products}
-        published = {
-            path.relative_to(ROOT).as_posix()
-            for path in [*(ROOT / "assets/catalog/images").rglob("*.webp"), *(ROOT / "assets/catalog/featured").glob("*.webp")]
-        }
-        self.assertEqual(referenced, published)
+    def test_stock_priority_and_visual_reset(self) -> None:
+        active = [product for product in self.products if product.get("stockPriority") == "active"]
+        secondary = [product for product in self.products if product.get("stockPriority") == "secondary"]
+        self.assertTrue(active)
+        self.assertTrue(secondary)
+        self.assertEqual(self.catalog["meta"].get("activeStockProducts"), len(active))
+        self.assertEqual(self.catalog["meta"].get("secondaryProducts"), len(secondary))
+        first_secondary = next((i for i, product in enumerate(self.products) if product.get("stockPriority") == "secondary"), len(self.products))
+        self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
+        self.assertTrue(all(product.get("visual") is None for product in self.products))
 
 
 if __name__ == "__main__":
