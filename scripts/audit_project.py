@@ -286,10 +286,11 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/message/ENKDSAHYHIGAN1", "Código Día:", "SKU Intl:", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/message/ENKDSAHYHIGAN1", "Código Día:", "SKU Intl:", "catalog-missing-visual", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "woeSearchClear" not in html + app_text,
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and all(token not in app_text for token in redundant_catalog_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "woeSearchClear" not in html + app_text,
         f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",

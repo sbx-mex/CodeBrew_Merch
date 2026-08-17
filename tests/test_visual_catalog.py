@@ -137,6 +137,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("tomar o adjuntar una foto clara", app)
         self.assertIn("Enviar foto por WhatsApp", app)
         self.assertIn("catalog-photo-request", app)
+        self.assertIn("catalog-missing-visual", app)
+        self.assertIn("const photoState=hasPhoto?'':", app)
+        for token in ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel"):
+            self.assertNotIn(token, app)
 
     def test_photo_list_has_one_row_per_codigo_dia(self) -> None:
         with (ROOT / "data/Listado_Codigo_Dia_Fotos.csv").open("r", encoding="utf-8-sig", newline="") as stream:
