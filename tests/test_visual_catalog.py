@@ -84,6 +84,18 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertEqual([row["folder"] for row in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
             self.assertTrue(all((source / row["folder"]).is_dir() for row in lots))
 
+    def test_duplicate_images_in_later_lots_are_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "images"
+            for number in range(1, 5):
+                (source / f"lote-{number:02d}").mkdir(parents=True, exist_ok=True)
+            image = Image.new("RGB", (20, 20), "green")
+            image.save(source / "lote-01/16999.jpg")
+            image.save(source / "lote-02/16999.jpg")
+            images, lots = discover_images(source)
+            self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
+            self.assertEqual(sum(row["duplicatesIgnored"] for row in lots), 1)
+
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -105,6 +117,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-catalog-visual", app)
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
+        self.assertNotIn("woeSearchClear", html + app)
+        self.assertIn("missingPhotoWhatsappUrl", app)
+        self.assertIn("https://wa.me/?text=", app)
+        self.assertIn("catalog-photo-request", app)
 
     def test_photo_list_has_one_row_per_codigo_dia(self) -> None:
         with (ROOT / "data/Listado_Codigo_Dia_Fotos.csv").open("r", encoding="utf-8-sig", newline="") as stream:
@@ -126,6 +142,8 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
         active_with_photo = [product for product in active if product.get("visual")]
         self.assertEqual(len(active_with_photo), self.catalog["meta"].get("activeWithPhoto"))
+        first_missing = next((index for index, product in enumerate(self.products) if not product.get("visual")), len(self.products))
+        self.assertTrue(all(product.get("visual") for product in self.products[:first_missing]))
 
 
 if __name__ == "__main__":

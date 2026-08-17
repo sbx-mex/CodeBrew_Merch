@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v39-photo-sync-2026-08-17';
+const CACHE_NAME = 'codebrew-v40-photo-request-2026-08-17';
 const APP_SHELL = [
   './',
   './index.html',

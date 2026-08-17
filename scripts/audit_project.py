@@ -148,11 +148,12 @@ def audit(root: Path) -> dict:
             and all(sum(child.is_file() and child.suffix.lower() in published_image_suffixes for child in lot.iterdir()) <= 100 for lot in lot_dirs)
             and all(image_is_readable(path) for path in restored_files)
             and referenced_visuals.issubset(published_visuals)
-            and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("imageFiles")
+            and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("publishedImageFiles")
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
             and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and coverage.get("duplicateProtection") == "one-photo-per-article"
+            and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
             and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
             and all(product.get("visualSource") == "pending-upload" for product in catalog_products if not product.get("visual"))
             and active_count == catalog_report.get("activeStockProducts") == catalog_payload.get("meta", {}).get("activeStockProducts")
@@ -215,16 +216,16 @@ def audit(root: Path) -> dict:
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v3"
+            and coverage.get("version") == "manual-upload-v4"
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
-            and all(row.get("status") == "matched" for row in coverage.get("files", []))
+            and all(row.get("status") in {"matched", "ignored-duplicate-article"} for row in coverage.get("files", []))
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
         )
         checks.append(check(
             "Control de fotos",
             coverage_ok,
-            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas; cruce por SKU, Código Día o nombre",
+            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas; cruce exacto por Código Día o SKU Intl",
         ))
     else:
         cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))
@@ -277,13 +278,13 @@ def audit(root: Path) -> dict:
         "WOE + Stock On Hand + HTML/PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
+    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "https://wa.me/?text=", "catalogVisibleLimit = 5", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html,
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "woeSearchClear" not in html + app_text,
         f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",

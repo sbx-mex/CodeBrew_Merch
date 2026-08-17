@@ -105,17 +105,20 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
         lot_images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
         if len(lot_images) > MAX_IMAGES_PER_LOT:
             raise ValueError(f"{lot.name}: admite como máximo {MAX_IMAGES_PER_LOT} imágenes")
+        ignored: list[dict] = []
         for image in lot_images:
             key = normalize_name(re.sub(r"_\d+$", "", image.stem))
             if key in seen_keys:
-                raise ValueError(f"Foto duplicada por nombre: {seen_keys[key]} y {image}")
+                ignored.append({"file": image.name, "reason": "duplicate-name", "kept": seen_keys[key].relative_to(source_dir).as_posix()})
+                continue
             digest = hashlib.sha256(image.read_bytes()).hexdigest()
             if digest in seen_hashes:
-                raise ValueError(f"Foto duplicada por contenido: {seen_hashes[digest]} y {image}")
+                ignored.append({"file": image.name, "reason": "duplicate-content", "kept": seen_hashes[digest].relative_to(source_dir).as_posix()})
+                continue
             seen_keys[key] = image
             seen_hashes[digest] = image
-        images.extend(lot_images)
-        lot_report.append({"folder": lot.name, "images": len(lot_images)})
+            images.append(image)
+        lot_report.append({"folder": lot.name, "images": len(lot_images), "accepted": len(lot_images) - len(ignored), "duplicatesIgnored": len(ignored), "ignoredFiles": ignored})
     return images, lot_report
 
 
@@ -209,7 +212,9 @@ def integrate(
     matched_products: set[str] = set()
     assigned_files: dict[str, Path] = {}
     used_output_lots: set[str] = set()
-    for image_number, source in enumerate(images):
+    published_files = 0
+    duplicate_article_files = 0
+    for source in images:
         key = image_identifier(source)
         match_field = ""
         matches: list[dict] = []
@@ -219,20 +224,30 @@ def integrate(
                 matches = indices[field][key]
                 break
 
+        previous_files = {assigned_files[product.get("articleKey")] for product in matches if product.get("articleKey") in assigned_files}
+        if previous_files:
+            duplicate_article_files += 1
+            file_rows.append({
+                "file": None,
+                "uploadedFrom": source.relative_to(source_dir).as_posix(),
+                "identifier": key,
+                "status": "ignored-duplicate-article",
+                "matchedBy": match_field or None,
+                "kept": sorted(path.relative_to(source_dir).as_posix() for path in previous_files),
+                "products": [],
+            })
+            continue
         for product in matches:
-            article_key = product.get("articleKey")
-            previous = assigned_files.get(article_key)
-            if previous and previous != source:
-                raise ValueError(f"El artículo {article_key} tiene más de una foto: {previous} y {source}")
-            assigned_files[article_key] = source
+            assigned_files[product.get("articleKey")] = source
 
-        target_lot = LOT_NAMES[image_number // MAX_IMAGES_PER_LOT]
+        target_lot = LOT_NAMES[published_files // MAX_IMAGES_PER_LOT]
         relative = Path(target_lot) / source.name
         used_output_lots.add(target_lot)
         destination = image_output / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
         width, height = image_dimensions(destination)
+        published_files += 1
         published = (Path("assets/catalog/images") / relative).as_posix()
 
         if matches:
@@ -272,18 +287,23 @@ def integrate(
             (lot / ".gitkeep").write_text("", encoding="utf-8")
 
     products.sort(key=lambda product: (
-        product.get("stockPriority") != "active",
         product.get("visual") is None,
+        product.get("stockPriority") != "active",
         int(product.get("codigoDia")) if str(product.get("codigoDia", "")).isdigit() else 999999,
         str(product.get("displayName", "")).casefold(),
     ))
     active_count = sum(product.get("stockPriority") == "active" for product in products)
     active_with_photo = sum(product.get("stockPriority") == "active" and bool(product.get("visual")) for product in products)
     with_photo = sum(bool(product.get("visual")) for product in products)
+    uploaded_image_files = sum(lot["images"] for lot in lots)
+    duplicate_name_or_content = sum(lot["duplicatesIgnored"] for lot in lots)
+    unmatched_files = sum(row.get("status") == "unmatched" for row in file_rows)
     totals = {
-        "imageFiles": len(images),
+        "imageFiles": uploaded_image_files,
+        "publishedImageFiles": published_files,
         "matchedImageFiles": matched_files,
-        "unmatchedImageFiles": len(images) - matched_files,
+        "unmatchedImageFiles": unmatched_files,
+        "duplicateImageFilesIgnored": duplicate_name_or_content + duplicate_article_files,
         "matchedProducts": with_photo,
         "activeProducts": active_count,
         "activeWithPhoto": active_with_photo,
@@ -297,8 +317,8 @@ def integrate(
         "withSourceImage": with_photo,
         "withApproximation": 0,
         "featuredImages": 0,
-        "restoredImageFiles": len(images),
-        "publishedImageFiles": len(images),
+        "restoredImageFiles": published_files,
+        "publishedImageFiles": published_files,
         "matchedImageFiles": matched_files,
         "unmatchedImageFiles": len(images) - matched_files,
         "activeStockProducts": active_count,
@@ -320,10 +340,11 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v3",
+        "version": "manual-upload-v4",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
+        "duplicatePolicy": "keep-first-lot-ignore-later",
         "packing": "fill-lote-01-first-then-02-03-04",
         "lots": lots,
         "totals": totals,
