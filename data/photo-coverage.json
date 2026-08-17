@@ -20,14 +20,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 48,
+    "images": 54,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 48,
-      "accepted": 48,
+      "images": 54,
+      "accepted": 54,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -54,15 +54,15 @@
     }
   ],
   "totals": {
-    "imageFiles": 48,
-    "publishedImageFiles": 48,
-    "matchedImageFiles": 48,
+    "imageFiles": 54,
+    "publishedImageFiles": 54,
+    "matchedImageFiles": 54,
     "unmatchedImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 52,
+    "matchedProducts": 58,
     "activeProducts": 942,
-    "activeWithPhoto": 47,
-    "activeMissingPhoto": 895,
+    "activeWithPhoto": 53,
+    "activeMissingPhoto": 889,
     "secondaryProducts": 170,
     "appendedOperationalProducts": 9,
     "appendedWoeProducts": 84
@@ -681,6 +681,57 @@
       ]
     },
     {
+      "file": "lote-01/14885.jpeg",
+      "uploadedFrom": "lote-01/14885.jpeg",
+      "identifier": "14885",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14885--pos-51358",
+          "codigoDia": "14885",
+          "skuIntl": "11141050",
+          "skuPos": "51358",
+          "displayName": "COR23 Tz14 Rain",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/14927.jpeg",
+      "uploadedFrom": "lote-01/14927.jpeg",
+      "identifier": "14927",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14927--pos-51365",
+          "codigoDia": "14927",
+          "skuIntl": "11141041",
+          "skuPos": "51365",
+          "displayName": "COR23 Pour Over",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/14928.jpeg",
+      "uploadedFrom": "lote-01/14928.jpeg",
+      "identifier": "14928",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14928--pos-51366",
+          "codigoDia": "14928",
+          "skuIntl": "11141095",
+          "skuPos": "51366",
+          "displayName": "COR23 Cold Brew",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/15857.jpeg",
       "uploadedFrom": "lote-01/15857.jpeg",
       "identifier": "15857",
@@ -701,6 +752,23 @@
           "skuIntl": "11157547",
           "skuPos": "CCup Acero SBX",
           "displayName": "CCup Acero SBX Genérico",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16078.jpeg",
+      "uploadedFrom": "lote-01/16078.jpeg",
+      "identifier": "16078",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16078--pos-lifestyle-sbx",
+          "codigoDia": "16078",
+          "skuIntl": "NA",
+          "skuPos": "Lifestyle SBX",
+          "displayName": "Lifestyle SBX Genérico",
           "stockPriority": "active"
         }
       ]
@@ -773,6 +841,23 @@
       ]
     },
     {
+      "file": "lote-01/16550.jpeg",
+      "uploadedFrom": "lote-01/16550.jpeg",
+      "identifier": "16550",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16550--pos-52585",
+          "codigoDia": "16550",
+          "skuIntl": "11174776",
+          "skuPos": "52585",
+          "displayName": "Wt26Mug14Bow",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16719.jpeg",
       "uploadedFrom": "lote-01/16719.jpeg",
       "identifier": "16719",
@@ -802,6 +887,23 @@
           "skuIntl": "11176587",
           "skuPos": "50740",
           "displayName": "SII26SSCC16Pony",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16877.jpeg",
+      "uploadedFrom": "lote-01/16877.jpeg",
+      "identifier": "16877",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16877--pos-58777",
+          "codigoDia": "16877",
+          "skuIntl": "11178954",
+          "skuPos": "58777",
+          "displayName": "Sp26SSCC24CarryC",
           "stockPriority": "active"
         }
       ]
