@@ -14,6 +14,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
 
 REQUIRED_SHEETS = ("Base_Campaña", "Discovery", "Homologados", "Essentials")
@@ -48,6 +49,19 @@ REQUIRED_FIELDS = (
     "nombreInventario",
     "skuPos",
 )
+HEADER_SCAN_LIMIT = 25
+SAP_FIELD_ALIASES = {
+    "idWoe": ("id woe",),
+    "codigoDia": ("codigo dia",),
+    "descripcionSap": ("descripcion sap", "descripcion"),
+}
+MICROS_FIELD_ALIASES = {
+    "agrupado": ("agrupado",),
+    "familia": ("familia",),
+    "conteo": ("conteo",),
+    "nombreMicros": ("nombre micros",),
+    "codigoDia": ("codigo dia",),
+}
 
 
 def normalize_header(value: object) -> str:
@@ -120,28 +134,54 @@ def money(value: object) -> str:
     return f"${amount:,.2f}"
 
 
+def locate_named_headers(ws, aliases_by_field, required_fields, *, label: str):
+    """Localiza encabezados por nombre sin depender de fila ni orden de columnas."""
+    scan_end = min(ws.max_row, HEADER_SCAN_LIMIT)
+    best_missing = list(required_fields)
+    for row_number in range(1, scan_end + 1):
+        cells = next(ws.iter_rows(min_row=row_number, max_row=row_number))
+        original = [clean_text(cell.value) for cell in cells]
+        normalized = [normalize_header(value) for value in original]
+        positions = {}
+        duplicate_fields = []
+        for field, aliases in aliases_by_field.items():
+            matches = [index for index, header in enumerate(normalized) if header in aliases]
+            if len(matches) > 1:
+                duplicate_fields.append(field)
+            elif matches:
+                positions[field] = matches[0]
+        missing = [field for field in required_fields if field not in positions]
+        if len(missing) < len(best_missing):
+            best_missing = missing
+        if not missing:
+            if duplicate_fields:
+                raise ValueError(
+                    f"{label} fila {row_number}: encabezados duplicados para "
+                    f"{', '.join(duplicate_fields)}"
+                )
+            return row_number, original, normalized, positions
+    raise ValueError(
+        f"{label}: no se localizaron encabezados válidos en las primeras "
+        f"{scan_end} filas; faltan {', '.join(best_missing)}"
+    )
+
+
 def locate_headers(ws):
-    original = [clean_text(cell.value) for cell in ws[1]]
-    normalized = [normalize_header(value) for value in original]
+    header_row, original, normalized, positions = locate_named_headers(
+        ws,
+        FIELD_ALIASES,
+        REQUIRED_FIELDS,
+        label=ws.title,
+    )
     duplicates = [name for name, count in Counter(normalized).items() if name and count > 1]
-    positions = {}
-    for field, aliases in FIELD_ALIASES.items():
-        matches = [index for index, header in enumerate(normalized) if header in aliases]
-        if len(matches) > 1:
-            raise ValueError(f"encabezado duplicado para {field}: {matches}")
-        if matches:
-            positions[field] = matches[0]
-    missing = [field for field in REQUIRED_FIELDS if field not in positions]
     price_columns = {
         original[index].strip().upper(): index
         for index, header in enumerate(normalized)
         if re.fullmatch(r"c[1-6]", header)
     }
-    if missing:
-        raise ValueError(f"faltan encabezados indispensables: {', '.join(missing)}")
     if not price_columns:
-        raise ValueError("no se detectó ningún encabezado de precio C1-C6")
-    return original, positions, price_columns, duplicates
+        raise ValueError(f"{ws.title} fila {header_row}: no se detectó precio C1-C6")
+    return header_row, original, positions, price_columns, duplicates
 
 
 def sheet_button(sheet_name: str, row, positions) -> str:
@@ -155,17 +195,19 @@ def sheet_button(sheet_name: str, row, positions) -> str:
 
 
 def parse_sheet(ws):
-    headers, positions, price_columns, duplicate_headers = locate_headers(ws)
+    header_row, headers, positions, price_columns, duplicate_headers = locate_headers(ws)
     products = []
     empty_rows = 0
     invalid_rows = []
     duplicate_rows = 0
+    record_rows = 0
     seen = set()
 
-    for row_number, row in enumerate(ws.iter_rows(min_row=2), start=2):
+    for row_number, row in enumerate(ws.iter_rows(min_row=header_row + 1), start=header_row + 1):
         if all(cell.value is None or clean_text(cell.value) == "" for cell in row):
             empty_rows += 1
             continue
+        record_rows += 1
         try:
             nombre_pos = clean_text(row[positions["nombrePos"]].value)
             campaign = campaign_from_product_name(nombre_pos) if ws.title == "Base_Campaña" else None
@@ -216,8 +258,9 @@ def parse_sheet(ws):
 
     report = {
         "sheet": ws.title,
+        "headerRow": header_row,
         "headers": headers,
-        "records": ws.max_row - 1,
+        "records": record_rows,
         "valid": len(products),
         "emptyRows": empty_rows,
         "duplicatesIgnored": duplicate_rows,
@@ -238,21 +281,29 @@ def parse_woe_catalog(workbook, products):
 
     sap_ws = workbook["SAP"]
     micros_ws = workbook["Catalogo Micros"]
-    sap_headers = [normalize_header(cell.value) for cell in sap_ws[1]]
-    micros_headers = [normalize_header(cell.value) for cell in micros_ws[1]]
-    if sap_headers[:3] != ["id woe", "codigo dia", "descripcion sap"]:
-        raise ValueError("SAP requiere: ID WOE, Codigo DIA y Descripcion SAP")
-    expected_micros = {"agrupado", "familia", "conteo", "nombre micros", "codigo dia"}
-    if not expected_micros.issubset(set(micros_headers)):
-        raise ValueError("Catalogo Micros requiere: Agrupado, Familia, Conteo, Nombre Micros y Codigo DIA")
-    micros_positions = {header: micros_headers.index(header) for header in expected_micros}
+    sap_header_row, _, _, sap_positions = locate_named_headers(
+        sap_ws,
+        SAP_FIELD_ALIASES,
+        tuple(SAP_FIELD_ALIASES),
+        label="SAP",
+    )
+    micros_header_row, _, _, micros_positions = locate_named_headers(
+        micros_ws,
+        MICROS_FIELD_ALIASES,
+        tuple(MICROS_FIELD_ALIASES),
+        label="Catalogo Micros",
+    )
 
     micros_by_dia = {}
     micros_meta_by_dia = {}
     micros_rows = 0
-    for row_number, row in enumerate(micros_ws.iter_rows(min_row=2), start=2):
-        code = identifier(row[micros_positions["codigo dia"]])
-        name = clean_text(row[micros_positions["nombre micros"]].value)
+    invalid_micros_rows = []
+    for row_number, row in enumerate(
+        micros_ws.iter_rows(min_row=micros_header_row + 1),
+        start=micros_header_row + 1,
+    ):
+        code = identifier(row[micros_positions["codigoDia"]])
+        name = clean_text(row[micros_positions["nombreMicros"]].value)
         agrupado = clean_text(row[micros_positions["agrupado"]].value)
         familia = clean_text(row[micros_positions["familia"]].value)
         conteo = clean_text(row[micros_positions["conteo"]].value)
@@ -260,7 +311,8 @@ def parse_woe_catalog(workbook, products):
             continue
         micros_rows += 1
         if not code:
-            raise ValueError(f"Catalogo Micros fila {row_number}: falta Codigo DIA")
+            invalid_micros_rows.append({"row": row_number, "reason": "falta Codigo DIA"})
+            continue
         values = micros_by_dia.setdefault(code, [])
         if name and name not in values:
             values.append(name)
@@ -291,17 +343,27 @@ def parse_woe_catalog(workbook, products):
     seen_dia = Counter()
     sap_rows = 0
     exact_sap_duplicates = 0
+    invalid_sap_rows = []
     seen_sap_rows = set()
     sap_codes = set()
-    for row_number, row in enumerate(sap_ws.iter_rows(min_row=2), start=2):
-        woe_id = identifier(row[0])
-        code = identifier(row[1])
-        description = clean_text(row[2].value if len(row) > 2 else "")
+    for row_number, row in enumerate(
+        sap_ws.iter_rows(min_row=sap_header_row + 1),
+        start=sap_header_row + 1,
+    ):
+        woe_id = identifier(row[sap_positions["idWoe"]])
+        code = identifier(row[sap_positions["codigoDia"]])
+        description = clean_text(row[sap_positions["descripcionSap"]].value)
         if not woe_id and not code and not description:
             continue
         sap_rows += 1
         if not woe_id or not code:
-            raise ValueError(f"SAP fila {row_number}: ID WOE o Codigo DIA vacío")
+            missing = []
+            if not woe_id:
+                missing.append("ID WOE")
+            if not code:
+                missing.append("Codigo DIA")
+            invalid_sap_rows.append({"row": row_number, "reason": f"falta {' y '.join(missing)}"})
+            continue
         fingerprint = (woe_id, code, canonical_text(description))
         if fingerprint in seen_sap_rows:
             exact_sap_duplicates += 1
@@ -365,15 +427,19 @@ def parse_woe_catalog(workbook, products):
 
     report = {
         "sapRows": sap_rows,
+        "sapHeaderRow": sap_header_row,
         "catalogRows": len(catalog),
         "sapCatalogRows": len(seen_sap_rows),
         "orphanCatalogRows": len(orphan_codes),
         "uniqueWoe": len(seen_woe),
         "uniqueDiaSap": len(seen_dia),
         "exactSapDuplicatesIgnored": exact_sap_duplicates,
+        "invalidSapRows": invalid_sap_rows,
         "multiWoeRelations": sum(count - 1 for count in seen_woe.values()),
         "multiDiaRelations": sum(count - 1 for count in seen_dia.values()),
         "microsRows": micros_rows,
+        "microsHeaderRow": micros_header_row,
+        "invalidMicrosRows": invalid_micros_rows,
         "uniqueDiaMicros": len(micros_by_dia),
         "microsUnitsPopulated": 0,
         "microsGroups": len({item["agrupado"] for rows in micros_meta_by_dia.values() for item in rows if item["agrupado"]}),
@@ -405,14 +471,19 @@ def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path)
     woe_catalog, woe_report = parse_woe_catalog(workbook, products)
 
     campaign = workbook["Base_Campaña"]
-    if normalize_header(campaign["D1"].value) != "nombre pos":
-        raise ValueError("Base_Campaña!D1 no corresponde al encabezado NOMBRE POS")
-    latest_item = clean_text(campaign["D2"].value)
-    if latest_item and not any(
-        product["sourceSheet"] == "Base_Campaña" and product["nombrePos"] == latest_item
-        for product in products
-    ):
-        raise ValueError("Base_Campaña!D2 no coincide con un artículo válido procesado")
+    _, _, campaign_positions, _, _ = locate_headers(campaign)
+    campaign_products = sorted(
+        (product for product in products if product["sourceSheet"] == "Base_Campaña"),
+        key=lambda product: product["sourceRow"],
+    )
+    if not campaign_products:
+        raise ValueError("Base_Campaña no contiene artículos válidos")
+    latest_product = campaign_products[0]
+    latest_item = latest_product["nombrePos"]
+    latest_item_cell = (
+        f"Base_Campaña!{get_column_letter(campaign_positions['nombrePos'] + 1)}"
+        f"{latest_product['sourceRow']}"
+    )
 
     # Algunos libros no incluyen docProps/core.xml. En ese caso openpyxl crea
     # fechas con la hora actual al abrirlos, lo que vuelve distinto cada build.
@@ -434,7 +505,7 @@ def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path)
         "sourceFile": excel_path.name,
         "generatedAtUtc": generated_at,
         "sourceModifiedAtUtc": generated_at,
-        "latestItemCell": "Base_Campaña!D2",
+        "latestItemCell": latest_item_cell,
         "latestItem": latest_item,
         "totalValidProducts": len(products),
         "sheets": reports,
