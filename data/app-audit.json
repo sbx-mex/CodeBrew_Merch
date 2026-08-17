@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-17T20:30:53+00:00",
+  "auditedAtUtc": "2026-08-17T20:36:30+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "33ef667c8a97c3b733e39704a35231193207196a889502ca681fda1dab58a1e1",
   "checksTotal": 14,
@@ -81,7 +81,7 @@
   ],
   "performance": {
     "sizes": {
-      "index.html": 21318,
+      "index.html": 21406,
       "styles.css": 43421,
       "catalog.css": 9548,
       "app.js": 126318,
