@@ -1,11 +1,11 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-17T08:25:13+00:00",
-  "sourceModifiedAtUtc": "2026-08-17T08:25:13+00:00",
+  "generatedAtUtc": "2026-08-17T08:24:38+00:00",
+  "sourceModifiedAtUtc": "2026-08-17T08:24:38+00:00",
   "latestItemCell": "Base_Campaña!D2",
   "latestItem": "SII26GlCCColor",
-  "totalValidProducts": 962,
+  "totalValidProducts": 961,
   "sheets": [
     {
       "sheet": "Base_Campaña",
@@ -84,17 +84,17 @@
         "C5",
         "C6"
       ],
-      "records": 717,
-      "valid": 715,
-      "emptyRows": 0,
+      "records": 716,
+      "valid": 714,
+      "emptyRows": 1,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 541,
+          "row": 540,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 542,
+          "row": 541,
           "reason": "sin identificador útil o sin precio"
         }
       ],

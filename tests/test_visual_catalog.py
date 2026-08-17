@@ -158,6 +158,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("catalog-missing-visual", app)
         self.assertIn("photoState=hasPhoto?'':", app)
         self.assertIn("stockFirst?4000:1000", app)
+        self.assertIn("stockQuantity", app)
+        self.assertIn("normalizeSearchText", app)
+        self.assertIn("renderWoeSuggestions(input.value)", app)
+        self.assertNotIn("input.value='';box.hidden=true", app)
         self.assertIn("scheduleCatalogRender", app)
         self.assertIn("updateViaCache:'none'", app)
         self.assertIn("controllerchange", app)
@@ -191,6 +195,9 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertTrue(all(product.get("stockPriority") == "active" for product in self.products[:first_secondary]))
         active_with_photo = [product for product in active if product.get("visual")]
         self.assertEqual(len(active_with_photo), self.catalog["meta"].get("activeWithPhoto"))
+        active_missing = [product for product in active if not product.get("visual")]
+        quantities = [float(product.get("stockQuantity") or 0) for product in active_missing]
+        self.assertEqual(quantities, sorted(quantities, reverse=True))
         first_missing = next((index for index, product in enumerate(self.products) if not product.get("visual")), len(self.products))
         self.assertTrue(all(product.get("visual") for product in self.products[:first_missing]))
 

@@ -22,7 +22,9 @@ LOT_NAMES = tuple(f"lote-{number:02d}" for number in range(1, 5))
 
 
 def normalize_name(value: object) -> str:
-    return re.sub(r"[^a-z0-9]", "", str(value or "").lower())
+    text = unicodedata.normalize("NFD", str(value or "").casefold())
+    text = "".join(char for char in text if unicodedata.category(char) != "Mn")
+    return re.sub(r"[^a-z0-9]", "", text)
 
 
 def identifier(value: object) -> str:
@@ -75,19 +77,43 @@ def load_woe_catalog(path: Path) -> list[dict]:
     return json.loads(raw)
 
 
-def load_active_names(path: Path) -> set[str]:
+def load_stock_profile(path: Path) -> dict[str, dict]:
     if not path.is_file():
-        return set()
+        return {}
     payload = json.loads(path.read_text(encoding="utf-8"))
-    return {normalize_name(value) for value in payload.get("activeNames", []) if normalize_name(value)}
+    stock = payload.get("stockByName", {})
+    if stock:
+        return {
+            normalize_name(key): {
+                "ingredient": str(value.get("ingredient") or key),
+                "quantity": float(value.get("quantity") or 0),
+                "category": str(value.get("category") or ""),
+                "unit": str(value.get("unit") or ""),
+            }
+            for key, value in stock.items()
+            if normalize_name(key) and float(value.get("quantity") or 0) > 0
+        }
+    return {
+        normalize_name(value): {"ingredient": str(value), "quantity": 1.0, "category": "", "unit": ""}
+        for value in payload.get("activeNames", [])
+        if normalize_name(value)
+    }
+
+
+def product_stock(product: dict, stock_profile: dict[str, dict]) -> dict | None:
+    matches = [
+        stock_profile[key]
+        for field in ("nombreInventario", "nombrePos", "displayName")
+        if product.get(field)
+        for key in (normalize_name(product.get(field)),)
+        if key in stock_profile
+    ]
+    return max(matches, key=lambda row: row["quantity"]) if matches else None
 
 
 def product_is_active(product: dict, active_names: set[str]) -> bool:
-    return any(
-        normalize_name(product.get(field, "")) in active_names
-        for field in ("nombreInventario", "nombrePos", "displayName")
-        if product.get(field)
-    )
+    """Compatibilidad con auditorías anteriores que sólo entregan nombres activos."""
+    return any(normalize_name(product.get(field, "")) in active_names for field in ("nombreInventario", "nombrePos", "displayName") if product.get(field))
 
 
 def image_dimensions(path: Path) -> tuple[int, int]:
@@ -161,13 +187,18 @@ def build_indices(products: list[dict]) -> dict[str, dict[str, list[dict]]]:
     return indices
 
 
-def add_operational_products(products: list[dict], operational_path: Path, image_keys: set[str]) -> int:
+def add_operational_products(products: list[dict], operational_path: Path, image_keys: set[str], stock_keys: set[str]) -> int:
     indices = build_indices(products)
     existing_article_keys = {product.get("articleKey") for product in products}
     added = 0
     for row in load_operational_products(operational_path):
         matching_fields = [field for field in ("codigoDia", "skuIntl") if identifier(row.get(field)) in image_keys]
-        if not matching_fields:
+        active_name = any(
+            normalize_name(row.get(field)) in stock_keys
+            for field in ("nombreInventario", "nombrePos")
+            if row.get(field)
+        )
+        if not matching_fields and not active_name:
             continue
         if any(indices[field].get(identifier(row.get(field))) for field in matching_fields):
             continue
@@ -201,6 +232,20 @@ def add_operational_products(products: list[dict], operational_path: Path, image
                 indices[field][key].append(product)
         added += 1
     return added
+
+
+def enrich_products_with_woe(products: list[dict], woe_catalog_path: Path) -> None:
+    """Añade referencias SAP/Micros por Código Día para búsqueda y control de fotos."""
+    by_day: dict[str, list[dict]] = defaultdict(list)
+    for row in load_woe_catalog(woe_catalog_path):
+        day_key = identifier(row.get("codigoDia"))
+        if day_key:
+            by_day[day_key].append(row)
+    for product in products:
+        relations = by_day.get(identifier(product.get("codigoDia")), [])
+        product["sapIds"] = sorted({str(row.get("idWoe") or "").strip() for row in relations if str(row.get("idWoe") or "").strip()})
+        product["sapDescriptions"] = sorted({str(row.get("descripcionSap") or "").strip() for row in relations if str(row.get("descripcionSap") or "").strip()})
+        product["microsNames"] = sorted({str(name).strip() for row in relations for name in row.get("micros", []) if str(name).strip()})
 
 
 def add_woe_merch_products(products: list[dict], woe_catalog_path: Path) -> int:
@@ -257,16 +302,21 @@ def integrate(
 ) -> dict:
     payload = load_catalog(catalog_path)
     products = payload.get("products", [])
-    active_names = load_active_names(active_list)
+    stock_profile = load_stock_profile(active_list)
     images, lots = discover_images(source_dir)
     appended_woe_products = add_woe_merch_products(products, woe_catalog)
-    appended_products = add_operational_products(products, operational_products, {image_identifier(path) for path in images})
+    appended_products = add_operational_products(products, operational_products, {image_identifier(path) for path in images}, set(stock_profile))
+    enrich_products_with_woe(products, woe_catalog)
     indices = build_indices(products)
 
     for product in products:
-        active = product_is_active(product, active_names) if active_names else product.get("stockPriority") == "active"
+        stock = product_stock(product, stock_profile)
+        active = bool(stock) if stock_profile else product.get("stockPriority") == "active"
         day_key = identifier(product.get("codigoDia"))
         product["stockPriority"] = "active" if active else "secondary"
+        product["stockQuantity"] = stock["quantity"] if stock else 0
+        product["stockMatchName"] = stock["ingredient"] if stock else ""
+        product["stockUnit"] = stock["unit"] if stock else ""
         product["photoUploadName"] = f"{day_key}.jpg" if day_key else ""
         product["visualSource"] = "pending-upload"
         product["visual"] = None
@@ -365,6 +415,7 @@ def integrate(
     products.sort(key=lambda product: (
         product.get("visual") is None,
         product.get("stockPriority") != "active",
+        -float(product.get("stockQuantity") or 0),
         int(product.get("codigoDia")) if str(product.get("codigoDia", "")).isdigit() else 999999,
         str(product.get("displayName", "")).casefold(),
     ))
@@ -418,13 +469,14 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v7",
+        "version": "manual-upload-v8-stock-ranked",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
         "duplicatePolicy": "keep-first-lot-ignore-later",
         "packing": "fill-lote-01-first-then-02-03-04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
+        "stockPriority": "Merch_Existente15_08(1).csv · existencia mayor a menor",
         "postPublishAudit": post_publish_audit,
         "lots": lots,
         "totals": totals,

@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "version": "manual-upload-v7",
+  "version": "manual-upload-v8-stock-ranked",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
@@ -17,17 +17,18 @@
     "Homologados",
     "Essentials"
   ],
+  "stockPriority": "Merch_Existente15_08(1).csv · existencia mayor a menor",
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 55,
+    "images": 54,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 55,
-      "accepted": 55,
+      "images": 54,
+      "accepted": 54,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -54,17 +55,17 @@
     }
   ],
   "totals": {
-    "imageFiles": 55,
-    "publishedImageFiles": 55,
-    "matchedImageFiles": 55,
+    "imageFiles": 54,
+    "publishedImageFiles": 54,
+    "matchedImageFiles": 54,
     "unmatchedImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 59,
-    "activeProducts": 942,
+    "matchedProducts": 58,
+    "activeProducts": 1017,
     "activeWithPhoto": 54,
-    "activeMissingPhoto": 888,
-    "secondaryProducts": 170,
-    "appendedOperationalProducts": 9,
+    "activeMissingPhoto": 963,
+    "secondaryProducts": 169,
+    "appendedOperationalProducts": 83,
     "appendedWoeProducts": 84
   },
   "files": [
@@ -791,23 +792,6 @@
       ]
     },
     {
-      "file": "lote-01/16378.jpeg",
-      "uploadedFrom": "lote-01/16378.jpeg",
-      "identifier": "16378",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16378--pos-52336",
-          "codigoDia": "16378",
-          "skuIntl": "NA",
-          "skuPos": "52336",
-          "displayName": "COR25CircCup",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
       "file": "lote-01/16531.jpeg",
       "uploadedFrom": "lote-01/16531.jpeg",
       "identifier": "16531",
@@ -1031,7 +1015,7 @@
           "skuIntl": "-",
           "skuPos": "58751",
           "displayName": "IMÁN MÉXICO",
-          "stockPriority": "secondary"
+          "stockPriority": "active"
         }
       ]
     }

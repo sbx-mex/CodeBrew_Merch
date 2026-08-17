@@ -20,7 +20,7 @@ PERFORMANCE_BUDGETS = {
     "index.html": 35_000,
     "styles.css": 45_000,
     "catalog.css": 30_000,
-    "app.js": 126_000,
+    "app.js": 127_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/merch-catalog.js": 1_000_000,
@@ -168,7 +168,7 @@ def audit(root: Path) -> dict:
             and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
-            and coverage.get("version") == "manual-upload-v7"
+            and coverage.get("version") == "manual-upload-v8-stock-ranked"
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
             and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
@@ -233,7 +233,7 @@ def audit(root: Path) -> dict:
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v7"
+            and coverage.get("version") == "manual-upload-v8-stock-ranked"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0

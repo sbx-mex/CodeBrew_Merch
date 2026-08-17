@@ -1,393 +1,6580 @@
 {
-  "version": "2026-08-15",
-  "source": "Merch_Existente15_08.csv",
-  "purpose": "prioridad-activos-sin-cantidades",
+  "version": "stock-priority-v2",
+  "source": "Merch_Existente15_08(1).csv",
+  "purpose": "prioridad-fotos-pendientes-por-existencia",
   "activeNames": [
-    "bearhugger",
-    "bearhuggerspring",
-    "bearhugworldcup",
-    "beentherecancun14oz",
-    "beenthereguanajuato14oz",
-    "beentheremazatlan14oz",
-    "beentheremerida14oz",
-    "beentherepuertovallarta14oz",
-    "beentheretulum14oz",
-    "bttu16mex",
-    "ccupacerosbxgenrico",
-    "ccupplasticsbxgenrico",
-    "cor23cc24green",
-    "cor23coldbrew",
-    "cor23dw12green",
-    "cor23glcc18omb",
-    "cor23mug20stan",
-    "cor23pourover",
-    "cor23prensafran",
-    "cor23reuhotcup",
-    "cor23reuscc16",
-    "cor23reuscc24",
-    "cor23ss16stswi",
-    "cor23ss16thrul",
-    "cor23ss16toneb",
-    "cor23ss20copper",
-    "cor23ss20stquen",
-    "cor23ss25stybtl",
-    "cor23totebag",
-    "cor23tu16sirent",
-    "cor23tu20stblck",
-    "cor23tz14green",
-    "cor23tz14rain",
-    "cor25cc24siren",
-    "cor25circcup",
-    "cor25dw12prism",
-    "cor25gl16sust",
-    "cor25mug16sus",
-    "cor25ss16sleeve",
-    "cor25ss16sus",
-    "cor25ss20stouch",
-    "cor25sscc24black",
-    "cor25stan30black",
-    "cor25staniceflow",
-    "cor25tu16susta",
-    "cor26btl20",
-    "cor26glass16sus",
-    "cor26mug14copper",
-    "cor26mug2copper",
-    "cor26ppbtl20s",
-    "cor26ssthrulid",
-    "cor26stan30white",
-    "cor26tu16sust",
-    "disc2ozcabos",
-    "disc2ozcan",
-    "disc2ozcdmx",
-    "disc2ozchiapas",
-    "disc2ozcozumel",
-    "disc2ozgdl",
-    "disc2ozmty",
-    "disc2ozmxpais",
-    "disc2ozoax",
-    "disc2ozplayac",
-    "disc2ozpuebla",
-    "disc2ozpvallarta",
-    "disc2oztulum",
-    "disccc24mxpais",
-    "discoveryacapulc",
-    "discoverycabos",
-    "discoverycancun",
-    "discoverycdmx",
-    "discoverychiapas",
-    "discoverychihua",
-    "discoverycozumel",
-    "discoveryensenad",
-    "discoverygdl",
-    "discoverygto",
-    "discoveryleon",
-    "discoverymazatla",
-    "discoverymerida",
-    "discoverymorelia",
-    "discoverymty",
-    "discoverymxpais",
-    "discoveryoax",
-    "discoveryplayac",
-    "discoverypuebla",
-    "discoverypvallarta",
-    "discoveryqro",
-    "discoverysanmig",
-    "discoverytulum",
-    "discoveryver",
-    "discoveryzacat",
-    "discss20mxpais",
-    "essreusablecup",
-    "filtroschemex",
-    "fl25cc24ddm",
-    "fl25cc24dome",
-    "fl25cc24strawt",
-    "fl25ccss16vac",
-    "fl25ccss24pearl",
-    "fl25dw12luster",
-    "fl25glasscc",
-    "fl25glassccsust",
-    "fl25keychaind",
-    "fl25llavero",
-    "fl25manga",
-    "fl25monederoaniv",
-    "fl25montsc",
-    "fl25monvxmc",
-    "fl25mug14abrac",
-    "fl25mug16sust",
-    "fl25pines",
-    "fl25pinesddm",
-    "fl25reusbar",
-    "fl25reusccba",
-    "fl25reusccesp",
-    "fl25reusccpikep",
-    "fl25reusespresso",
-    "fl25reuspikep",
-    "fl25ss16charm",
-    "fl25ss16studded",
-    "fl25ss20ddm",
-    "fl25ss20grad",
-    "fl25ss20siren",
-    "fl25ss24vac",
-    "fl25ssbtl20",
-    "fl25sscc16purple",
-    "fl25sscc24anniv",
-    "fl25sscc24sust",
-    "fl25ssmug12rib",
-    "fl25sstu12sust",
-    "fl25sstu16wave",
-    "fl25sstu20anni",
-    "fl25sstu20vac",
-    "fl25stanley16",
-    "fl25stanpearl",
-    "fl25stopperbar",
-    "fl25strawbar",
-    "fl25tu16anniv",
-    "fl25tu16charm",
-    "fl25tu16ddm",
-    "fl25tu16sust",
-    "imnmexico",
-    "lifestylesbxgenrico",
-    "llaverosbxgenrico",
-    "pinessbxgenrico",
-    "repuestoparacafetera8tazas",
-    "resmug12sscopper",
-    "ressetct3pck",
-    "resss16bananalea",
-    "resss16goldshin",
-    "resss16tgradient",
-    "setreusasbxgenrico",
-    "si25cc24bling",
-    "si25cc24colors",
-    "si25cc24dome",
-    "si25cc24drinks",
-    "si25cc24fun",
-    "si25ccreustierra",
-    "si25dw12beach",
-    "si25keychaincc",
-    "si25keychainzoo",
-    "si25mug12teach",
-    "si25quencher30",
-    "si25reus24teach",
-    "si25reusdelivery",
-    "si25reustierra",
-    "si25sscc24father",
-    "si25sscc24paddle",
-    "si25sscc24swimm",
-    "si25ssdoodle",
-    "si25tu16bubble",
-    "si25tu20swimm",
-    "si25tu20zoo",
-    "si25tz14glass",
-    "si25vac24stanley",
-    "sii25bdaystopper",
-    "sii25cc24b2s",
-    "sii25cc24frblue",
-    "sii25cc24jeweled",
-    "sii25clipboyb",
-    "sii25clipgirlb",
-    "sii25dw12studded",
-    "sii25llaveroalo",
-    "sii25llaverob2s",
-    "sii25quencher30",
-    "sii25reuscolor",
-    "sii25sscc24frb",
-    "sii25sscc24green",
-    "sii25stoppsl",
-    "sii25strawlluvia",
-    "sii25tu16blue",
-    "sii25tu16farmr",
-    "sii25tu20soft",
-    "sii26bearpony",
-    "sii26btl16pony",
-    "sii26btl20resort",
-    "sii26btlss20",
-    "sii26cc24gamer",
-    "sii26cc24gid",
-    "sii26cc24rain",
-    "sii26doodle16",
-    "sii26gicccolor",
-    "sii26glassbear",
-    "sii26mug14aniv",
-    "sii26quencher30p",
-    "sii26ss12aniv",
-    "sii26ss12charm",
-    "sii26ss16pleat",
-    "sii26ss16resort",
-    "sii26ss16studded",
-    "sii26ss20hand",
-    "sii26ssbtl12aniv",
-    "sii26sscc16pony",
-    "sii26sscc20pony",
-    "sii26sscc24white",
-    "sii26sstu12pony",
-    "sii26tu10gam",
-    "sp25stopperp",
-    "sp26blindbox",
-    "sp26cc16prism",
-    "sp26cc216rabbit",
-    "sp26cc24dome",
-    "sp26cc24or",
-    "sp26cc24teach",
-    "sp26ccreustierra",
-    "sp26ccup16cherry",
-    "sp26cookiejp",
-    "sp26gl18mottled",
-    "sp26keychainor",
-    "sp26mug14mom",
-    "sp26mug14rabbit",
-    "sp26neblack",
-    "sp26necrossb",
-    "sp26nellavero",
-    "sp26newhite",
-    "sp26reustierra",
-    "sp26ss12pink",
-    "sp26ss16cherry",
-    "sp26ss16rabbit",
-    "sp26ss16under",
-    "sp26ss20orange",
-    "sp26sscc16band",
-    "sp26sscc24carryc",
-    "sp26sscc24cherry",
-    "sp26sscc24oran",
-    "sp26ssvac40cherr",
-    "sp26stan30purp",
-    "sp26stanquen20",
-    "sp26tu16cherry",
-    "sp26tu16mom",
-    "sp26tu16orange",
-    "sp26tu16teach",
-    "sp26tu20blossom",
-    "sp26tu20blue",
-    "sp26tz14glassc",
-    "sp26vac16stan",
-    "sp26wtbl19under",
-    "sp26wtblss16cher",
-    "stanleysbxgenrico",
-    "stopperssbxgenrico",
-    "tazassbxgenrico",
-    "totebagcabos",
-    "totebagcan",
-    "totebagcdmx",
-    "totebagcozumel",
-    "totebaggdl",
-    "totebagmty",
-    "totebagmxpais",
-    "totebagplayac",
-    "totebagpvallart",
-    "totebagssbxgenrico",
-    "totebagtulum",
-    "tumbacerosbxgenrico",
-    "tumbplasticsbxgenrico",
     "vasorewards",
-    "wc26bearmex",
-    "wc26bearwc",
+    "essreusablecup",
+    "stopperssbxgenerico",
+    "sii26glassbear",
+    "sii26tu10gam",
+    "lifestylesbxgenerico",
+    "wc26ss16pink",
     "wc26cc24pride",
     "wc26cc24road",
-    "wc26ccss24puffy",
-    "wc26dw12oran",
-    "wc26gl20silicone",
-    "wc26llaverob",
-    "wc26mug12stan",
-    "wc26nesbx",
-    "wc26nesiren",
-    "wc26reus",
-    "wc26ss16black",
-    "wc26ss16charm",
-    "wc26ss16lid",
-    "wc26ss16pink",
-    "wc26ss20btl",
-    "wc26ss20pull",
-    "wc26ss20twist",
+    "sii26cc24gid",
+    "sii26quencher30p",
+    "sii26cc24gamer",
+    "sii26btlss20",
+    "sii26ss20hand",
+    "cor23tz14green",
+    "sp26cc24or",
+    "cor23coldbrew",
+    "sii26ss12charm",
     "wc26ss30pride",
+    "sii26sscc24white",
+    "cor23pourover",
+    "wc26mug12stan",
+    "wc26ss20twist",
+    "wc26ss16lid",
+    "llaverosbxgenerico",
+    "si25keychainzoo",
     "wc26sscc24grad",
-    "wc26stan20icef",
+    "sii26ss16pleat",
+    "sii26ss16studded",
+    "wc26tu16flower",
+    "sii26doodle16",
+    "wc26gl20silicone",
+    "wc26ss16charm",
+    "sp26sscc16band",
+    "cor23totebag",
+    "sp26neblack",
+    "wt26reussiren",
+    "sp26ss20orange",
+    "sp26vac16stan",
+    "filtroschemex",
+    "wc26dw12oran",
+    "wc26nesbx",
+    "sp26newhite",
+    "wc26ss20btl",
+    "sp26tu16mom",
     "wc26stanhand20",
     "wc26stanquen30",
+    "sp26keychainor",
+    "sii25bdaystopper",
+    "wt26vasojacaran",
+    "disccc24mxpais",
+    "sp26sscc24oran",
+    "wc26nesiren",
+    "wc26stan20icef",
+    "cor25circcup",
+    "imanmexico",
+    "sp26cc24teach",
+    "sii26ssbtl12aniv",
+    "wc26reus",
+    "sp26sscc24carryc",
+    "sii25clipgirlb",
+    "wc26ccss24puffy",
+    "sii26ss12aniv",
+    "wt26reussv",
+    "cor23prensafran",
     "wc26totepride",
+    "sp26stanquen20",
+    "cor23cc24green",
     "wc26toteroad",
-    "wc26tu16flower",
+    "discss20mxpais",
+    "wt26vasofresa",
+    "cor26ppbtl20s",
+    "sii26ss16resort",
+    "bearhuggerspring",
+    "sp26cookiejp",
+    "sii26sstu12pony",
+    "cor23tz14rain",
+    "sii26btl16pony",
+    "sii26gicccolor",
+    "sii26mug14aniv",
+    "sp26cc24dome",
+    "sii25clipboyb",
+    "xm25tag",
+    "discoverymxpais",
+    "sii26btl20resort",
+    "cor26btl20",
+    "si25cc24colors",
+    "sii26sscc16pony",
+    "sp26mug14mom",
+    "totebagssbxgenerico",
+    "sii26sscc20pony",
+    "sp26tu16teach",
+    "bearhugworldcup",
+    "xm25tz14glass",
+    "cor26stan30white",
     "wc26tu20yellow",
-    "wc26tu24dw",
+    "disc2ozmxpais",
+    "xm25stopper",
+    "cor26ssthrulid",
+    "sp26tu16orange",
+    "wt26vasopistache",
+    "fl25monederoaniv",
+    "wt26mug14bow",
+    "sp26nellavero",
+    "discoverytulum",
+    "tazassbxgenerico",
+    "fl25manga",
+    "fl25stopperbar",
+    "discoverycdmx",
+    "discoverygdl",
+    "wt26llaverosv",
+    "sp26mug14rabbit",
+    "ccupplasticsbxgenerico",
+    "wt26tuss16duck",
+    "disc2ozgdl",
+    "fl25reusccba",
+    "disc2oztulum",
+    "xm25reumike",
+    "sii26cc24rain",
+    "totebagcdmx",
+    "discoverygto",
+    "disc2ozpvallarta",
+    "disc2ozplayac",
+    "sp26reustierra",
+    "discoverymty",
+    "sp26tz14glassc",
+    "discoveryplayac",
+    "fl25keychaind",
+    "disc2ozcabos",
+    "totebagmxpais",
+    "si25tu20swimm",
+    "discoverycancun",
+    "si25sscc24paddle",
+    "discoverycabos",
+    "totebagmty",
+    "xm25reuelev",
+    "bearhugger",
+    "discoverypvallarta",
+    "sp26ccreustierra",
+    "totebaggdl",
+    "disc2ozcdmx",
     "wt25crarryingbag",
+    "discoveryleon",
+    "discoveryensenad",
+    "discoveryqro",
+    "wc26ss20pull",
+    "sii25stoppsl",
+    "discoverycozumel",
+    "sii25strawlluvia",
+    "sii25llaverob2s",
+    "totebagpvallart",
+    "sp26ccup16cherry",
+    "wc26llaverob",
+    "xm25reu2hol",
+    "resmug12sscopper",
+    "discoverychihua",
+    "ressetct3pck",
+    "cor23reuscc16",
+    "cor26tu16sust",
+    "resss16bananalea",
+    "cor26mug14copper",
+    "si25cc24drinks",
+    "disc2ozcan",
+    "xm25ccglass18",
+    "disc2ozcozumel",
+    "pinessbxgenerico",
+    "disc2ozmty",
+    "discoverysanmig",
+    "discoverymorelia",
+    "discoveryzacat",
+    "fl25llavero",
+    "cor25dw12prism",
+    "discoverychiapas",
+    "cor23reuscc24",
+    "wc26ss16black",
+    "discoverypuebla",
+    "fl25cc24dome",
+    "xm25ss16peng",
+    "totebagplayac",
+    "xm25give16hot",
+    "discoveryoax",
+    "cor26glass16sus",
+    "fl25cc24ddm",
+    "totebagcan",
+    "xm25mugpinguin",
+    "si25ssdoodle",
+    "cor25mug16sus",
+    "wc26bearwc",
+    "discoveryacapulc",
+    "si25cc24dome",
+    "sii25cc24jeweled",
+    "fl25pinesddm",
+    "sp26necrossb",
+    "xm25stancb16",
+    "fl25strawbar",
+    "sp25stopperp",
+    "ccupacerosbxgenerico",
+    "setreusasbxgenerico",
+    "cor25ss16sleeve",
+    "resss16goldshin",
+    "cor23glcc18omb",
+    "wt26sscc24win",
+    "wt26glasscc16",
+    "xm25tu16cping",
+    "xm25reu1hol",
+    "sp26ss16under",
+    "wt26sscc24grad",
+    "xm25give16cc",
+    "sp26wtblss16cher",
+    "si25tz14glass",
+    "si25keychaincc",
+    "xm25tu16charm",
+    "cor23tu16sirent",
+    "wt26reusbear",
+    "cor23ss25stybtl",
+    "fl25reusbar",
+    "sp26wtbl19under",
     "wt262pkstanley",
-    "wt26btl20gr",
+    "wt26sscc30togo",
+    "discoveryver",
     "wt26btlstanley",
-    "wt26canteen",
+    "sp26cc216rabbit",
+    "totebagtulum",
+    "discoverymazatla",
+    "sii25llaveroalo",
+    "xm25cc24hol",
+    "si25dw12beach",
+    "wt26ss20sv",
+    "disc2ozchiapas",
+    "wt26tu16charm",
+    "wt26ssbtl20sv",
+    "wt26btl20gr",
+    "si25reusdelivery",
+    "disc2ozpuebla",
+    "sp26gl18mottled",
+    "totebagcozumel",
+    "wc26tu24dw",
+    "wt26ss16vac",
+    "xm25btl24magn",
+    "si25sscc24swimm",
+    "wt26sscc16grad",
+    "fl25sscc24sust",
     "wt26cc15blue",
     "wt26cc24choco",
+    "fl25pines",
+    "sii25reuscolor",
+    "cor23ss16thrul",
+    "tumbplasticsbxgenerico",
+    "wt26sscc24carryl",
+    "discoverymerida",
+    "tumbacerosbxgenerico",
     "wt26cc24spinner",
-    "wt26ccgl16red",
+    "fl25sstu20vac",
+    "si25cc24fun",
+    "sp26tu20blossom",
+    "xm25sscc24topp",
+    "fl25stanpearl",
+    "totebagcabos",
+    "fl25sstu12sust",
+    "disc2ozoax",
+    "sp26ss12pink",
+    "wc26bearmex",
+    "cor23ss16stswi",
+    "fl25cc24strawt",
+    "si25sscc24father",
+    "si25reustierra",
+    "si25tu20zoo",
+    "sii25tu16farmr",
+    "cor25stan30black",
+    "cor25tu16susta",
+    "si25cc24bling",
+    "sp26sscc24cherry",
+    "cor23ss20stquen",
+    "fl25ccss24pearl",
+    "sp26tu16cherry",
+    "cor23mug20stan",
     "wt26dw12jac",
-    "wt26glasscc16",
-    "wt26llaverosv",
-    "wt26mug14bow",
-    "wt26reusbear",
-    "wt26reussiren",
-    "wt26reussv",
+    "xm25reu24ccst",
+    "cor25staniceflow",
+    "fl25glassccsust",
+    "sp26ssvac40cherr",
+    "xm25stopmax",
+    "beentheremazatlan14oz",
+    "sp26stan30purp",
+    "sp26cc16prism",
+    "xm25llavero",
+    "fl25ss16studded",
+    "fl25tu16charm",
+    "si25ccreustierra",
+    "sii25cc24b2s",
+    "cor23dw12green",
+    "fl25montsc",
+    "si25tu16bubble",
+    "sii26bearpony",
+    "sp26ss16rabbit",
+    "stanleysbxgenerico",
+    "xm25reus16st",
+    "cor25ss20stouch",
+    "cor25sscc24black",
+    "sii25sscc24green",
+    "wt26sscc16jac",
+    "xm25stopmike",
+    "cor23ss16toneb",
+    "fl25tu16sust",
+    "si25reus24teach",
+    "xm25cc24house",
+    "cor25cc24siren",
+    "cor25gl16sust",
+    "fl25reuspikep",
+    "fl25ss20siren",
+    "fl25sstu16wave",
+    "repuestoparacafetera8tazas",
+    "sii25dw12studded",
+    "sii25quencher30",
+    "wt26ccgl16red",
+    "cor23reuhotcup",
+    "cor23tu20stblck",
+    "fl25mug16sust",
+    "sp26tu20blue",
+    "fl25reusccpikep",
+    "fl25ss24vac",
+    "fl25sscc24anniv",
+    "fl25ssmug12rib",
+    "fl25tu16ddm",
+    "sii25tu20soft",
+    "xm25cc24snow",
+    "xm25ss16green",
+    "xm25sscc24r",
+    "beentheremerida14oz",
+    "beentherepuertovallarta14oz",
+    "cor25ss16sus",
+    "cor26mug2copper",
+    "fl25reusespresso",
+    "fl25ss16charm",
+    "si25mug12teach",
+    "wt26ss20jac",
+    "xm25dw12red",
+    "xm25tu16bow",
+    "xm25tustan20",
+    "beenthereguanajuato14oz",
+    "fl25dw12luster",
+    "fl25glasscc",
+    "fl25ss20ddm",
+    "fl25tu16anniv",
     "wt26ss16choco",
     "wt26ss16green",
-    "wt26ss16vac",
-    "wt26ss20jac",
-    "wt26ss20sv",
-    "wt26ss30jac",
-    "wt26ssbtl20sv",
-    "wt26sscc16grad",
-    "wt26sscc16jac",
-    "wt26sscc24carryl",
-    "wt26sscc24grad",
-    "wt26sscc24win",
-    "wt26sscc30togo",
-    "wt26tu16charm",
-    "wt26tuss16duck",
-    "wt26vasofresa",
-    "wt26vasojacaran",
-    "wt26vasopistache",
-    "xm25btl20twi",
-    "xm25btl24magn",
     "xm25btlstanley",
-    "xm25cc24hol",
-    "xm25cc24house",
-    "xm25cc24snow",
-    "xm25ccglass18",
-    "xm25dw12red",
-    "xm25give16cc",
-    "xm25give16hot",
-    "xm25llavero",
-    "xm25mug12house",
-    "xm25mug12stan",
-    "xm25mugpinguin",
     "xm25quen30lil",
+    "xm25stopdust",
+    "beentherecancun14oz",
+    "beentheretulum14oz",
+    "fl25ccss16vac",
+    "fl25sscc16purple",
+    "fl25sstu20anni",
+    "fl25stanley16",
+    "sp26blindbox",
+    "sp26ss16cherry",
+    "xm25mug12house",
+    "xm25ss16diam",
+    "xm25stopdermo",
+    "xm25stopelev",
+    "xm25stopwill",
+    "bttu16mex",
+    "cor23ss20copper",
+    "fl25monvxmc",
+    "fl25mug14abrac",
+    "fl25reusccesp",
+    "fl25ss20grad",
+    "fl25ssbtl20",
+    "resss16tgradient",
+    "si25quencher30",
+    "si25vac24stanley",
+    "sii25cc24frblue",
+    "sii25sscc24frb",
+    "sii25tu16blue",
+    "wt26canteen",
+    "wt26ss30jac",
+    "xm25btl20twi",
+    "xm25mug12stan",
     "xm25quencher30",
     "xm25redquen30",
-    "xm25reu1hol",
-    "xm25reu24ccst",
-    "xm25reu2hol",
-    "xm25reuelev",
-    "xm25reumike",
-    "xm25reus16st",
     "xm25ss12vac",
     "xm25ss16charm",
-    "xm25ss16diam",
-    "xm25ss16green",
-    "xm25ss16peng",
-    "xm25sscc24r",
-    "xm25sscc24topp",
-    "xm25stancb16",
     "xm25stanvac16",
-    "xm25stopdermo",
-    "xm25stopdust",
-    "xm25stopelev",
     "xm25stophopp",
-    "xm25stopmax",
-    "xm25stopmike",
-    "xm25stopper",
-    "xm25stopwill",
-    "xm25tag",
-    "xm25tu12hol",
-    "xm25tu16bow",
-    "xm25tu16charm",
-    "xm25tu16cping",
-    "xm25tustan20",
-    "xm25tz14glass"
-  ]
+    "xm25tu12hol"
+  ],
+  "stockByName": {
+    "vasorewards": {
+      "ingredient": "Vaso Rewards",
+      "quantity": 30824,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "essreusablecup": {
+      "ingredient": "ESS Reusable cup",
+      "quantity": 27933,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "stopperssbxgenerico": {
+      "ingredient": "Stoppers SBX Genérico",
+      "quantity": 12340,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26glassbear": {
+      "ingredient": "SII26GlassBear",
+      "quantity": 12014,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26tu10gam": {
+      "ingredient": "SII26Tu10Gam",
+      "quantity": 11460,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "lifestylesbxgenerico": {
+      "ingredient": "Lifestyle SBX Genérico",
+      "quantity": 10598,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss16pink": {
+      "ingredient": "WC26SS16Pink",
+      "quantity": 8628,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26cc24pride": {
+      "ingredient": "WC26CC24Pride",
+      "quantity": 8447,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26cc24road": {
+      "ingredient": "WC26CC24Road",
+      "quantity": 8390,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26cc24gid": {
+      "ingredient": "SII26CC24GID",
+      "quantity": 7842,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26quencher30p": {
+      "ingredient": "SII26Quencher30P",
+      "quantity": 7841,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26cc24gamer": {
+      "ingredient": "SII26CC24Gamer",
+      "quantity": 7765,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26btlss20": {
+      "ingredient": "SII26BTLSS20",
+      "quantity": 7663,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss20hand": {
+      "ingredient": "SII26SS20Hand",
+      "quantity": 7661,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23tz14green": {
+      "ingredient": "COR23 Tz14Green",
+      "quantity": 7551,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26cc24or": {
+      "ingredient": "Sp26CC24Or",
+      "quantity": 7513,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23coldbrew": {
+      "ingredient": "COR23 Cold Brew",
+      "quantity": 7458,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss12charm": {
+      "ingredient": "SII26SS12Charm",
+      "quantity": 7448,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss30pride": {
+      "ingredient": "WC26SS30Pride",
+      "quantity": 7404,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26sscc24white": {
+      "ingredient": "SII26SSCC24White",
+      "quantity": 7384,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23pourover": {
+      "ingredient": "COR23 Pour Over",
+      "quantity": 7252,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26mug12stan": {
+      "ingredient": "WC26Mug12Stan",
+      "quantity": 7232,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "wc26ss20twist": {
+      "ingredient": "WC26SS20Twist",
+      "quantity": 7181,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss16lid": {
+      "ingredient": "WC26SS16Lid",
+      "quantity": 7145,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "llaverosbxgenerico": {
+      "ingredient": "Llavero SBX Genérico",
+      "quantity": 6944,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25keychainzoo": {
+      "ingredient": "SI25KeychainZoo",
+      "quantity": 6932,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26sscc24grad": {
+      "ingredient": "WC26SSCC24Grad",
+      "quantity": 6561,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss16pleat": {
+      "ingredient": "SII26SS16Pleat",
+      "quantity": 6131,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss16studded": {
+      "ingredient": "SII26SS16Studded",
+      "quantity": 5063,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26tu16flower": {
+      "ingredient": "WC26Tu16Flower",
+      "quantity": 4708,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26doodle16": {
+      "ingredient": "SII26Doodle16",
+      "quantity": 4686,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26gl20silicone": {
+      "ingredient": "WC26Gl20Silicone",
+      "quantity": 4549,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss16charm": {
+      "ingredient": "WC26SS16Charm",
+      "quantity": 4493,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26sscc16band": {
+      "ingredient": "Sp26SSCC16Band",
+      "quantity": 4307,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23totebag": {
+      "ingredient": "COR23 ToteBag",
+      "quantity": 4195,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26neblack": {
+      "ingredient": "Sp26NEBlack",
+      "quantity": 4192,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26reussiren": {
+      "ingredient": "Wt26ReusSiren",
+      "quantity": 4168,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ss20orange": {
+      "ingredient": "Sp26SS20Orange",
+      "quantity": 4002,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26vac16stan": {
+      "ingredient": "Sp26Vac16Stan",
+      "quantity": 3964,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "filtroschemex": {
+      "ingredient": "Filtros Chemex",
+      "quantity": 3769,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "wc26dw12oran": {
+      "ingredient": "WC26Dw12Oran",
+      "quantity": 3486,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26nesbx": {
+      "ingredient": "WC26NESBX",
+      "quantity": 3238,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26newhite": {
+      "ingredient": "Sp26NEWhite",
+      "quantity": 3127,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss20btl": {
+      "ingredient": "WC26SS20BTL",
+      "quantity": 3068,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu16mom": {
+      "ingredient": "Sp26Tu16Mom",
+      "quantity": 3017,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26stanhand20": {
+      "ingredient": "WC26StanHand20",
+      "quantity": 2803,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26stanquen30": {
+      "ingredient": "WC26StanQuen30",
+      "quantity": 2790,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26keychainor": {
+      "ingredient": "Sp26KeychainOr",
+      "quantity": 2785,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25bdaystopper": {
+      "ingredient": "SII25BdayStopper",
+      "quantity": 2665,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26vasojacaran": {
+      "ingredient": "Wt26VasoJacaran",
+      "quantity": 2591,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disccc24mxpais": {
+      "ingredient": "DiscCC24MxPais",
+      "quantity": 2589,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26sscc24oran": {
+      "ingredient": "Sp26SSCC24Oran",
+      "quantity": 2575,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26nesiren": {
+      "ingredient": "WC26NESiren",
+      "quantity": 2543,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26stan20icef": {
+      "ingredient": "WC26Stan20IceF",
+      "quantity": 2529,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25circcup": {
+      "ingredient": "COR25CircCup",
+      "quantity": 2521,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "imanmexico": {
+      "ingredient": "ImánMexico",
+      "quantity": 2297,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26cc24teach": {
+      "ingredient": "Sp26CC24Teach",
+      "quantity": 2262,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ssbtl12aniv": {
+      "ingredient": "SII26SSBTL12Aniv",
+      "quantity": 2254,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26reus": {
+      "ingredient": "WC26Reus",
+      "quantity": 2080,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26sscc24carryc": {
+      "ingredient": "Sp26SSCC24CarryC",
+      "quantity": 2034,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25clipgirlb": {
+      "ingredient": "SII25ClipGirlB",
+      "quantity": 1977,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ccss24puffy": {
+      "ingredient": "WC26CCSS24Puffy",
+      "quantity": 1973,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss12aniv": {
+      "ingredient": "SII26SS12Aniv",
+      "quantity": 1832,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26reussv": {
+      "ingredient": "Wt26ReusSV",
+      "quantity": 1803,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23prensafran": {
+      "ingredient": "COR23 PrensaFran",
+      "quantity": 1793,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26totepride": {
+      "ingredient": "WC26TotePride",
+      "quantity": 1766,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26stanquen20": {
+      "ingredient": "Sp26StanQuen20",
+      "quantity": 1764,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "cor23cc24green": {
+      "ingredient": "COR23 CC24 Green",
+      "quantity": 1744,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26toteroad": {
+      "ingredient": "WC26ToteRoad",
+      "quantity": 1719,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discss20mxpais": {
+      "ingredient": "DiscSS20MxPais",
+      "quantity": 1657,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26vasofresa": {
+      "ingredient": "Wt26VasoFresa",
+      "quantity": 1637,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26ppbtl20s": {
+      "ingredient": "COR26PPBTL20S",
+      "quantity": 1538,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26ss16resort": {
+      "ingredient": "SII26SS16Resort",
+      "quantity": 1508,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "bearhuggerspring": {
+      "ingredient": "BearHuggerSpring",
+      "quantity": 1481,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "sp26cookiejp": {
+      "ingredient": "Sp26CookieJP",
+      "quantity": 1429,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26sstu12pony": {
+      "ingredient": "SII26SSTu12Pony",
+      "quantity": 1403,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23tz14rain": {
+      "ingredient": "COR23 Tz14 Rain",
+      "quantity": 1358,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26btl16pony": {
+      "ingredient": "SII26BTL16Pony",
+      "quantity": 1311,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26gicccolor": {
+      "ingredient": "SII26GICCColor",
+      "quantity": 1300,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26mug14aniv": {
+      "ingredient": "SII26Mug14Aniv",
+      "quantity": 1298,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "sp26cc24dome": {
+      "ingredient": "Sp26CC24Dome",
+      "quantity": 1294,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25clipboyb": {
+      "ingredient": "SII25ClipBoyB",
+      "quantity": 1277,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tag": {
+      "ingredient": "Xm25Tag",
+      "quantity": 1276,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverymxpais": {
+      "ingredient": "DiscoveryMxPais",
+      "quantity": 1254,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26btl20resort": {
+      "ingredient": "SII26BTL20Resort",
+      "quantity": 1243,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26btl20": {
+      "ingredient": "COR26BTL20",
+      "quantity": 1208,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25cc24colors": {
+      "ingredient": "SI25CC24Colors",
+      "quantity": 1208,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26sscc16pony": {
+      "ingredient": "SII26SSCC16Pony",
+      "quantity": 1205,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26mug14mom": {
+      "ingredient": "Sp26Mug14Mom",
+      "quantity": 1180,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagssbxgenerico": {
+      "ingredient": "Tote bags SBX Genérico",
+      "quantity": 1154,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26sscc20pony": {
+      "ingredient": "SII26SSCC20Pony",
+      "quantity": 1097,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu16teach": {
+      "ingredient": "Sp26Tu16Teach",
+      "quantity": 1051,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "bearhugworldcup": {
+      "ingredient": "BearHugWorldCup",
+      "quantity": 976,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "xm25tz14glass": {
+      "ingredient": "Xm25Tz14Glass",
+      "quantity": 939,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26stan30white": {
+      "ingredient": "COR26Stan30White",
+      "quantity": 865,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26tu20yellow": {
+      "ingredient": "WC26Tu20Yellow",
+      "quantity": 857,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozmxpais": {
+      "ingredient": "Disc2ozMxPais",
+      "quantity": 854,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopper": {
+      "ingredient": "Xm25Stopper",
+      "quantity": 850,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26ssthrulid": {
+      "ingredient": "COR26SSThruLid",
+      "quantity": 829,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu16orange": {
+      "ingredient": "Sp26Tu16Orange",
+      "quantity": 823,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26vasopistache": {
+      "ingredient": "Wt26VasoPistache",
+      "quantity": 796,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25monederoaniv": {
+      "ingredient": "Fl25MonederoAniv",
+      "quantity": 760,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26mug14bow": {
+      "ingredient": "Wt26Mug14Bow",
+      "quantity": 732,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "sp26nellavero": {
+      "ingredient": "Sp26NELlavero",
+      "quantity": 725,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverytulum": {
+      "ingredient": "DiscoveryTulum",
+      "quantity": 659,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "tazassbxgenerico": {
+      "ingredient": "Tazas SBX Genérico",
+      "quantity": 634,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "fl25manga": {
+      "ingredient": "Fl25Manga",
+      "quantity": 623,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25stopperbar": {
+      "ingredient": "Fl25StopperBar",
+      "quantity": 615,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverycdmx": {
+      "ingredient": "DiscoveryCDMX",
+      "quantity": 576,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverygdl": {
+      "ingredient": "DiscoveryGDL",
+      "quantity": 573,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26llaverosv": {
+      "ingredient": "Wt26LlaveroSV",
+      "quantity": 524,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26mug14rabbit": {
+      "ingredient": "Sp26Mug14Rabbit",
+      "quantity": 499,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "ccupplasticsbxgenerico": {
+      "ingredient": "CCupPlastic SBX Genérico",
+      "quantity": 498,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26tuss16duck": {
+      "ingredient": "Wt26TuSS16Duck",
+      "quantity": 459,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozgdl": {
+      "ingredient": "Disc2ozGDL",
+      "quantity": 452,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reusccba": {
+      "ingredient": "Fl25ReusCCBa",
+      "quantity": 452,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2oztulum": {
+      "ingredient": "Disc2ozTulum",
+      "quantity": 445,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reumike": {
+      "ingredient": "Xm25ReuMike",
+      "quantity": 445,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26cc24rain": {
+      "ingredient": "SII26CC24Rain",
+      "quantity": 437,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagcdmx": {
+      "ingredient": "ToteBag CDMX",
+      "quantity": 436,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverygto": {
+      "ingredient": "DiscoveryGTO",
+      "quantity": 420,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozpvallarta": {
+      "ingredient": "Disc2ozPVallarta",
+      "quantity": 401,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozplayac": {
+      "ingredient": "Disc2ozPlayaC",
+      "quantity": 375,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26reustierra": {
+      "ingredient": "Sp26ReusTierra",
+      "quantity": 373,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverymty": {
+      "ingredient": "DiscoveryMTY",
+      "quantity": 367,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tz14glassc": {
+      "ingredient": "Sp26Tz14GlassC",
+      "quantity": 350,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryplayac": {
+      "ingredient": "DiscoveryPlayaC",
+      "quantity": 349,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25keychaind": {
+      "ingredient": "Fl25KeyChainD",
+      "quantity": 326,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozcabos": {
+      "ingredient": "Disc2ozCabos",
+      "quantity": 323,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagmxpais": {
+      "ingredient": "ToteBag MxPais",
+      "quantity": 315,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25tu20swimm": {
+      "ingredient": "SI25Tu20Swimm",
+      "quantity": 312,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverycancun": {
+      "ingredient": "DiscoveryCancun",
+      "quantity": 309,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25sscc24paddle": {
+      "ingredient": "SI25SSCC24Paddle",
+      "quantity": 307,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverycabos": {
+      "ingredient": "DiscoveryCabos",
+      "quantity": 302,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagmty": {
+      "ingredient": "ToteBag MTY",
+      "quantity": 302,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reuelev": {
+      "ingredient": "Xm25ReuElev",
+      "quantity": 300,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "bearhugger": {
+      "ingredient": "BearHugger",
+      "quantity": 297,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "discoverypvallarta": {
+      "ingredient": "DiscoveryPVallarta",
+      "quantity": 296,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ccreustierra": {
+      "ingredient": "Sp26CCReusTierra",
+      "quantity": 294,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebaggdl": {
+      "ingredient": "ToteBag GDL",
+      "quantity": 287,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozcdmx": {
+      "ingredient": "Disc2ozCDMX",
+      "quantity": 278,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt25crarryingbag": {
+      "ingredient": "Wt25CrarryingBag",
+      "quantity": 277,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "discoveryleon": {
+      "ingredient": "DiscoveryLeon",
+      "quantity": 274,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryensenad": {
+      "ingredient": "DiscoveryEnsenad",
+      "quantity": 270,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryqro": {
+      "ingredient": "DiscoveryQRO",
+      "quantity": 268,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss20pull": {
+      "ingredient": "WC26SS20Pull",
+      "quantity": 264,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25stoppsl": {
+      "ingredient": "SII25StopPSL",
+      "quantity": 257,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverycozumel": {
+      "ingredient": "DiscoveryCozumel",
+      "quantity": 253,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25strawlluvia": {
+      "ingredient": "SII25StrawLluvia",
+      "quantity": 250,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25llaverob2s": {
+      "ingredient": "SII25LlaveroB2S",
+      "quantity": 249,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagpvallart": {
+      "ingredient": "ToteBag Pvallart",
+      "quantity": 229,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ccup16cherry": {
+      "ingredient": "Sp26CCup16Cherry",
+      "quantity": 224,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26llaverob": {
+      "ingredient": "WC26LlaveroB",
+      "quantity": 221,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reu2hol": {
+      "ingredient": "Xm25Reu2Hol",
+      "quantity": 219,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "resmug12sscopper": {
+      "ingredient": "ResMug12SSCopper",
+      "quantity": 218,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "discoverychihua": {
+      "ingredient": "DiscoveryChihua",
+      "quantity": 217,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "ressetct3pck": {
+      "ingredient": "ResSetCT3Pck",
+      "quantity": 213,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23reuscc16": {
+      "ingredient": "COR23 ReusCC16",
+      "quantity": 211,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26tu16sust": {
+      "ingredient": "COR26Tu16Sust",
+      "quantity": 202,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "resss16bananalea": {
+      "ingredient": "ResSS16BananaLea",
+      "quantity": 195,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26mug14copper": {
+      "ingredient": "COR26Mug14Copper",
+      "quantity": 193,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25cc24drinks": {
+      "ingredient": "SI25CC24Drinks",
+      "quantity": 192,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozcan": {
+      "ingredient": "Disc2ozCAN",
+      "quantity": 190,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ccglass18": {
+      "ingredient": "Xm25CCGlass18",
+      "quantity": 187,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozcozumel": {
+      "ingredient": "Disc2ozCozumel",
+      "quantity": 185,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "pinessbxgenerico": {
+      "ingredient": "Pines SBX Genérico",
+      "quantity": 183,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozmty": {
+      "ingredient": "Disc2ozMTY",
+      "quantity": 181,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverysanmig": {
+      "ingredient": "DiscoverySanMig",
+      "quantity": 170,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverymorelia": {
+      "ingredient": "DiscoveryMorelia",
+      "quantity": 168,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryzacat": {
+      "ingredient": "DiscoveryZacat",
+      "quantity": 167,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25llavero": {
+      "ingredient": "Fl25Llavero",
+      "quantity": 166,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25dw12prism": {
+      "ingredient": "COR25DW12Prism",
+      "quantity": 163,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverychiapas": {
+      "ingredient": "DiscoveryChiapas",
+      "quantity": 161,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23reuscc24": {
+      "ingredient": "COR23 ReusCC24",
+      "quantity": 159,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26ss16black": {
+      "ingredient": "WC26SS16Black",
+      "quantity": 149,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverypuebla": {
+      "ingredient": "DiscoveryPuebla",
+      "quantity": 148,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25cc24dome": {
+      "ingredient": "Fl25CC24Dome",
+      "quantity": 140,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ss16peng": {
+      "ingredient": "Xm25SS16Peng",
+      "quantity": 138,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagplayac": {
+      "ingredient": "ToteBag PlayaC",
+      "quantity": 135,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25give16hot": {
+      "ingredient": "Xm25Give16Hot",
+      "quantity": 124,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryoax": {
+      "ingredient": "DiscoveryOAX",
+      "quantity": 122,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26glass16sus": {
+      "ingredient": "COR26Glass16Sus",
+      "quantity": 121,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25cc24ddm": {
+      "ingredient": "Fl25CC24DDM",
+      "quantity": 118,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagcan": {
+      "ingredient": "ToteBag CAN",
+      "quantity": 118,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25mugpinguin": {
+      "ingredient": "Xm25MugPinguin",
+      "quantity": 115,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25ssdoodle": {
+      "ingredient": "SI25SSDoodle",
+      "quantity": 108,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25mug16sus": {
+      "ingredient": "COR25Mug 16Sus",
+      "quantity": 104,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26bearwc": {
+      "ingredient": "WC26BearWC",
+      "quantity": 100,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryacapulc": {
+      "ingredient": "DiscoveryAcapulc",
+      "quantity": 98,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25cc24dome": {
+      "ingredient": "SI25CC24Dome",
+      "quantity": 98,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25cc24jeweled": {
+      "ingredient": "SII25CC24Jeweled",
+      "quantity": 95,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25pinesddm": {
+      "ingredient": "Fl25PinesDDM",
+      "quantity": 92,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26necrossb": {
+      "ingredient": "Sp26NECrossB",
+      "quantity": 91,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stancb16": {
+      "ingredient": "Xm25StanCB16",
+      "quantity": 91,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25strawbar": {
+      "ingredient": "Fl25StrawBar",
+      "quantity": 90,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp25stopperp": {
+      "ingredient": "Sp25StopperP",
+      "quantity": 90,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "ccupacerosbxgenerico": {
+      "ingredient": "CCup Acero SBX Genérico",
+      "quantity": 89,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "setreusasbxgenerico": {
+      "ingredient": "Set Reusa SBX Genérico",
+      "quantity": 89,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25ss16sleeve": {
+      "ingredient": "COR25SS16Sleeve",
+      "quantity": 88,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "resss16goldshin": {
+      "ingredient": "Res SS16GoldShin",
+      "quantity": 88,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23glcc18omb": {
+      "ingredient": "COR23 GlCC18 Omb",
+      "quantity": 84,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc24win": {
+      "ingredient": "Wt26SSCC24Win",
+      "quantity": 83,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26glasscc16": {
+      "ingredient": "Wt26GlassCC16",
+      "quantity": 81,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tu16cping": {
+      "ingredient": "Xm25Tu16CPing",
+      "quantity": 81,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reu1hol": {
+      "ingredient": "Xm25Reu1Hol",
+      "quantity": 78,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ss16under": {
+      "ingredient": "Sp26SS16Under",
+      "quantity": 77,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc24grad": {
+      "ingredient": "Wt26SSCC24Grad",
+      "quantity": 75,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25give16cc": {
+      "ingredient": "Xm25Give16CC",
+      "quantity": 75,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26wtblss16cher": {
+      "ingredient": "Sp26WTBLSS16Cher",
+      "quantity": 74,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25tz14glass": {
+      "ingredient": "SI25Tz14Glass",
+      "quantity": 73,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "si25keychaincc": {
+      "ingredient": "SI25KeyChainCC",
+      "quantity": 72,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tu16charm": {
+      "ingredient": "Xm25Tu16Charm",
+      "quantity": 72,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23tu16sirent": {
+      "ingredient": "COR23 Tu16 SirenT",
+      "quantity": 70,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26reusbear": {
+      "ingredient": "Wt26ReusBear",
+      "quantity": 70,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss25stybtl": {
+      "ingredient": "COR23 SS25StyBTL",
+      "quantity": 67,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reusbar": {
+      "ingredient": "Fl25ReusBar",
+      "quantity": 67,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26wtbl19under": {
+      "ingredient": "Sp26WTBL19Under",
+      "quantity": 67,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt262pkstanley": {
+      "ingredient": "Wt262PkStanley",
+      "quantity": 67,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc30togo": {
+      "ingredient": "Wt26SSCC30Togo",
+      "quantity": 61,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoveryver": {
+      "ingredient": "DiscoveryVER",
+      "quantity": 60,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26btlstanley": {
+      "ingredient": "Wt26BTLStanley",
+      "quantity": 60,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26cc216rabbit": {
+      "ingredient": "Sp26CC216Rabbit",
+      "quantity": 59,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagtulum": {
+      "ingredient": "ToteBag Tulum",
+      "quantity": 59,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverymazatla": {
+      "ingredient": "DiscoveryMazatla",
+      "quantity": 58,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25llaveroalo": {
+      "ingredient": "SII25LlaveroAlo",
+      "quantity": 57,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25cc24hol": {
+      "ingredient": "Xm25CC24Hol",
+      "quantity": 57,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25dw12beach": {
+      "ingredient": "SI25DW12Beach",
+      "quantity": 55,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss20sv": {
+      "ingredient": "Wt26SS20SV",
+      "quantity": 55,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozchiapas": {
+      "ingredient": "Disc2ozChiapas",
+      "quantity": 53,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26tu16charm": {
+      "ingredient": "Wt26Tu16Charm",
+      "quantity": 51,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ssbtl20sv": {
+      "ingredient": "Wt26SSBTL20SV",
+      "quantity": 50,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26btl20gr": {
+      "ingredient": "Wt26BTL20Gr",
+      "quantity": 49,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25reusdelivery": {
+      "ingredient": "SI25ReusDelivery",
+      "quantity": 48,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozpuebla": {
+      "ingredient": "Disc2ozPuebla",
+      "quantity": 47,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26gl18mottled": {
+      "ingredient": "Sp26Gl18Mottled",
+      "quantity": 47,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagcozumel": {
+      "ingredient": "ToteBag Cozumel",
+      "quantity": 47,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26tu24dw": {
+      "ingredient": "WC26Tu24DW",
+      "quantity": 47,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss16vac": {
+      "ingredient": "Wt26SS16Vac",
+      "quantity": 45,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25btl24magn": {
+      "ingredient": "Xm25BTL24Magn",
+      "quantity": 45,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25sscc24swimm": {
+      "ingredient": "SI25SSCC24Swimm",
+      "quantity": 40,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc16grad": {
+      "ingredient": "Wt26SSCC16Grad",
+      "quantity": 39,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sscc24sust": {
+      "ingredient": "Fl25SSCC24Sust",
+      "quantity": 38,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26cc15blue": {
+      "ingredient": "Wt26CC15Blue",
+      "quantity": 38,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26cc24choco": {
+      "ingredient": "Wt26CC24Choco",
+      "quantity": 37,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25pines": {
+      "ingredient": "Fl25Pines",
+      "quantity": 35,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25reuscolor": {
+      "ingredient": "SII25ReusColor",
+      "quantity": 35,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss16thrul": {
+      "ingredient": "COR23 SS16 ThruL",
+      "quantity": 34,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "tumbplasticsbxgenerico": {
+      "ingredient": "Tumb Plastic SBX Genérico",
+      "quantity": 34,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc24carryl": {
+      "ingredient": "Wt26SSCC24CarryL",
+      "quantity": 34,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "discoverymerida": {
+      "ingredient": "DiscoveryMerida",
+      "quantity": 33,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "tumbacerosbxgenerico": {
+      "ingredient": "Tumb acero SBX Genérico",
+      "quantity": 33,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26cc24spinner": {
+      "ingredient": "Wt26CC24Spinner",
+      "quantity": 32,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sstu20vac": {
+      "ingredient": "Fl25SSTu20Vac",
+      "quantity": 31,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25cc24fun": {
+      "ingredient": "SI25CC24Fun",
+      "quantity": 30,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu20blossom": {
+      "ingredient": "Sp26Tu20Blossom",
+      "quantity": 30,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25sscc24topp": {
+      "ingredient": "Xm25SSCC24Topp",
+      "quantity": 30,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25stanpearl": {
+      "ingredient": "Fl25StanPearl",
+      "quantity": 28,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "totebagcabos": {
+      "ingredient": "ToteBag Cabos",
+      "quantity": 26,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sstu12sust": {
+      "ingredient": "Fl25SSTu12Sust",
+      "quantity": 25,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "disc2ozoax": {
+      "ingredient": "Disc2ozOAX",
+      "quantity": 24,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ss12pink": {
+      "ingredient": "Sp26SS12Pink",
+      "quantity": 24,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wc26bearmex": {
+      "ingredient": "WC26BearMex",
+      "quantity": 23,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss16stswi": {
+      "ingredient": "COR23 SS16StSwi",
+      "quantity": 22,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25cc24strawt": {
+      "ingredient": "Fl25CC24StrawT",
+      "quantity": 22,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25sscc24father": {
+      "ingredient": "SI25SSCC24Father",
+      "quantity": 20,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25reustierra": {
+      "ingredient": "SI25ReusTierra",
+      "quantity": 19,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25tu20zoo": {
+      "ingredient": "SI25Tu20Zoo",
+      "quantity": 19,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25tu16farmr": {
+      "ingredient": "SII25Tu16FarmR",
+      "quantity": 19,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25stan30black": {
+      "ingredient": "COR25Stan30Black",
+      "quantity": 18,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25tu16susta": {
+      "ingredient": "COR25Tu16Susta",
+      "quantity": 17,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25cc24bling": {
+      "ingredient": "SI25CC24Bling",
+      "quantity": 17,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26sscc24cherry": {
+      "ingredient": "Sp26SSCC24Cherry",
+      "quantity": 17,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss20stquen": {
+      "ingredient": "COR23 SS20StQuen",
+      "quantity": 16,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ccss24pearl": {
+      "ingredient": "Fl25CCSS24Pearl",
+      "quantity": 16,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu16cherry": {
+      "ingredient": "Sp26Tu16Cherry",
+      "quantity": 16,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23mug20stan": {
+      "ingredient": "COR23 Mug20 Stan",
+      "quantity": 15,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26dw12jac": {
+      "ingredient": "Wt26Dw12Jac",
+      "quantity": 15,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reu24ccst": {
+      "ingredient": "Xm25Reu24CCST",
+      "quantity": 15,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25staniceflow": {
+      "ingredient": "COR25StanIceflow",
+      "quantity": 14,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25glassccsust": {
+      "ingredient": "Fl25GlassCCSust",
+      "quantity": 14,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ssvac40cherr": {
+      "ingredient": "Sp26SSVac40Cherr",
+      "quantity": 14,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopmax": {
+      "ingredient": "Xm25StopMax",
+      "quantity": 14,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "beentheremazatlan14oz": {
+      "ingredient": "Been There Mazatlan 14 oz",
+      "quantity": 13,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "sp26stan30purp": {
+      "ingredient": "Sp26Stan30Purp",
+      "quantity": 13,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26cc16prism": {
+      "ingredient": "Sp26CC16Prism",
+      "quantity": 12,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25llavero": {
+      "ingredient": "Xm25Llavero",
+      "quantity": 12,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss16studded": {
+      "ingredient": "Fl25SS16Studded",
+      "quantity": 11,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25tu16charm": {
+      "ingredient": "Fl25Tu16Charm",
+      "quantity": 11,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25ccreustierra": {
+      "ingredient": "SI25CCReusTierra",
+      "quantity": 11,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25cc24b2s": {
+      "ingredient": "SII25CC24B2S",
+      "quantity": 11,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23dw12green": {
+      "ingredient": "COR23 DW12 Green",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25montsc": {
+      "ingredient": "Fl25MonTSC",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25tu16bubble": {
+      "ingredient": "SI25Tu16Bubble",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii26bearpony": {
+      "ingredient": "SII26BearPony",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ss16rabbit": {
+      "ingredient": "Sp26SS16Rabbit",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "stanleysbxgenerico": {
+      "ingredient": "Stanley SBX Genérico",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25reus16st": {
+      "ingredient": "Xm25Reus16ST",
+      "quantity": 10,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25ss20stouch": {
+      "ingredient": "COR25SS20STouch",
+      "quantity": 9,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25sscc24black": {
+      "ingredient": "COR25SSCC24Black",
+      "quantity": 9,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25sscc24green": {
+      "ingredient": "SII25SSCC24Green",
+      "quantity": 9,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26sscc16jac": {
+      "ingredient": "Wt26SSCC16Jac",
+      "quantity": 9,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopmike": {
+      "ingredient": "Xm25StopMike",
+      "quantity": 9,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss16toneb": {
+      "ingredient": "COR23 SS16ToneB",
+      "quantity": 8,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25tu16sust": {
+      "ingredient": "Fl25Tu16Sust",
+      "quantity": 8,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25reus24teach": {
+      "ingredient": "SI25Reus24Teach",
+      "quantity": 8,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25cc24house": {
+      "ingredient": "Xm25CC24House",
+      "quantity": 8,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25cc24siren": {
+      "ingredient": "COR25 CC24Siren",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor25gl16sust": {
+      "ingredient": "COR25Gl16Sust",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reuspikep": {
+      "ingredient": "Fl25ReusPikeP",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss20siren": {
+      "ingredient": "Fl25SS20Siren",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sstu16wave": {
+      "ingredient": "Fl25SStu16Wave",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "repuestoparacafetera8tazas": {
+      "ingredient": "Repuesto para cafetera 8 tazas",
+      "quantity": 7,
+      "category": "Mercancia",
+      "unit": "Pieza"
+    },
+    "sii25dw12studded": {
+      "ingredient": "SII25DW12Studded",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25quencher30": {
+      "ingredient": "SII25Quencher30",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ccgl16red": {
+      "ingredient": "Wt26CCGl16Red",
+      "quantity": 7,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23reuhotcup": {
+      "ingredient": "COR23 ReuHotCup",
+      "quantity": 6,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23tu20stblck": {
+      "ingredient": "COR23 Tu20STBlck",
+      "quantity": 6,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25mug16sust": {
+      "ingredient": "Fl25Mug16Sust",
+      "quantity": 6,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26tu20blue": {
+      "ingredient": "Sp26Tu20Blue",
+      "quantity": 6,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reusccpikep": {
+      "ingredient": "Fl25ReusCCPikeP",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss24vac": {
+      "ingredient": "Fl25SS24Vac",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sscc24anniv": {
+      "ingredient": "Fl25SSCC24Anniv",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ssmug12rib": {
+      "ingredient": "Fl25SSMug12Rib",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25tu16ddm": {
+      "ingredient": "Fl25Tu16DDM",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25tu20soft": {
+      "ingredient": "SII25Tu20Soft",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25cc24snow": {
+      "ingredient": "Xm25CC24Snow",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ss16green": {
+      "ingredient": "Xm25SS16Green",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25sscc24r": {
+      "ingredient": "Xm25SSCC24R",
+      "quantity": 5,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "beentheremerida14oz": {
+      "ingredient": "Been There Merida 14 oz",
+      "quantity": 4,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "beentherepuertovallarta14oz": {
+      "ingredient": "Been There Puerto Vallarta 14 oz",
+      "quantity": 4,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "cor25ss16sus": {
+      "ingredient": "COR25SS16Sus",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor26mug2copper": {
+      "ingredient": "COR26Mug2Copper",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reusespresso": {
+      "ingredient": "Fl25ReusEspresso",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss16charm": {
+      "ingredient": "Fl25SS16Charm",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25mug12teach": {
+      "ingredient": "SI25Mug12Teach",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss20jac": {
+      "ingredient": "Wt26SS20Jac",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25dw12red": {
+      "ingredient": "Xm25DW12Red",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tu16bow": {
+      "ingredient": "Xm25Tu16Bow",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tustan20": {
+      "ingredient": "Xm25TuStan20",
+      "quantity": 4,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "beenthereguanajuato14oz": {
+      "ingredient": "Been There Guanajuato 14 oz",
+      "quantity": 3,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "fl25dw12luster": {
+      "ingredient": "Fl25DW12Luster",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25glasscc": {
+      "ingredient": "Fl25GlassCC",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss20ddm": {
+      "ingredient": "Fl25SS20DDM",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25tu16anniv": {
+      "ingredient": "Fl25Tu16Anniv",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss16choco": {
+      "ingredient": "Wt26SS16Choco",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss16green": {
+      "ingredient": "Wt26SS16Green",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25btlstanley": {
+      "ingredient": "Xm25BTLStanley",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25quen30lil": {
+      "ingredient": "Xm25Quen30Lil",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopdust": {
+      "ingredient": "Xm25StopDust",
+      "quantity": 3,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "beentherecancun14oz": {
+      "ingredient": "Been There Cancun 14 oz",
+      "quantity": 2,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "beentheretulum14oz": {
+      "ingredient": "Been There Tulum 14 oz",
+      "quantity": 2,
+      "category": "Tazas",
+      "unit": "Pieza"
+    },
+    "fl25ccss16vac": {
+      "ingredient": "Fl25CCSS16Vac",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sscc16purple": {
+      "ingredient": "Fl25SSCC16Purple",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25sstu20anni": {
+      "ingredient": "Fl25SSTu20Anni",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25stanley16": {
+      "ingredient": "Fl25Stanley16",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26blindbox": {
+      "ingredient": "Sp26BlindBox",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sp26ss16cherry": {
+      "ingredient": "Sp26SS16Cherry",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25mug12house": {
+      "ingredient": "Xm25Mug12House",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ss16diam": {
+      "ingredient": "Xm25SS16Diam",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopdermo": {
+      "ingredient": "Xm25StopDermo",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopelev": {
+      "ingredient": "Xm25StopElev",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stopwill": {
+      "ingredient": "Xm25StopWill",
+      "quantity": 2,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "bttu16mex": {
+      "ingredient": "BTTu16Mex",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "cor23ss20copper": {
+      "ingredient": "COR23 SS20Copper",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25monvxmc": {
+      "ingredient": "Fl25MonVXMC",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25mug14abrac": {
+      "ingredient": "Fl25Mug14Abrac",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25reusccesp": {
+      "ingredient": "Fl25ReusCCEsp",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ss20grad": {
+      "ingredient": "Fl25SS20Grad",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "fl25ssbtl20": {
+      "ingredient": "Fl25SSBTL20",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "resss16tgradient": {
+      "ingredient": "ResSS16TGradient",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25quencher30": {
+      "ingredient": "SI25Quencher30",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "si25vac24stanley": {
+      "ingredient": "SI25Vac24Stanley",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25cc24frblue": {
+      "ingredient": "SII25CC24FRBlue",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25sscc24frb": {
+      "ingredient": "SII25SSCC24FRB",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "sii25tu16blue": {
+      "ingredient": "SII25Tu16Blue",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26canteen": {
+      "ingredient": "Wt26Canteen",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "wt26ss30jac": {
+      "ingredient": "Wt26SS30Jac",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25btl20twi": {
+      "ingredient": "Xm25BTL20Twi",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25mug12stan": {
+      "ingredient": "Xm25Mug12Stan",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25quencher30": {
+      "ingredient": "Xm25Quencher30",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25redquen30": {
+      "ingredient": "Xm25RedQuen30",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ss12vac": {
+      "ingredient": "Xm25SS12Vac",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25ss16charm": {
+      "ingredient": "Xm25SS16Charm",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stanvac16": {
+      "ingredient": "Xm25StanVac16",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25stophopp": {
+      "ingredient": "Xm25StopHopp",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    },
+    "xm25tu12hol": {
+      "ingredient": "Xm25Tu12Hol",
+      "quantity": 1,
+      "category": "Tumblers",
+      "unit": "Pieza"
+    }
+  },
+  "stockItems": [
+    {
+      "key": "vasorewards",
+      "ingredient": "Vaso Rewards",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 30824,
+      "sourceRows": [
+        2
+      ]
+    },
+    {
+      "key": "essreusablecup",
+      "ingredient": "ESS Reusable cup",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 27933,
+      "sourceRows": [
+        3
+      ]
+    },
+    {
+      "key": "stopperssbxgenerico",
+      "ingredient": "Stoppers SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 12340,
+      "sourceRows": [
+        4
+      ]
+    },
+    {
+      "key": "sii26glassbear",
+      "ingredient": "SII26GlassBear",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 12014,
+      "sourceRows": [
+        5
+      ]
+    },
+    {
+      "key": "sii26tu10gam",
+      "ingredient": "SII26Tu10Gam",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 11460,
+      "sourceRows": [
+        6
+      ]
+    },
+    {
+      "key": "lifestylesbxgenerico",
+      "ingredient": "Lifestyle SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10598,
+      "sourceRows": [
+        7
+      ]
+    },
+    {
+      "key": "wc26ss16pink",
+      "ingredient": "WC26SS16Pink",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8628,
+      "sourceRows": [
+        8
+      ]
+    },
+    {
+      "key": "wc26cc24pride",
+      "ingredient": "WC26CC24Pride",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8447,
+      "sourceRows": [
+        9
+      ]
+    },
+    {
+      "key": "wc26cc24road",
+      "ingredient": "WC26CC24Road",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8390,
+      "sourceRows": [
+        10
+      ]
+    },
+    {
+      "key": "sii26cc24gid",
+      "ingredient": "SII26CC24GID",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7842,
+      "sourceRows": [
+        11
+      ]
+    },
+    {
+      "key": "sii26quencher30p",
+      "ingredient": "SII26Quencher30P",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7841,
+      "sourceRows": [
+        12
+      ]
+    },
+    {
+      "key": "sii26cc24gamer",
+      "ingredient": "SII26CC24Gamer",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7765,
+      "sourceRows": [
+        13
+      ]
+    },
+    {
+      "key": "sii26btlss20",
+      "ingredient": "SII26BTLSS20",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7663,
+      "sourceRows": [
+        14
+      ]
+    },
+    {
+      "key": "sii26ss20hand",
+      "ingredient": "SII26SS20Hand",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7661,
+      "sourceRows": [
+        15
+      ]
+    },
+    {
+      "key": "cor23tz14green",
+      "ingredient": "COR23 Tz14Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7551,
+      "sourceRows": [
+        16
+      ]
+    },
+    {
+      "key": "sp26cc24or",
+      "ingredient": "Sp26CC24Or",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7513,
+      "sourceRows": [
+        17
+      ]
+    },
+    {
+      "key": "cor23coldbrew",
+      "ingredient": "COR23 Cold Brew",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7458,
+      "sourceRows": [
+        18
+      ]
+    },
+    {
+      "key": "sii26ss12charm",
+      "ingredient": "SII26SS12Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7448,
+      "sourceRows": [
+        19
+      ]
+    },
+    {
+      "key": "wc26ss30pride",
+      "ingredient": "WC26SS30Pride",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7404,
+      "sourceRows": [
+        20
+      ]
+    },
+    {
+      "key": "sii26sscc24white",
+      "ingredient": "SII26SSCC24White",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7384,
+      "sourceRows": [
+        21
+      ]
+    },
+    {
+      "key": "cor23pourover",
+      "ingredient": "COR23 Pour Over",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7252,
+      "sourceRows": [
+        22
+      ]
+    },
+    {
+      "key": "wc26mug12stan",
+      "ingredient": "WC26Mug12Stan",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 7232,
+      "sourceRows": [
+        23
+      ]
+    },
+    {
+      "key": "wc26ss20twist",
+      "ingredient": "WC26SS20Twist",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7181,
+      "sourceRows": [
+        24
+      ]
+    },
+    {
+      "key": "wc26ss16lid",
+      "ingredient": "WC26SS16Lid",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7145,
+      "sourceRows": [
+        25
+      ]
+    },
+    {
+      "key": "llaverosbxgenerico",
+      "ingredient": "Llavero SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6944,
+      "sourceRows": [
+        26
+      ]
+    },
+    {
+      "key": "si25keychainzoo",
+      "ingredient": "SI25KeychainZoo",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6932,
+      "sourceRows": [
+        27
+      ]
+    },
+    {
+      "key": "wc26sscc24grad",
+      "ingredient": "WC26SSCC24Grad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6561,
+      "sourceRows": [
+        28
+      ]
+    },
+    {
+      "key": "sii26ss16pleat",
+      "ingredient": "SII26SS16Pleat",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6131,
+      "sourceRows": [
+        29
+      ]
+    },
+    {
+      "key": "sii26ss16studded",
+      "ingredient": "SII26SS16Studded",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5063,
+      "sourceRows": [
+        30
+      ]
+    },
+    {
+      "key": "wc26tu16flower",
+      "ingredient": "WC26Tu16Flower",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4708,
+      "sourceRows": [
+        31
+      ]
+    },
+    {
+      "key": "sii26doodle16",
+      "ingredient": "SII26Doodle16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4686,
+      "sourceRows": [
+        32
+      ]
+    },
+    {
+      "key": "wc26gl20silicone",
+      "ingredient": "WC26Gl20Silicone",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4549,
+      "sourceRows": [
+        33
+      ]
+    },
+    {
+      "key": "wc26ss16charm",
+      "ingredient": "WC26SS16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4493,
+      "sourceRows": [
+        34
+      ]
+    },
+    {
+      "key": "sp26sscc16band",
+      "ingredient": "Sp26SSCC16Band",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4307,
+      "sourceRows": [
+        35
+      ]
+    },
+    {
+      "key": "cor23totebag",
+      "ingredient": "COR23 ToteBag",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4195,
+      "sourceRows": [
+        36
+      ]
+    },
+    {
+      "key": "sp26neblack",
+      "ingredient": "Sp26NEBlack",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4192,
+      "sourceRows": [
+        37
+      ]
+    },
+    {
+      "key": "wt26reussiren",
+      "ingredient": "Wt26ReusSiren",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4168,
+      "sourceRows": [
+        38
+      ]
+    },
+    {
+      "key": "sp26ss20orange",
+      "ingredient": "Sp26SS20Orange",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4002,
+      "sourceRows": [
+        39
+      ]
+    },
+    {
+      "key": "sp26vac16stan",
+      "ingredient": "Sp26Vac16Stan",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3964,
+      "sourceRows": [
+        40
+      ]
+    },
+    {
+      "key": "filtroschemex",
+      "ingredient": "Filtros Chemex",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 3769,
+      "sourceRows": [
+        41
+      ]
+    },
+    {
+      "key": "wc26dw12oran",
+      "ingredient": "WC26Dw12Oran",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3486,
+      "sourceRows": [
+        42
+      ]
+    },
+    {
+      "key": "wc26nesbx",
+      "ingredient": "WC26NESBX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3238,
+      "sourceRows": [
+        43
+      ]
+    },
+    {
+      "key": "sp26newhite",
+      "ingredient": "Sp26NEWhite",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3127,
+      "sourceRows": [
+        44
+      ]
+    },
+    {
+      "key": "wc26ss20btl",
+      "ingredient": "WC26SS20BTL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3068,
+      "sourceRows": [
+        45
+      ]
+    },
+    {
+      "key": "sp26tu16mom",
+      "ingredient": "Sp26Tu16Mom",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3017,
+      "sourceRows": [
+        46
+      ]
+    },
+    {
+      "key": "wc26stanhand20",
+      "ingredient": "WC26StanHand20",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2803,
+      "sourceRows": [
+        47
+      ]
+    },
+    {
+      "key": "wc26stanquen30",
+      "ingredient": "WC26StanQuen30",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2790,
+      "sourceRows": [
+        48
+      ]
+    },
+    {
+      "key": "sp26keychainor",
+      "ingredient": "Sp26KeychainOr",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2785,
+      "sourceRows": [
+        49
+      ]
+    },
+    {
+      "key": "sii25bdaystopper",
+      "ingredient": "SII25BdayStopper",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2665,
+      "sourceRows": [
+        50
+      ]
+    },
+    {
+      "key": "wt26vasojacaran",
+      "ingredient": "Wt26VasoJacaran",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2591,
+      "sourceRows": [
+        51
+      ]
+    },
+    {
+      "key": "disccc24mxpais",
+      "ingredient": "DiscCC24MxPais",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2589,
+      "sourceRows": [
+        52
+      ]
+    },
+    {
+      "key": "sp26sscc24oran",
+      "ingredient": "Sp26SSCC24Oran",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2575,
+      "sourceRows": [
+        53
+      ]
+    },
+    {
+      "key": "wc26nesiren",
+      "ingredient": "WC26NESiren",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2543,
+      "sourceRows": [
+        54
+      ]
+    },
+    {
+      "key": "wc26stan20icef",
+      "ingredient": "WC26Stan20IceF",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2529,
+      "sourceRows": [
+        55
+      ]
+    },
+    {
+      "key": "cor25circcup",
+      "ingredient": "COR25CircCup",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2521,
+      "sourceRows": [
+        56
+      ]
+    },
+    {
+      "key": "imanmexico",
+      "ingredient": "ImánMexico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2297,
+      "sourceRows": [
+        57
+      ]
+    },
+    {
+      "key": "sp26cc24teach",
+      "ingredient": "Sp26CC24Teach",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2262,
+      "sourceRows": [
+        58
+      ]
+    },
+    {
+      "key": "sii26ssbtl12aniv",
+      "ingredient": "SII26SSBTL12Aniv",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2254,
+      "sourceRows": [
+        59
+      ]
+    },
+    {
+      "key": "wc26reus",
+      "ingredient": "WC26Reus",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2080,
+      "sourceRows": [
+        60
+      ]
+    },
+    {
+      "key": "sp26sscc24carryc",
+      "ingredient": "Sp26SSCC24CarryC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2034,
+      "sourceRows": [
+        61
+      ]
+    },
+    {
+      "key": "sii25clipgirlb",
+      "ingredient": "SII25ClipGirlB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1977,
+      "sourceRows": [
+        62
+      ]
+    },
+    {
+      "key": "wc26ccss24puffy",
+      "ingredient": "WC26CCSS24Puffy",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1973,
+      "sourceRows": [
+        63
+      ]
+    },
+    {
+      "key": "sii26ss12aniv",
+      "ingredient": "SII26SS12Aniv",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1832,
+      "sourceRows": [
+        64
+      ]
+    },
+    {
+      "key": "wt26reussv",
+      "ingredient": "Wt26ReusSV",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1803,
+      "sourceRows": [
+        65
+      ]
+    },
+    {
+      "key": "cor23prensafran",
+      "ingredient": "COR23 PrensaFran",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1793,
+      "sourceRows": [
+        66
+      ]
+    },
+    {
+      "key": "wc26totepride",
+      "ingredient": "WC26TotePride",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1766,
+      "sourceRows": [
+        67
+      ]
+    },
+    {
+      "key": "sp26stanquen20",
+      "ingredient": "Sp26StanQuen20",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 1764,
+      "sourceRows": [
+        68
+      ]
+    },
+    {
+      "key": "cor23cc24green",
+      "ingredient": "COR23 CC24 Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1744,
+      "sourceRows": [
+        69
+      ]
+    },
+    {
+      "key": "wc26toteroad",
+      "ingredient": "WC26ToteRoad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1719,
+      "sourceRows": [
+        70
+      ]
+    },
+    {
+      "key": "discss20mxpais",
+      "ingredient": "DiscSS20MxPais",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1657,
+      "sourceRows": [
+        71
+      ]
+    },
+    {
+      "key": "wt26vasofresa",
+      "ingredient": "Wt26VasoFresa",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1637,
+      "sourceRows": [
+        72
+      ]
+    },
+    {
+      "key": "cor26ppbtl20s",
+      "ingredient": "COR26PPBTL20S",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1538,
+      "sourceRows": [
+        73
+      ]
+    },
+    {
+      "key": "sii26ss16resort",
+      "ingredient": "SII26SS16Resort",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1508,
+      "sourceRows": [
+        74
+      ]
+    },
+    {
+      "key": "bearhuggerspring",
+      "ingredient": "BearHuggerSpring",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 1481,
+      "sourceRows": [
+        75
+      ]
+    },
+    {
+      "key": "sp26cookiejp",
+      "ingredient": "Sp26CookieJP",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1429,
+      "sourceRows": [
+        76
+      ]
+    },
+    {
+      "key": "sii26sstu12pony",
+      "ingredient": "SII26SSTu12Pony",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1403,
+      "sourceRows": [
+        77
+      ]
+    },
+    {
+      "key": "cor23tz14rain",
+      "ingredient": "COR23 Tz14 Rain",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1358,
+      "sourceRows": [
+        78
+      ]
+    },
+    {
+      "key": "sii26btl16pony",
+      "ingredient": "SII26BTL16Pony",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1311,
+      "sourceRows": [
+        79
+      ]
+    },
+    {
+      "key": "sii26gicccolor",
+      "ingredient": "SII26GICCColor",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1300,
+      "sourceRows": [
+        80
+      ]
+    },
+    {
+      "key": "sii26mug14aniv",
+      "ingredient": "SII26Mug14Aniv",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 1298,
+      "sourceRows": [
+        81
+      ]
+    },
+    {
+      "key": "sp26cc24dome",
+      "ingredient": "Sp26CC24Dome",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1294,
+      "sourceRows": [
+        82
+      ]
+    },
+    {
+      "key": "sii25clipboyb",
+      "ingredient": "SII25ClipBoyB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1277,
+      "sourceRows": [
+        83
+      ]
+    },
+    {
+      "key": "xm25tag",
+      "ingredient": "Xm25Tag",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1276,
+      "sourceRows": [
+        84
+      ]
+    },
+    {
+      "key": "discoverymxpais",
+      "ingredient": "DiscoveryMxPais",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1254,
+      "sourceRows": [
+        85
+      ]
+    },
+    {
+      "key": "sii26btl20resort",
+      "ingredient": "SII26BTL20Resort",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1243,
+      "sourceRows": [
+        86
+      ]
+    },
+    {
+      "key": "cor26btl20",
+      "ingredient": "COR26BTL20",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1208,
+      "sourceRows": [
+        87
+      ]
+    },
+    {
+      "key": "si25cc24colors",
+      "ingredient": "SI25CC24Colors",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1208,
+      "sourceRows": [
+        88
+      ]
+    },
+    {
+      "key": "sii26sscc16pony",
+      "ingredient": "SII26SSCC16Pony",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1205,
+      "sourceRows": [
+        89
+      ]
+    },
+    {
+      "key": "sp26mug14mom",
+      "ingredient": "Sp26Mug14Mom",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1180,
+      "sourceRows": [
+        90
+      ]
+    },
+    {
+      "key": "totebagssbxgenerico",
+      "ingredient": "Tote bags SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1154,
+      "sourceRows": [
+        91
+      ]
+    },
+    {
+      "key": "sii26sscc20pony",
+      "ingredient": "SII26SSCC20Pony",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1097,
+      "sourceRows": [
+        92
+      ]
+    },
+    {
+      "key": "sp26tu16teach",
+      "ingredient": "Sp26Tu16Teach",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1051,
+      "sourceRows": [
+        93
+      ]
+    },
+    {
+      "key": "bearhugworldcup",
+      "ingredient": "BearHugWorldCup",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 976,
+      "sourceRows": [
+        94
+      ]
+    },
+    {
+      "key": "xm25tz14glass",
+      "ingredient": "Xm25Tz14Glass",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 939,
+      "sourceRows": [
+        95
+      ]
+    },
+    {
+      "key": "cor26stan30white",
+      "ingredient": "COR26Stan30White",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 865,
+      "sourceRows": [
+        96
+      ]
+    },
+    {
+      "key": "wc26tu20yellow",
+      "ingredient": "WC26Tu20Yellow",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 857,
+      "sourceRows": [
+        97
+      ]
+    },
+    {
+      "key": "disc2ozmxpais",
+      "ingredient": "Disc2ozMxPais",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 854,
+      "sourceRows": [
+        98
+      ]
+    },
+    {
+      "key": "xm25stopper",
+      "ingredient": "Xm25Stopper",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 850,
+      "sourceRows": [
+        99
+      ]
+    },
+    {
+      "key": "cor26ssthrulid",
+      "ingredient": "COR26SSThruLid",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 829,
+      "sourceRows": [
+        100
+      ]
+    },
+    {
+      "key": "sp26tu16orange",
+      "ingredient": "Sp26Tu16Orange",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 823,
+      "sourceRows": [
+        101
+      ]
+    },
+    {
+      "key": "wt26vasopistache",
+      "ingredient": "Wt26VasoPistache",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 796,
+      "sourceRows": [
+        102
+      ]
+    },
+    {
+      "key": "fl25monederoaniv",
+      "ingredient": "Fl25MonederoAniv",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 760,
+      "sourceRows": [
+        103
+      ]
+    },
+    {
+      "key": "wt26mug14bow",
+      "ingredient": "Wt26Mug14Bow",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 732,
+      "sourceRows": [
+        104
+      ]
+    },
+    {
+      "key": "sp26nellavero",
+      "ingredient": "Sp26NELlavero",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 725,
+      "sourceRows": [
+        105
+      ]
+    },
+    {
+      "key": "discoverytulum",
+      "ingredient": "DiscoveryTulum",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 659,
+      "sourceRows": [
+        106
+      ]
+    },
+    {
+      "key": "tazassbxgenerico",
+      "ingredient": "Tazas SBX Genérico",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 634,
+      "sourceRows": [
+        107
+      ]
+    },
+    {
+      "key": "fl25manga",
+      "ingredient": "Fl25Manga",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 623,
+      "sourceRows": [
+        108
+      ]
+    },
+    {
+      "key": "fl25stopperbar",
+      "ingredient": "Fl25StopperBar",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 615,
+      "sourceRows": [
+        109
+      ]
+    },
+    {
+      "key": "discoverycdmx",
+      "ingredient": "DiscoveryCDMX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 576,
+      "sourceRows": [
+        110
+      ]
+    },
+    {
+      "key": "discoverygdl",
+      "ingredient": "DiscoveryGDL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 573,
+      "sourceRows": [
+        111
+      ]
+    },
+    {
+      "key": "wt26llaverosv",
+      "ingredient": "Wt26LlaveroSV",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 524,
+      "sourceRows": [
+        112
+      ]
+    },
+    {
+      "key": "sp26mug14rabbit",
+      "ingredient": "Sp26Mug14Rabbit",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 499,
+      "sourceRows": [
+        113
+      ]
+    },
+    {
+      "key": "ccupplasticsbxgenerico",
+      "ingredient": "CCupPlastic SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 498,
+      "sourceRows": [
+        114
+      ]
+    },
+    {
+      "key": "wt26tuss16duck",
+      "ingredient": "Wt26TuSS16Duck",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 459,
+      "sourceRows": [
+        115
+      ]
+    },
+    {
+      "key": "disc2ozgdl",
+      "ingredient": "Disc2ozGDL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 452,
+      "sourceRows": [
+        116
+      ]
+    },
+    {
+      "key": "fl25reusccba",
+      "ingredient": "Fl25ReusCCBa",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 452,
+      "sourceRows": [
+        117
+      ]
+    },
+    {
+      "key": "disc2oztulum",
+      "ingredient": "Disc2ozTulum",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 445,
+      "sourceRows": [
+        118
+      ]
+    },
+    {
+      "key": "xm25reumike",
+      "ingredient": "Xm25ReuMike",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 445,
+      "sourceRows": [
+        119
+      ]
+    },
+    {
+      "key": "sii26cc24rain",
+      "ingredient": "SII26CC24Rain",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 437,
+      "sourceRows": [
+        120
+      ]
+    },
+    {
+      "key": "totebagcdmx",
+      "ingredient": "ToteBag CDMX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 436,
+      "sourceRows": [
+        121
+      ]
+    },
+    {
+      "key": "discoverygto",
+      "ingredient": "DiscoveryGTO",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 420,
+      "sourceRows": [
+        122
+      ]
+    },
+    {
+      "key": "disc2ozpvallarta",
+      "ingredient": "Disc2ozPVallarta",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 401,
+      "sourceRows": [
+        123
+      ]
+    },
+    {
+      "key": "disc2ozplayac",
+      "ingredient": "Disc2ozPlayaC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 375,
+      "sourceRows": [
+        124
+      ]
+    },
+    {
+      "key": "sp26reustierra",
+      "ingredient": "Sp26ReusTierra",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 373,
+      "sourceRows": [
+        125
+      ]
+    },
+    {
+      "key": "discoverymty",
+      "ingredient": "DiscoveryMTY",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 367,
+      "sourceRows": [
+        126
+      ]
+    },
+    {
+      "key": "sp26tz14glassc",
+      "ingredient": "Sp26Tz14GlassC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 350,
+      "sourceRows": [
+        127
+      ]
+    },
+    {
+      "key": "discoveryplayac",
+      "ingredient": "DiscoveryPlayaC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 349,
+      "sourceRows": [
+        128
+      ]
+    },
+    {
+      "key": "fl25keychaind",
+      "ingredient": "Fl25KeyChainD",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 326,
+      "sourceRows": [
+        129
+      ]
+    },
+    {
+      "key": "disc2ozcabos",
+      "ingredient": "Disc2ozCabos",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 323,
+      "sourceRows": [
+        130
+      ]
+    },
+    {
+      "key": "totebagmxpais",
+      "ingredient": "ToteBag MxPais",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 315,
+      "sourceRows": [
+        131
+      ]
+    },
+    {
+      "key": "si25tu20swimm",
+      "ingredient": "SI25Tu20Swimm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 312,
+      "sourceRows": [
+        132
+      ]
+    },
+    {
+      "key": "discoverycancun",
+      "ingredient": "DiscoveryCancun",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 309,
+      "sourceRows": [
+        133
+      ]
+    },
+    {
+      "key": "si25sscc24paddle",
+      "ingredient": "SI25SSCC24Paddle",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 307,
+      "sourceRows": [
+        134
+      ]
+    },
+    {
+      "key": "discoverycabos",
+      "ingredient": "DiscoveryCabos",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 302,
+      "sourceRows": [
+        135
+      ]
+    },
+    {
+      "key": "totebagmty",
+      "ingredient": "ToteBag MTY",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 302,
+      "sourceRows": [
+        136
+      ]
+    },
+    {
+      "key": "xm25reuelev",
+      "ingredient": "Xm25ReuElev",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 300,
+      "sourceRows": [
+        137
+      ]
+    },
+    {
+      "key": "bearhugger",
+      "ingredient": "BearHugger",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 297,
+      "sourceRows": [
+        138
+      ]
+    },
+    {
+      "key": "discoverypvallarta",
+      "ingredient": "DiscoveryPVallarta",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 296,
+      "sourceRows": [
+        139
+      ]
+    },
+    {
+      "key": "sp26ccreustierra",
+      "ingredient": "Sp26CCReusTierra",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 294,
+      "sourceRows": [
+        140
+      ]
+    },
+    {
+      "key": "totebaggdl",
+      "ingredient": "ToteBag GDL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 287,
+      "sourceRows": [
+        141
+      ]
+    },
+    {
+      "key": "disc2ozcdmx",
+      "ingredient": "Disc2ozCDMX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 278,
+      "sourceRows": [
+        142
+      ]
+    },
+    {
+      "key": "wt25crarryingbag",
+      "ingredient": "Wt25CrarryingBag",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 277,
+      "sourceRows": [
+        143
+      ]
+    },
+    {
+      "key": "discoveryleon",
+      "ingredient": "DiscoveryLeon",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 274,
+      "sourceRows": [
+        144
+      ]
+    },
+    {
+      "key": "discoveryensenad",
+      "ingredient": "DiscoveryEnsenad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 270,
+      "sourceRows": [
+        145
+      ]
+    },
+    {
+      "key": "discoveryqro",
+      "ingredient": "DiscoveryQRO",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 268,
+      "sourceRows": [
+        146
+      ]
+    },
+    {
+      "key": "wc26ss20pull",
+      "ingredient": "WC26SS20Pull",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 264,
+      "sourceRows": [
+        147
+      ]
+    },
+    {
+      "key": "sii25stoppsl",
+      "ingredient": "SII25StopPSL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 257,
+      "sourceRows": [
+        148
+      ]
+    },
+    {
+      "key": "discoverycozumel",
+      "ingredient": "DiscoveryCozumel",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 253,
+      "sourceRows": [
+        149
+      ]
+    },
+    {
+      "key": "sii25strawlluvia",
+      "ingredient": "SII25StrawLluvia",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 250,
+      "sourceRows": [
+        150
+      ]
+    },
+    {
+      "key": "sii25llaverob2s",
+      "ingredient": "SII25LlaveroB2S",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 249,
+      "sourceRows": [
+        151
+      ]
+    },
+    {
+      "key": "totebagpvallart",
+      "ingredient": "ToteBag Pvallart",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 229,
+      "sourceRows": [
+        152
+      ]
+    },
+    {
+      "key": "sp26ccup16cherry",
+      "ingredient": "Sp26CCup16Cherry",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 224,
+      "sourceRows": [
+        153
+      ]
+    },
+    {
+      "key": "wc26llaverob",
+      "ingredient": "WC26LlaveroB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 221,
+      "sourceRows": [
+        154
+      ]
+    },
+    {
+      "key": "xm25reu2hol",
+      "ingredient": "Xm25Reu2Hol",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 219,
+      "sourceRows": [
+        155
+      ]
+    },
+    {
+      "key": "resmug12sscopper",
+      "ingredient": "ResMug12SSCopper",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 218,
+      "sourceRows": [
+        156
+      ]
+    },
+    {
+      "key": "discoverychihua",
+      "ingredient": "DiscoveryChihua",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 217,
+      "sourceRows": [
+        157
+      ]
+    },
+    {
+      "key": "ressetct3pck",
+      "ingredient": "ResSetCT3Pck",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 213,
+      "sourceRows": [
+        158
+      ]
+    },
+    {
+      "key": "cor23reuscc16",
+      "ingredient": "COR23 ReusCC16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 211,
+      "sourceRows": [
+        159
+      ]
+    },
+    {
+      "key": "cor26tu16sust",
+      "ingredient": "COR26Tu16Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 202,
+      "sourceRows": [
+        160
+      ]
+    },
+    {
+      "key": "resss16bananalea",
+      "ingredient": "ResSS16BananaLea",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 195,
+      "sourceRows": [
+        161
+      ]
+    },
+    {
+      "key": "cor26mug14copper",
+      "ingredient": "COR26Mug14Copper",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 193,
+      "sourceRows": [
+        162
+      ]
+    },
+    {
+      "key": "si25cc24drinks",
+      "ingredient": "SI25CC24Drinks",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 192,
+      "sourceRows": [
+        163
+      ]
+    },
+    {
+      "key": "disc2ozcan",
+      "ingredient": "Disc2ozCAN",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 190,
+      "sourceRows": [
+        164
+      ]
+    },
+    {
+      "key": "xm25ccglass18",
+      "ingredient": "Xm25CCGlass18",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 187,
+      "sourceRows": [
+        165
+      ]
+    },
+    {
+      "key": "disc2ozcozumel",
+      "ingredient": "Disc2ozCozumel",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 185,
+      "sourceRows": [
+        166
+      ]
+    },
+    {
+      "key": "pinessbxgenerico",
+      "ingredient": "Pines SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 183,
+      "sourceRows": [
+        167
+      ]
+    },
+    {
+      "key": "disc2ozmty",
+      "ingredient": "Disc2ozMTY",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 181,
+      "sourceRows": [
+        168
+      ]
+    },
+    {
+      "key": "discoverysanmig",
+      "ingredient": "DiscoverySanMig",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 170,
+      "sourceRows": [
+        169
+      ]
+    },
+    {
+      "key": "discoverymorelia",
+      "ingredient": "DiscoveryMorelia",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 168,
+      "sourceRows": [
+        170
+      ]
+    },
+    {
+      "key": "discoveryzacat",
+      "ingredient": "DiscoveryZacat",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 167,
+      "sourceRows": [
+        171
+      ]
+    },
+    {
+      "key": "fl25llavero",
+      "ingredient": "Fl25Llavero",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 166,
+      "sourceRows": [
+        172
+      ]
+    },
+    {
+      "key": "cor25dw12prism",
+      "ingredient": "COR25DW12Prism",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 163,
+      "sourceRows": [
+        173
+      ]
+    },
+    {
+      "key": "discoverychiapas",
+      "ingredient": "DiscoveryChiapas",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 161,
+      "sourceRows": [
+        174
+      ]
+    },
+    {
+      "key": "cor23reuscc24",
+      "ingredient": "COR23 ReusCC24",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 159,
+      "sourceRows": [
+        175
+      ]
+    },
+    {
+      "key": "wc26ss16black",
+      "ingredient": "WC26SS16Black",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 149,
+      "sourceRows": [
+        176
+      ]
+    },
+    {
+      "key": "discoverypuebla",
+      "ingredient": "DiscoveryPuebla",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 148,
+      "sourceRows": [
+        177
+      ]
+    },
+    {
+      "key": "fl25cc24dome",
+      "ingredient": "Fl25CC24Dome",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 140,
+      "sourceRows": [
+        178
+      ]
+    },
+    {
+      "key": "xm25ss16peng",
+      "ingredient": "Xm25SS16Peng",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 138,
+      "sourceRows": [
+        179
+      ]
+    },
+    {
+      "key": "totebagplayac",
+      "ingredient": "ToteBag PlayaC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 135,
+      "sourceRows": [
+        180
+      ]
+    },
+    {
+      "key": "xm25give16hot",
+      "ingredient": "Xm25Give16Hot",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 124,
+      "sourceRows": [
+        181
+      ]
+    },
+    {
+      "key": "discoveryoax",
+      "ingredient": "DiscoveryOAX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 122,
+      "sourceRows": [
+        182
+      ]
+    },
+    {
+      "key": "cor26glass16sus",
+      "ingredient": "COR26Glass16Sus",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 121,
+      "sourceRows": [
+        183
+      ]
+    },
+    {
+      "key": "fl25cc24ddm",
+      "ingredient": "Fl25CC24DDM",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 118,
+      "sourceRows": [
+        184
+      ]
+    },
+    {
+      "key": "totebagcan",
+      "ingredient": "ToteBag CAN",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 118,
+      "sourceRows": [
+        185
+      ]
+    },
+    {
+      "key": "xm25mugpinguin",
+      "ingredient": "Xm25MugPinguin",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 115,
+      "sourceRows": [
+        186
+      ]
+    },
+    {
+      "key": "si25ssdoodle",
+      "ingredient": "SI25SSDoodle",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 108,
+      "sourceRows": [
+        187
+      ]
+    },
+    {
+      "key": "cor25mug16sus",
+      "ingredient": "COR25Mug 16Sus",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 104,
+      "sourceRows": [
+        188
+      ]
+    },
+    {
+      "key": "wc26bearwc",
+      "ingredient": "WC26BearWC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 100,
+      "sourceRows": [
+        189
+      ]
+    },
+    {
+      "key": "discoveryacapulc",
+      "ingredient": "DiscoveryAcapulc",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 98,
+      "sourceRows": [
+        190
+      ]
+    },
+    {
+      "key": "si25cc24dome",
+      "ingredient": "SI25CC24Dome",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 98,
+      "sourceRows": [
+        191
+      ]
+    },
+    {
+      "key": "sii25cc24jeweled",
+      "ingredient": "SII25CC24Jeweled",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 95,
+      "sourceRows": [
+        192
+      ]
+    },
+    {
+      "key": "fl25pinesddm",
+      "ingredient": "Fl25PinesDDM",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 92,
+      "sourceRows": [
+        193
+      ]
+    },
+    {
+      "key": "sp26necrossb",
+      "ingredient": "Sp26NECrossB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 91,
+      "sourceRows": [
+        194
+      ]
+    },
+    {
+      "key": "xm25stancb16",
+      "ingredient": "Xm25StanCB16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 91,
+      "sourceRows": [
+        195
+      ]
+    },
+    {
+      "key": "fl25strawbar",
+      "ingredient": "Fl25StrawBar",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 90,
+      "sourceRows": [
+        196
+      ]
+    },
+    {
+      "key": "sp25stopperp",
+      "ingredient": "Sp25StopperP",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 90,
+      "sourceRows": [
+        197
+      ]
+    },
+    {
+      "key": "ccupacerosbxgenerico",
+      "ingredient": "CCup Acero SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 89,
+      "sourceRows": [
+        198
+      ]
+    },
+    {
+      "key": "setreusasbxgenerico",
+      "ingredient": "Set Reusa SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 89,
+      "sourceRows": [
+        199
+      ]
+    },
+    {
+      "key": "cor25ss16sleeve",
+      "ingredient": "COR25SS16Sleeve",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 88,
+      "sourceRows": [
+        200
+      ]
+    },
+    {
+      "key": "resss16goldshin",
+      "ingredient": "Res SS16GoldShin",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 88,
+      "sourceRows": [
+        201
+      ]
+    },
+    {
+      "key": "cor23glcc18omb",
+      "ingredient": "COR23 GlCC18 Omb",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 84,
+      "sourceRows": [
+        202
+      ]
+    },
+    {
+      "key": "wt26sscc24win",
+      "ingredient": "Wt26SSCC24Win",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 83,
+      "sourceRows": [
+        203
+      ]
+    },
+    {
+      "key": "wt26glasscc16",
+      "ingredient": "Wt26GlassCC16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 81,
+      "sourceRows": [
+        204
+      ]
+    },
+    {
+      "key": "xm25tu16cping",
+      "ingredient": "Xm25Tu16CPing",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 81,
+      "sourceRows": [
+        205
+      ]
+    },
+    {
+      "key": "xm25reu1hol",
+      "ingredient": "Xm25Reu1Hol",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 78,
+      "sourceRows": [
+        206
+      ]
+    },
+    {
+      "key": "sp26ss16under",
+      "ingredient": "Sp26SS16Under",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 77,
+      "sourceRows": [
+        207
+      ]
+    },
+    {
+      "key": "wt26sscc24grad",
+      "ingredient": "Wt26SSCC24Grad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 75,
+      "sourceRows": [
+        208
+      ]
+    },
+    {
+      "key": "xm25give16cc",
+      "ingredient": "Xm25Give16CC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 75,
+      "sourceRows": [
+        209
+      ]
+    },
+    {
+      "key": "sp26wtblss16cher",
+      "ingredient": "Sp26WTBLSS16Cher",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 74,
+      "sourceRows": [
+        210
+      ]
+    },
+    {
+      "key": "si25tz14glass",
+      "ingredient": "SI25Tz14Glass",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 73,
+      "sourceRows": [
+        211
+      ]
+    },
+    {
+      "key": "si25keychaincc",
+      "ingredient": "SI25KeyChainCC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 72,
+      "sourceRows": [
+        212
+      ]
+    },
+    {
+      "key": "xm25tu16charm",
+      "ingredient": "Xm25Tu16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 72,
+      "sourceRows": [
+        213
+      ]
+    },
+    {
+      "key": "cor23tu16sirent",
+      "ingredient": "COR23 Tu16 SirenT",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 70,
+      "sourceRows": [
+        214
+      ]
+    },
+    {
+      "key": "wt26reusbear",
+      "ingredient": "Wt26ReusBear",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 70,
+      "sourceRows": [
+        215
+      ]
+    },
+    {
+      "key": "cor23ss25stybtl",
+      "ingredient": "COR23 SS25StyBTL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 67,
+      "sourceRows": [
+        216
+      ]
+    },
+    {
+      "key": "fl25reusbar",
+      "ingredient": "Fl25ReusBar",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 67,
+      "sourceRows": [
+        217
+      ]
+    },
+    {
+      "key": "sp26wtbl19under",
+      "ingredient": "Sp26WTBL19Under",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 67,
+      "sourceRows": [
+        218
+      ]
+    },
+    {
+      "key": "wt262pkstanley",
+      "ingredient": "Wt262PkStanley",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 67,
+      "sourceRows": [
+        219
+      ]
+    },
+    {
+      "key": "wt26sscc30togo",
+      "ingredient": "Wt26SSCC30Togo",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 61,
+      "sourceRows": [
+        220
+      ]
+    },
+    {
+      "key": "discoveryver",
+      "ingredient": "DiscoveryVER",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 60,
+      "sourceRows": [
+        221
+      ]
+    },
+    {
+      "key": "wt26btlstanley",
+      "ingredient": "Wt26BTLStanley",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 60,
+      "sourceRows": [
+        222
+      ]
+    },
+    {
+      "key": "sp26cc216rabbit",
+      "ingredient": "Sp26CC216Rabbit",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 59,
+      "sourceRows": [
+        223
+      ]
+    },
+    {
+      "key": "totebagtulum",
+      "ingredient": "ToteBag Tulum",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 59,
+      "sourceRows": [
+        224
+      ]
+    },
+    {
+      "key": "discoverymazatla",
+      "ingredient": "DiscoveryMazatla",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 58,
+      "sourceRows": [
+        225
+      ]
+    },
+    {
+      "key": "sii25llaveroalo",
+      "ingredient": "SII25LlaveroAlo",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 57,
+      "sourceRows": [
+        226
+      ]
+    },
+    {
+      "key": "xm25cc24hol",
+      "ingredient": "Xm25CC24Hol",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 57,
+      "sourceRows": [
+        227
+      ]
+    },
+    {
+      "key": "si25dw12beach",
+      "ingredient": "SI25DW12Beach",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 55,
+      "sourceRows": [
+        228
+      ]
+    },
+    {
+      "key": "wt26ss20sv",
+      "ingredient": "Wt26SS20SV",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 55,
+      "sourceRows": [
+        229
+      ]
+    },
+    {
+      "key": "disc2ozchiapas",
+      "ingredient": "Disc2ozChiapas",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 53,
+      "sourceRows": [
+        230
+      ]
+    },
+    {
+      "key": "wt26tu16charm",
+      "ingredient": "Wt26Tu16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 51,
+      "sourceRows": [
+        231
+      ]
+    },
+    {
+      "key": "wt26ssbtl20sv",
+      "ingredient": "Wt26SSBTL20SV",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 50,
+      "sourceRows": [
+        232
+      ]
+    },
+    {
+      "key": "wt26btl20gr",
+      "ingredient": "Wt26BTL20Gr",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 49,
+      "sourceRows": [
+        233
+      ]
+    },
+    {
+      "key": "si25reusdelivery",
+      "ingredient": "SI25ReusDelivery",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 48,
+      "sourceRows": [
+        234
+      ]
+    },
+    {
+      "key": "disc2ozpuebla",
+      "ingredient": "Disc2ozPuebla",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 47,
+      "sourceRows": [
+        235
+      ]
+    },
+    {
+      "key": "sp26gl18mottled",
+      "ingredient": "Sp26Gl18Mottled",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 47,
+      "sourceRows": [
+        236
+      ]
+    },
+    {
+      "key": "totebagcozumel",
+      "ingredient": "ToteBag Cozumel",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 47,
+      "sourceRows": [
+        237
+      ]
+    },
+    {
+      "key": "wc26tu24dw",
+      "ingredient": "WC26Tu24DW",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 47,
+      "sourceRows": [
+        238
+      ]
+    },
+    {
+      "key": "wt26ss16vac",
+      "ingredient": "Wt26SS16Vac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 45,
+      "sourceRows": [
+        239
+      ]
+    },
+    {
+      "key": "xm25btl24magn",
+      "ingredient": "Xm25BTL24Magn",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 45,
+      "sourceRows": [
+        240
+      ]
+    },
+    {
+      "key": "si25sscc24swimm",
+      "ingredient": "SI25SSCC24Swimm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 40,
+      "sourceRows": [
+        241
+      ]
+    },
+    {
+      "key": "wt26sscc16grad",
+      "ingredient": "Wt26SSCC16Grad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 39,
+      "sourceRows": [
+        242
+      ]
+    },
+    {
+      "key": "fl25sscc24sust",
+      "ingredient": "Fl25SSCC24Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 38,
+      "sourceRows": [
+        243
+      ]
+    },
+    {
+      "key": "wt26cc15blue",
+      "ingredient": "Wt26CC15Blue",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 38,
+      "sourceRows": [
+        244
+      ]
+    },
+    {
+      "key": "wt26cc24choco",
+      "ingredient": "Wt26CC24Choco",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 37,
+      "sourceRows": [
+        245
+      ]
+    },
+    {
+      "key": "fl25pines",
+      "ingredient": "Fl25Pines",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 35,
+      "sourceRows": [
+        246
+      ]
+    },
+    {
+      "key": "sii25reuscolor",
+      "ingredient": "SII25ReusColor",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 35,
+      "sourceRows": [
+        247
+      ]
+    },
+    {
+      "key": "cor23ss16thrul",
+      "ingredient": "COR23 SS16 ThruL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 34,
+      "sourceRows": [
+        248
+      ]
+    },
+    {
+      "key": "tumbplasticsbxgenerico",
+      "ingredient": "Tumb Plastic SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 34,
+      "sourceRows": [
+        249
+      ]
+    },
+    {
+      "key": "wt26sscc24carryl",
+      "ingredient": "Wt26SSCC24CarryL",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 34,
+      "sourceRows": [
+        250
+      ]
+    },
+    {
+      "key": "discoverymerida",
+      "ingredient": "DiscoveryMerida",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 33,
+      "sourceRows": [
+        251
+      ]
+    },
+    {
+      "key": "tumbacerosbxgenerico",
+      "ingredient": "Tumb acero SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 33,
+      "sourceRows": [
+        252
+      ]
+    },
+    {
+      "key": "wt26cc24spinner",
+      "ingredient": "Wt26CC24Spinner",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 32,
+      "sourceRows": [
+        253
+      ]
+    },
+    {
+      "key": "fl25sstu20vac",
+      "ingredient": "Fl25SSTu20Vac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 31,
+      "sourceRows": [
+        254
+      ]
+    },
+    {
+      "key": "si25cc24fun",
+      "ingredient": "SI25CC24Fun",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 30,
+      "sourceRows": [
+        255
+      ]
+    },
+    {
+      "key": "sp26tu20blossom",
+      "ingredient": "Sp26Tu20Blossom",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 30,
+      "sourceRows": [
+        256
+      ]
+    },
+    {
+      "key": "xm25sscc24topp",
+      "ingredient": "Xm25SSCC24Topp",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 30,
+      "sourceRows": [
+        257
+      ]
+    },
+    {
+      "key": "fl25stanpearl",
+      "ingredient": "Fl25StanPearl",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 28,
+      "sourceRows": [
+        258
+      ]
+    },
+    {
+      "key": "totebagcabos",
+      "ingredient": "ToteBag Cabos",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 26,
+      "sourceRows": [
+        259
+      ]
+    },
+    {
+      "key": "fl25sstu12sust",
+      "ingredient": "Fl25SSTu12Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 25,
+      "sourceRows": [
+        260
+      ]
+    },
+    {
+      "key": "disc2ozoax",
+      "ingredient": "Disc2ozOAX",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 24,
+      "sourceRows": [
+        261
+      ]
+    },
+    {
+      "key": "sp26ss12pink",
+      "ingredient": "Sp26SS12Pink",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 24,
+      "sourceRows": [
+        262
+      ]
+    },
+    {
+      "key": "wc26bearmex",
+      "ingredient": "WC26BearMex",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 23,
+      "sourceRows": [
+        263
+      ]
+    },
+    {
+      "key": "cor23ss16stswi",
+      "ingredient": "COR23 SS16StSwi",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 22,
+      "sourceRows": [
+        264
+      ]
+    },
+    {
+      "key": "fl25cc24strawt",
+      "ingredient": "Fl25CC24StrawT",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 22,
+      "sourceRows": [
+        265
+      ]
+    },
+    {
+      "key": "si25sscc24father",
+      "ingredient": "SI25SSCC24Father",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 20,
+      "sourceRows": [
+        266
+      ]
+    },
+    {
+      "key": "si25reustierra",
+      "ingredient": "SI25ReusTierra",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 19,
+      "sourceRows": [
+        267
+      ]
+    },
+    {
+      "key": "si25tu20zoo",
+      "ingredient": "SI25Tu20Zoo",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 19,
+      "sourceRows": [
+        268
+      ]
+    },
+    {
+      "key": "sii25tu16farmr",
+      "ingredient": "SII25Tu16FarmR",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 19,
+      "sourceRows": [
+        269
+      ]
+    },
+    {
+      "key": "cor25stan30black",
+      "ingredient": "COR25Stan30Black",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 18,
+      "sourceRows": [
+        270
+      ]
+    },
+    {
+      "key": "cor25tu16susta",
+      "ingredient": "COR25Tu16Susta",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 17,
+      "sourceRows": [
+        271
+      ]
+    },
+    {
+      "key": "si25cc24bling",
+      "ingredient": "SI25CC24Bling",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 17,
+      "sourceRows": [
+        272
+      ]
+    },
+    {
+      "key": "sp26sscc24cherry",
+      "ingredient": "Sp26SSCC24Cherry",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 17,
+      "sourceRows": [
+        273
+      ]
+    },
+    {
+      "key": "cor23ss20stquen",
+      "ingredient": "COR23 SS20StQuen",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 16,
+      "sourceRows": [
+        274
+      ]
+    },
+    {
+      "key": "fl25ccss24pearl",
+      "ingredient": "Fl25CCSS24Pearl",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 16,
+      "sourceRows": [
+        275
+      ]
+    },
+    {
+      "key": "sp26tu16cherry",
+      "ingredient": "Sp26Tu16Cherry",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 16,
+      "sourceRows": [
+        276
+      ]
+    },
+    {
+      "key": "cor23mug20stan",
+      "ingredient": "COR23 Mug20 Stan",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 15,
+      "sourceRows": [
+        277
+      ]
+    },
+    {
+      "key": "wt26dw12jac",
+      "ingredient": "Wt26Dw12Jac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 15,
+      "sourceRows": [
+        278
+      ]
+    },
+    {
+      "key": "xm25reu24ccst",
+      "ingredient": "Xm25Reu24CCST",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 15,
+      "sourceRows": [
+        279
+      ]
+    },
+    {
+      "key": "cor25staniceflow",
+      "ingredient": "COR25StanIceflow",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 14,
+      "sourceRows": [
+        280
+      ]
+    },
+    {
+      "key": "fl25glassccsust",
+      "ingredient": "Fl25GlassCCSust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 14,
+      "sourceRows": [
+        281
+      ]
+    },
+    {
+      "key": "sp26ssvac40cherr",
+      "ingredient": "Sp26SSVac40Cherr",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 14,
+      "sourceRows": [
+        282
+      ]
+    },
+    {
+      "key": "xm25stopmax",
+      "ingredient": "Xm25StopMax",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 14,
+      "sourceRows": [
+        283
+      ]
+    },
+    {
+      "key": "beentheremazatlan14oz",
+      "ingredient": "Been There Mazatlan 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 13,
+      "sourceRows": [
+        284
+      ]
+    },
+    {
+      "key": "sp26stan30purp",
+      "ingredient": "Sp26Stan30Purp",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 13,
+      "sourceRows": [
+        285
+      ]
+    },
+    {
+      "key": "sp26cc16prism",
+      "ingredient": "Sp26CC16Prism",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 12,
+      "sourceRows": [
+        286
+      ]
+    },
+    {
+      "key": "xm25llavero",
+      "ingredient": "Xm25Llavero",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 12,
+      "sourceRows": [
+        287
+      ]
+    },
+    {
+      "key": "fl25ss16studded",
+      "ingredient": "Fl25SS16Studded",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 11,
+      "sourceRows": [
+        288
+      ]
+    },
+    {
+      "key": "fl25tu16charm",
+      "ingredient": "Fl25Tu16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 11,
+      "sourceRows": [
+        289
+      ]
+    },
+    {
+      "key": "si25ccreustierra",
+      "ingredient": "SI25CCReusTierra",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 11,
+      "sourceRows": [
+        290
+      ]
+    },
+    {
+      "key": "sii25cc24b2s",
+      "ingredient": "SII25CC24B2S",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 11,
+      "sourceRows": [
+        291
+      ]
+    },
+    {
+      "key": "cor23dw12green",
+      "ingredient": "COR23 DW12 Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        292
+      ]
+    },
+    {
+      "key": "fl25montsc",
+      "ingredient": "Fl25MonTSC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        293
+      ]
+    },
+    {
+      "key": "si25tu16bubble",
+      "ingredient": "SI25Tu16Bubble",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        294
+      ]
+    },
+    {
+      "key": "sii26bearpony",
+      "ingredient": "SII26BearPony",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        295
+      ]
+    },
+    {
+      "key": "sp26ss16rabbit",
+      "ingredient": "Sp26SS16Rabbit",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        296
+      ]
+    },
+    {
+      "key": "stanleysbxgenerico",
+      "ingredient": "Stanley SBX Genérico",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        297
+      ]
+    },
+    {
+      "key": "xm25reus16st",
+      "ingredient": "Xm25Reus16ST",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 10,
+      "sourceRows": [
+        298
+      ]
+    },
+    {
+      "key": "cor25ss20stouch",
+      "ingredient": "COR25SS20STouch",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 9,
+      "sourceRows": [
+        299
+      ]
+    },
+    {
+      "key": "cor25sscc24black",
+      "ingredient": "COR25SSCC24Black",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 9,
+      "sourceRows": [
+        300
+      ]
+    },
+    {
+      "key": "sii25sscc24green",
+      "ingredient": "SII25SSCC24Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 9,
+      "sourceRows": [
+        301
+      ]
+    },
+    {
+      "key": "wt26sscc16jac",
+      "ingredient": "Wt26SSCC16Jac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 9,
+      "sourceRows": [
+        302
+      ]
+    },
+    {
+      "key": "xm25stopmike",
+      "ingredient": "Xm25StopMike",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 9,
+      "sourceRows": [
+        303
+      ]
+    },
+    {
+      "key": "cor23ss16toneb",
+      "ingredient": "COR23 SS16ToneB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8,
+      "sourceRows": [
+        304
+      ]
+    },
+    {
+      "key": "fl25tu16sust",
+      "ingredient": "Fl25Tu16Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8,
+      "sourceRows": [
+        305
+      ]
+    },
+    {
+      "key": "si25reus24teach",
+      "ingredient": "SI25Reus24Teach",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8,
+      "sourceRows": [
+        306
+      ]
+    },
+    {
+      "key": "xm25cc24house",
+      "ingredient": "Xm25CC24House",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 8,
+      "sourceRows": [
+        307
+      ]
+    },
+    {
+      "key": "cor25cc24siren",
+      "ingredient": "COR25 CC24Siren",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        308
+      ]
+    },
+    {
+      "key": "cor25gl16sust",
+      "ingredient": "COR25Gl16Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        309
+      ]
+    },
+    {
+      "key": "fl25reuspikep",
+      "ingredient": "Fl25ReusPikeP",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        310
+      ]
+    },
+    {
+      "key": "fl25ss20siren",
+      "ingredient": "Fl25SS20Siren",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        311
+      ]
+    },
+    {
+      "key": "fl25sstu16wave",
+      "ingredient": "Fl25SStu16Wave",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        312
+      ]
+    },
+    {
+      "key": "repuestoparacafetera8tazas",
+      "ingredient": "Repuesto para cafetera 8 tazas",
+      "category": "Mercancia",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        313
+      ]
+    },
+    {
+      "key": "sii25dw12studded",
+      "ingredient": "SII25DW12Studded",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        314
+      ]
+    },
+    {
+      "key": "sii25quencher30",
+      "ingredient": "SII25Quencher30",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        315
+      ]
+    },
+    {
+      "key": "wt26ccgl16red",
+      "ingredient": "Wt26CCGl16Red",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 7,
+      "sourceRows": [
+        316
+      ]
+    },
+    {
+      "key": "cor23reuhotcup",
+      "ingredient": "COR23 ReuHotCup",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6,
+      "sourceRows": [
+        317
+      ]
+    },
+    {
+      "key": "cor23tu20stblck",
+      "ingredient": "COR23 Tu20STBlck",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6,
+      "sourceRows": [
+        318
+      ]
+    },
+    {
+      "key": "fl25mug16sust",
+      "ingredient": "Fl25Mug16Sust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6,
+      "sourceRows": [
+        319
+      ]
+    },
+    {
+      "key": "sp26tu20blue",
+      "ingredient": "Sp26Tu20Blue",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 6,
+      "sourceRows": [
+        320
+      ]
+    },
+    {
+      "key": "fl25reusccpikep",
+      "ingredient": "Fl25ReusCCPikeP",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        321
+      ]
+    },
+    {
+      "key": "fl25ss24vac",
+      "ingredient": "Fl25SS24Vac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        322
+      ]
+    },
+    {
+      "key": "fl25sscc24anniv",
+      "ingredient": "Fl25SSCC24Anniv",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        323
+      ]
+    },
+    {
+      "key": "fl25ssmug12rib",
+      "ingredient": "Fl25SSMug12Rib",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        324
+      ]
+    },
+    {
+      "key": "fl25tu16ddm",
+      "ingredient": "Fl25Tu16DDM",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        325
+      ]
+    },
+    {
+      "key": "sii25tu20soft",
+      "ingredient": "SII25Tu20Soft",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        326
+      ]
+    },
+    {
+      "key": "xm25cc24snow",
+      "ingredient": "Xm25CC24Snow",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        327
+      ]
+    },
+    {
+      "key": "xm25ss16green",
+      "ingredient": "Xm25SS16Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        328
+      ]
+    },
+    {
+      "key": "xm25sscc24r",
+      "ingredient": "Xm25SSCC24R",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 5,
+      "sourceRows": [
+        329
+      ]
+    },
+    {
+      "key": "beentheremerida14oz",
+      "ingredient": "Been There Merida 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        330
+      ]
+    },
+    {
+      "key": "beentherepuertovallarta14oz",
+      "ingredient": "Been There Puerto Vallarta 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        331
+      ]
+    },
+    {
+      "key": "cor25ss16sus",
+      "ingredient": "COR25SS16Sus",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        332
+      ]
+    },
+    {
+      "key": "cor26mug2copper",
+      "ingredient": "COR26Mug2Copper",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        333
+      ]
+    },
+    {
+      "key": "fl25reusespresso",
+      "ingredient": "Fl25ReusEspresso",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        334
+      ]
+    },
+    {
+      "key": "fl25ss16charm",
+      "ingredient": "Fl25SS16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        335
+      ]
+    },
+    {
+      "key": "si25mug12teach",
+      "ingredient": "SI25Mug12Teach",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        336
+      ]
+    },
+    {
+      "key": "wt26ss20jac",
+      "ingredient": "Wt26SS20Jac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        337
+      ]
+    },
+    {
+      "key": "xm25dw12red",
+      "ingredient": "Xm25DW12Red",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        338
+      ]
+    },
+    {
+      "key": "xm25tu16bow",
+      "ingredient": "Xm25Tu16Bow",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        339
+      ]
+    },
+    {
+      "key": "xm25tustan20",
+      "ingredient": "Xm25TuStan20",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 4,
+      "sourceRows": [
+        340
+      ]
+    },
+    {
+      "key": "beenthereguanajuato14oz",
+      "ingredient": "Been There Guanajuato 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        341
+      ]
+    },
+    {
+      "key": "fl25dw12luster",
+      "ingredient": "Fl25DW12Luster",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        342
+      ]
+    },
+    {
+      "key": "fl25glasscc",
+      "ingredient": "Fl25GlassCC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        343
+      ]
+    },
+    {
+      "key": "fl25ss20ddm",
+      "ingredient": "Fl25SS20DDM",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        344
+      ]
+    },
+    {
+      "key": "fl25tu16anniv",
+      "ingredient": "Fl25Tu16Anniv",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        345
+      ]
+    },
+    {
+      "key": "wt26ss16choco",
+      "ingredient": "Wt26SS16Choco",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        346
+      ]
+    },
+    {
+      "key": "wt26ss16green",
+      "ingredient": "Wt26SS16Green",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        347
+      ]
+    },
+    {
+      "key": "xm25btlstanley",
+      "ingredient": "Xm25BTLStanley",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        348
+      ]
+    },
+    {
+      "key": "xm25quen30lil",
+      "ingredient": "Xm25Quen30Lil",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        349
+      ]
+    },
+    {
+      "key": "xm25stopdust",
+      "ingredient": "Xm25StopDust",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 3,
+      "sourceRows": [
+        350
+      ]
+    },
+    {
+      "key": "beentherecancun14oz",
+      "ingredient": "Been There Cancun 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        351
+      ]
+    },
+    {
+      "key": "beentheretulum14oz",
+      "ingredient": "Been There Tulum 14 oz",
+      "category": "Tazas",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        352
+      ]
+    },
+    {
+      "key": "fl25ccss16vac",
+      "ingredient": "Fl25CCSS16Vac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        353
+      ]
+    },
+    {
+      "key": "fl25sscc16purple",
+      "ingredient": "Fl25SSCC16Purple",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        354
+      ]
+    },
+    {
+      "key": "fl25sstu20anni",
+      "ingredient": "Fl25SSTu20Anni",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        355
+      ]
+    },
+    {
+      "key": "fl25stanley16",
+      "ingredient": "Fl25Stanley16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        356
+      ]
+    },
+    {
+      "key": "sp26blindbox",
+      "ingredient": "Sp26BlindBox",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        357
+      ]
+    },
+    {
+      "key": "sp26ss16cherry",
+      "ingredient": "Sp26SS16Cherry",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        358
+      ]
+    },
+    {
+      "key": "xm25mug12house",
+      "ingredient": "Xm25Mug12House",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        359
+      ]
+    },
+    {
+      "key": "xm25ss16diam",
+      "ingredient": "Xm25SS16Diam",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        360
+      ]
+    },
+    {
+      "key": "xm25stopdermo",
+      "ingredient": "Xm25StopDermo",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        361
+      ]
+    },
+    {
+      "key": "xm25stopelev",
+      "ingredient": "Xm25StopElev",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        362
+      ]
+    },
+    {
+      "key": "xm25stopwill",
+      "ingredient": "Xm25StopWill",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 2,
+      "sourceRows": [
+        363
+      ]
+    },
+    {
+      "key": "bttu16mex",
+      "ingredient": "BTTu16Mex",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        364
+      ]
+    },
+    {
+      "key": "cor23ss20copper",
+      "ingredient": "COR23 SS20Copper",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        365
+      ]
+    },
+    {
+      "key": "fl25monvxmc",
+      "ingredient": "Fl25MonVXMC",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        366
+      ]
+    },
+    {
+      "key": "fl25mug14abrac",
+      "ingredient": "Fl25Mug14Abrac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        367
+      ]
+    },
+    {
+      "key": "fl25reusccesp",
+      "ingredient": "Fl25ReusCCEsp",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        368
+      ]
+    },
+    {
+      "key": "fl25ss20grad",
+      "ingredient": "Fl25SS20Grad",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        369
+      ]
+    },
+    {
+      "key": "fl25ssbtl20",
+      "ingredient": "Fl25SSBTL20",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        370
+      ]
+    },
+    {
+      "key": "resss16tgradient",
+      "ingredient": "ResSS16TGradient",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        371
+      ]
+    },
+    {
+      "key": "si25quencher30",
+      "ingredient": "SI25Quencher30",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        372
+      ]
+    },
+    {
+      "key": "si25vac24stanley",
+      "ingredient": "SI25Vac24Stanley",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        373
+      ]
+    },
+    {
+      "key": "sii25cc24frblue",
+      "ingredient": "SII25CC24FRBlue",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        374
+      ]
+    },
+    {
+      "key": "sii25sscc24frb",
+      "ingredient": "SII25SSCC24FRB",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        375
+      ]
+    },
+    {
+      "key": "sii25tu16blue",
+      "ingredient": "SII25Tu16Blue",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        376
+      ]
+    },
+    {
+      "key": "wt26canteen",
+      "ingredient": "Wt26Canteen",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        377
+      ]
+    },
+    {
+      "key": "wt26ss30jac",
+      "ingredient": "Wt26SS30Jac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        378
+      ]
+    },
+    {
+      "key": "xm25btl20twi",
+      "ingredient": "Xm25BTL20Twi",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        379
+      ]
+    },
+    {
+      "key": "xm25mug12stan",
+      "ingredient": "Xm25Mug12Stan",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        380
+      ]
+    },
+    {
+      "key": "xm25quencher30",
+      "ingredient": "Xm25Quencher30",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        381
+      ]
+    },
+    {
+      "key": "xm25redquen30",
+      "ingredient": "Xm25RedQuen30",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        382
+      ]
+    },
+    {
+      "key": "xm25ss12vac",
+      "ingredient": "Xm25SS12Vac",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        383
+      ]
+    },
+    {
+      "key": "xm25ss16charm",
+      "ingredient": "Xm25SS16Charm",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        384
+      ]
+    },
+    {
+      "key": "xm25stanvac16",
+      "ingredient": "Xm25StanVac16",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        385
+      ]
+    },
+    {
+      "key": "xm25stophopp",
+      "ingredient": "Xm25StopHopp",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        386
+      ]
+    },
+    {
+      "key": "xm25tu12hol",
+      "ingredient": "Xm25Tu12Hol",
+      "category": "Tumblers",
+      "unit": "Pieza",
+      "quantity": 1,
+      "sourceRows": [
+        387
+      ]
+    }
+  ],
+  "audit": {
+    "sourceRows": 386,
+    "uniqueItems": 386,
+    "positiveItems": 386,
+    "duplicateRowsConsolidated": 0,
+    "invalidRows": []
+  }
 }

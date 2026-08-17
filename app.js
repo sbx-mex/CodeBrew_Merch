@@ -126,6 +126,7 @@ requestAnimationFrame(()=>window.scrollTo({top:0,behavior:reduce?'auto':'smooth'
 }
 function normalizeSku(value){ return String(value || '').replace(/[^0-9]/g,'').replace(/^0+/,'') || ''; }
 function normalizeText(value){ return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+function normalizeSearchText(value){const text=normalizeText(value);return `${text} ${text.replace(/\s+/g,'')}`.trim();}
 function escapeHtml(value){ return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
 function moneyClean(v){ return String(v || '').trim(); }
 function tierKeys(p){ return Object.keys(p.tier || {}).filter(k => moneyClean(p.tier[k])); }
@@ -163,12 +164,12 @@ function findProduct(raw){
 const input = String(raw || '').trim();
 const numeric = normalizeSku(input);
 if (numeric && numericIndex.has(numeric)) return numericIndex.get(numeric);
-const q = normalizeText(input);
+const q = normalizeText(input),compact=q.replace(/\s+/g,'');
 if (!q) return null;
 if (campaignIndex.has(q)) return campaignIndex.get(q);
 let exact = products.find(p => [p.nombrePos,p.nombreInventario,p.botonPos,p.skuPos].some(v => normalizeText(v) === q));
 if (exact) return exact;
-return products.find(p => normalizeText(`${p.nombrePos} ${p.nombreInventario} ${p.descripcion} ${p.botonPos} ${p.skuPos}`).includes(q)) || null;
+return products.find(p => {const text=normalizeSearchText(`${p.skuIntl} ${p.codigoDia} ${p.nombrePos} ${p.nombreInventario} ${p.descripcion} ${p.botonPos} ${p.skuPos}`);return text.includes(q)||text.includes(compact);}) || null;
 }
 function correctSkuText(value){return String(value||'').replace(/[OoQqD]/g,'0').replace(/[Il|!]/g,'1').replace(/[Ss]/g,'5').replace(/[Bb]/g,'8').replace(/[Zz]/g,'2').replace(/[Gg]/g,'6')}
 function extractSku(text){
@@ -267,10 +268,11 @@ const visualDays=new Set(visualCatalog.map(product=>normalizeSku(product.codigoD
 const combinedWoeItems=[...visualWoeItems,...woeCatalog.filter(item=>!visualDays.has(normalizeSku(item.codigoDia)))];
 const woeSearchRows = combinedWoeItems.map((item,index) => {
 const product=item.visualProduct||{};
-return {item,index,text:normalizeText([
+return {item,index,text:normalizeSearchText([
 item.idWoe,item.codigoDia,item.descripcionSap,...(item.micros||[]),...(item.agrupado||[]),...(item.familia||[]),...(item.conteo||[]),
 ...(item.merch||[]).flatMap(row => [row.descripcionSci,row.nombrePos,row.nombreInventario,row.skuIntl,row.skuPos,row.base]),
-product.displayName,product.descripcionSci,product.nombrePos,product.nombreInventario,product.skuIntl,product.skuPos,product.nameKey,product.articleKey,product.source
+product.displayName,product.descripcionSci,product.nombrePos,product.nombreInventario,product.skuIntl,product.skuPos,product.nameKey,product.articleKey,product.source,
+...(product.sapIds||[]),...(product.sapDescriptions||[]),...(product.microsNames||[]),product.stockMatchName
 ].join(' '))};
 });
 const woeExactIndex = new Map();
@@ -309,11 +311,11 @@ function renderCatalog(raw=''){
 const filters=$('catalogFilters'),grid=$('catalogGrid');if(!filters||!grid)return;
 const merchMode=appMode==='merch',categories=['all','tumbler','mug','merchandise'];
 filters.hidden=!merchMode;if(merchMode){if(!categories.includes(catalogCategory))catalogCategory='all';filters.innerHTML=categories.map(category=>`<button type="button" class="catalog-filter ${category===catalogCategory?'active':''}" data-catalog-filter="${category}" aria-pressed="${category===catalogCategory}">${catalogCategoryLabel(category)}</button>`).join('')}else filters.innerHTML='';
-const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),signature=`${appMode}|${catalogCategory}|${microsCount}|${query}`;
+const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),compactQuery=query.replace(/\s+/g,''),signature=`${appMode}|${catalogCategory}|${microsCount}|${query}`;
 if(signature!==catalogRenderSignature){catalogVisibleLimit=5;catalogRenderSignature=signature;}
-const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const stockFirst=Boolean(query),rank=i=>Number(i.visualProduct?.stockPriority==='active')*(stockFirst?4000:1000)+Number(Boolean(i.visualProduct?.visual?.src))*2000+Number(i.operationalValidation?.sapMicros)*100+Number(i.validation?.sap)*20+Number((Number(i.qty??i.stock??i.stockOnHand??i.units??0)||0)>0)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&tokens.every(token=>row.text.includes(token))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
+const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const stockFirst=Boolean(query),rank=i=>Number(i.visualProduct?.stockPriority==='active')*(stockFirst?4000:1000)+(Number(i.visualProduct?.stockQuantity)||0)*50+Number(Boolean(i.visualProduct?.visual?.src))*2000+Number(i.operationalValidation?.sapMicros)*100+Number(i.validation?.sap)*20+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||Boolean(query)||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&(!query||tokens.every(token=>row.text.includes(token))||row.text.includes(compactQuery))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
 const matches=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))&&matchesCatalogCategory(row.item.visualProduct,catalogCategory));
-const unique=[];const seen=new Set();for(const row of matches){const visualKey=row.item.visualProduct.visual?.src||row.item.visualProduct.articleKey;if(seen.has(visualKey))continue;seen.add(visualKey);unique.push(row.item);}const catalogPriority=item=>Number(item.visualProduct?.stockPriority==='active')*(stockFirst?4:1)+Number(Boolean(item.visualProduct?.visual?.src))*2;unique.sort((a,b)=>catalogPriority(b)-catalogPriority(a)||Number(operationalWoeStatus(b).kind==='ok')-Number(operationalWoeStatus(a).kind==='ok')||articleName(a).localeCompare(articleName(b),'es'));
+const unique=[];const seen=new Set();for(const row of matches){const visualKey=row.item.visualProduct.visual?.src||row.item.visualProduct.articleKey;if(seen.has(visualKey))continue;seen.add(visualKey);unique.push(row.item);}const catalogPriority=item=>Number(item.visualProduct?.stockPriority==='active')*(stockFirst?4:1)+(Number(item.visualProduct?.stockQuantity)||0)*10+Number(Boolean(item.visualProduct?.visual?.src))*2;unique.sort((a,b)=>catalogPriority(b)-catalogPriority(a)||Number(operationalWoeStatus(b).kind==='ok')-Number(operationalWoeStatus(a).kind==='ok')||articleName(a).localeCompare(articleName(b),'es'));
 const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore');$('catalogSummary').textContent=`Mostrando ${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
 loadMore.hidden=visible.length>=unique.length;loadMore.textContent=`Ver ${Math.min(5,unique.length-visible.length)} imágenes más`;
 grid.innerHTML=visible.length?visible.map(item=>{
@@ -337,16 +339,16 @@ results.querySelectorAll('[data-micros-add]').forEach(button=>button.addEventLis
 function scheduleCatalogRender(value){cancelAnimationFrame(catalogSearchFrame);catalogSearchFrame=requestAnimationFrame(()=>{catalogSearchFrame=0;renderCatalog(value);});}
 function splitWoeQueries(raw){ return String(raw||'').split(/[\n,;]+/).map(value=>value.trim()).filter(Boolean); }
 function findWoeMatches(raw,limit=12){
-const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input);
+const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input),compactQuery=query.replace(/\s+/g,'');
 if(!query)return [];
-const exact=numeric?woeExactIndex.get(numeric):null,merchMode=appMode==='merch',exactMatches=(exact||[]).filter(item=>!merchMode||isMerchItem(item));
+const exact=numeric?woeExactIndex.get(numeric):null,merchMode=appMode==='merch',exactMatches=(exact||[]);
 if(exactMatches.length)return exactMatches.slice(0,limit);
 const tokens=query.split(' ').filter(Boolean);
 return woeSearchRows
 .map(row=>{
-if((merchMode&&!isMerchItem(row.item))||!tokens.every(token=>row.text.includes(token)))return null;
+if(!tokens.every(token=>row.text.includes(token))&&!row.text.includes(compactQuery))return null;
 const sap=normalizeText(row.item.descripcionSap),micros=normalizeText((row.item.micros||[]).join(' '));
-let score=Number(row.item.visualProduct?.stockPriority==='active')*100+(row.item.idWoe?12:0)+tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
+let score=Number(row.item.visualProduct?.stockPriority==='active')*100+(Number(row.item.visualProduct?.stockQuantity)||0)*10+(row.item.idWoe?12:0)+tokens.reduce((sum,token)=>sum+(sap.startsWith(token)?8:sap.includes(token)?5:micros.includes(token)?4:2),0);
 if(sap===query||micros===query)score+=30;
 return {item:row.item,score};
 })
@@ -363,7 +365,7 @@ box.innerHTML=matches.length?matches.map((item,index)=>`
 </button>`).join(''):`<div class="woe-no-suggestion"><b>Sin coincidencia exacta.</b><br>Intenta con Código Día, SAP, nombre o Conteo.</div>`;
 box.hidden=false;input.setAttribute('aria-expanded','true');
 box.querySelectorAll('[data-woe-suggestion]').forEach((button,index)=>button.addEventListener('click',()=>{
-addWoeItem(matches[index]);renderWoeResults();input.value='';box.hidden=true;input.setAttribute('aria-expanded','false');input.focus();
+addWoeItem(matches[index]);renderWoeResults();renderWoeSuggestions(input.value);input.focus();
 }));
 }
 function setOperationalFlow(flowId,states,messageId,message,ready=false){

@@ -19,7 +19,7 @@ def run(*arguments: str) -> None:
 
 
 def validate_stage() -> None:
-    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json")
+    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "merch-active-products.json", "Merch_Existente15_08(1).csv")
     missing = [name for name in required if not (STAGE / name).is_file()]
     if missing or not (STAGE / "images").is_dir() or not (STAGE / "featured").is_dir():
         raise RuntimeError(f"Construcción incompleta: {missing}")
@@ -37,6 +37,12 @@ def main() -> int:
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
     try:
+        run(
+            "scripts/build_merch_stock.py",
+            "--csv", "Merch_Existente15_08(1).csv",
+            "--output", str(STAGE / "merch-active-products.json"),
+            "--clean-csv", str(STAGE / "Merch_Existente15_08(1).csv"),
+        )
         run(
             "scripts/generate_products.py",
             "--excel", "Lista_Precios_Base.xlsx",
@@ -69,7 +75,7 @@ def main() -> int:
             "scripts/integrate_uploaded_images.py",
             "--catalog", str(STAGE / "merch-catalog.js"),
             "--report", str(STAGE / "merch-catalog-report.json"),
-            "--active-list", "data/merch-active-products.json",
+            "--active-list", str(STAGE / "merch-active-products.json"),
             "--operational-products", str(STAGE / "products.js"),
             "--woe-catalog", str(STAGE / "woe.js"),
             "--source-dir", "assets/catalog/images",
@@ -82,6 +88,8 @@ def main() -> int:
         data.mkdir(exist_ok=True)
         for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json"):
             (STAGE / name).replace(data / name)
+        (STAGE / "merch-active-products.json").replace(data / "merch-active-products.json")
+        (STAGE / "Merch_Existente15_08(1).csv").replace(ROOT / "Merch_Existente15_08(1).csv")
         image_target = ROOT / "assets/catalog/images"
         if image_target.exists():
             shutil.rmtree(image_target)

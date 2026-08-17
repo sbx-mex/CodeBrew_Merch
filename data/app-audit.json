@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-17T08:25:13+00:00",
+  "auditedAtUtc": "2026-08-17T08:24:38+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "ae9d588ef7e35c50c7fd4778247c80e30f574a71d0a5a78a05a1c2a419d40893",
+  "sourceSha256": "31d2277e9ccc20cfa96f920c350a4c9f8d97f2e3c62b597db202072530115a24",
   "checksTotal": 14,
   "checksOk": 14,
   "warnings": 0,
@@ -11,7 +11,7 @@
     {
       "name": "Motor Excel",
       "status": "ok",
-      "detail": "962 artículos MERCH válidos"
+      "detail": "961 artículos MERCH válidos"
     },
     {
       "name": "Estructura MERCH",
@@ -21,17 +21,17 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,112 artículos; 55 fotos en 4 lotes; todos los archivos relacionados y 54 artículos activos con foto"
+      "detail": "1,186 artículos; 54 fotos en 4 lotes; todos los archivos relacionados y 54 artículos activos con foto"
     },
     {
       "name": "Listado y Excel de fotos",
       "status": "ok",
-      "detail": "1075 códigos Día; 55 con foto; una pestaña de control"
+      "detail": "1148 códigos Día; 54 con foto; una pestaña de control"
     },
     {
       "name": "Control de fotos",
       "status": "ok",
-      "detail": "55 fotos relacionadas; cruce exacto por Código Día o SKU Intl"
+      "detail": "54 fotos relacionadas; cruce exacto por Código Día o SKU Intl"
     },
     {
       "name": "Integridad WOE",
@@ -76,7 +76,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2377 KB auditados en archivos críticos"
+      "detail": "2600 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -84,10 +84,10 @@
       "index.html": 21318,
       "styles.css": 43421,
       "catalog.css": 9548,
-      "app.js": 125835,
-      "data/products.js": 358517,
-      "data/woe.js": 1180446,
-      "data/merch-catalog.js": 692657,
+      "app.js": 126315,
+      "data/products.js": 358182,
+      "data/woe.js": 1180279,
+      "data/merch-catalog.js": 921590,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
@@ -95,7 +95,7 @@
       "index.html": 35000,
       "styles.css": 45000,
       "catalog.css": 30000,
-      "app.js": 126000,
+      "app.js": 127000,
       "data/products.js": 500000,
       "data/woe.js": 1200000,
       "data/merch-catalog.js": 1000000,

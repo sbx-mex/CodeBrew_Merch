@@ -5,12 +5,13 @@ PWA operativa con tres accesos: **Catálogo General**, **Revisión de Merch** y 
 ## Motores
 
 - `Lista_Precios_Base.xlsx`: motor operativo SAP, Micros, Discovery y homologaciones.
+- `Merch_Existente15_08(1).csv`: fuente de existencia; se limpia, consolida sin duplicados y ordena de mayor a menor en cada compilación.
 - `engines/merch-lists/*.xlsx`: listas visuales independientes. El proceso descubre entre 1 y 99 archivos sin depender de un nombre fijo.
 - `assets/catalog/images/lote-01..04/`: las únicas cuatro rutas de fotos; admiten hasta 100 imágenes por carpeta.
 - `scripts/generate_products.py`: construye el cruce operativo.
 - `scripts/generate_manual_catalog.py`: normaliza los artículos sin procesar miles de imágenes; mantiene rápida la actualización.
 - `scripts/integrate_uploaded_images.py`: cruza únicamente por Código Día o SKU internacional y llena primero `lote-01`, después `lote-02`, `lote-03` y `lote-04`.
-- `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación, priorizada por los artículos con existencia; filtra `CON FOTO` o `FALTA FOTO`.
+- `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación; muestra primero `FALTA FOTO`, después existencia activa de mayor a menor y finalmente el cruce SAP.
 
 Llaves generadas:
 
@@ -19,7 +20,7 @@ Llaves generadas:
 
 Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva y se marca en `data/photo-coverage.json`; nunca se asigna por nombre, semejanza visual o suposición.
 
-En Revisión de Merch, los artículos con fotografía aparecen primero. Sólo las tarjetas sin foto muestran una acción compacta **Enviar foto por WhatsApp**. Abre el acceso privado configurado y prepara un mensaje con la descripción, Código Día y SKU internacional del artículo; la persona toma o adjunta la foto legible antes de enviarlo. WhatsApp no permite que una página web active la cámara ni adjunte una fotografía sin intervención de la persona.
+En Revisión de Merch, el orden considera existencia real y disponibilidad de foto. Sólo las tarjetas sin foto muestran una acción compacta **Enviar foto por WhatsApp**. El buscador permanece abierto al seleccionar una coincidencia y cruza Código Día, SAP, SKU internacional, Micros y todas las pestañas operativas, incluso si el artículo aún no tiene ficha visual.
 
 El catálogo es exclusivamente una herramienta interna de conteo: no publica precios ni campos monetarios.
 
@@ -28,7 +29,8 @@ El catálogo es exclusivamente una herramienta interna de conteo: no publica pre
 1. Reemplaza o agrega los Excel dentro de `engines/merch-lists/`.
 2. Conserva los encabezados `CÓDIGO DIA`, `Descripción SCI`, `NOMBRE POS`, `NOMBRE INVENTARIO` y `SKU POS`.
 3. Agrega la foto en cualquiera de las cuatro carpetas y nómbrala sólo con Código Día o SKU internacional, por ejemplo `16999.jpg` o `11186659.jpg`.
-4. Sube el cambio a `main`. El workflow ordena las fotos desde `lote-01`, regenera el catálogo y publica únicamente si toda la auditoría pasa.
+4. Reemplaza `Merch_Existente15_08(1).csv` cuando cambie la existencia.
+5. Sube el cambio a `main`. El workflow limpia duplicados del CSV, ordena las fotos desde `lote-01`, regenera el catálogo y publica únicamente si toda la auditoría pasa.
 
 Para actualizar una foto ya existente, reemplaza el archivo conservando su nombre. El integrador publica una sola foto por artículo y descarta copias repetidas. La interfaz muestra cada imagen una sola vez y no abre una segunda vista ampliada.
 Si la misma foto o identificador aparece en más de una carpeta, se conserva la primera según el orden `lote-01` a `lote-04` y las copias posteriores se ignoran y desaparecen al publicar. Esto evita que un duplicado detenga el workflow.
