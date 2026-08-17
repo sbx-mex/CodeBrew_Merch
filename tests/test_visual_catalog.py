@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 from PIL import Image
-from scripts.integrate_uploaded_images import discover_images, identifier
+from scripts.integrate_uploaded_images import discover_images, identifier, validate_published_lots
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,6 +110,17 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
             self.assertEqual(lots[2]["ignoredFiles"][0]["reason"], "duplicate-content")
 
+    def test_post_publish_audit_rejects_duplicates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "images"
+            for number in range(1, 5):
+                (source / f"lote-{number:02d}").mkdir(parents=True, exist_ok=True)
+            image = Image.new("RGB", (20, 20), "green")
+            image.save(source / "lote-01/16162.jpg")
+            image.save(source / "lote-04/16378.jpg")
+            with self.assertRaisesRegex(ValueError, "Duplicado detectado después de publicar"):
+                validate_published_lots(source)
+
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -133,7 +144,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("Ampliar", app)
         self.assertNotIn("woeSearchClear", html + app)
         self.assertIn("missingPhotoWhatsappUrl", app)
-        self.assertIn("https://wa.me/525521104575", app)
+        self.assertIn("525521107475", app)
+        self.assertIn("https://wa.me/", app)
+        self.assertIn("whatsapp://send?phone=", app)
+        self.assertIn("data-photo-whatsapp", app)
+        self.assertIn("window.location.assign", app)
         self.assertIn("Código Día:", app)
         self.assertIn("Nombre sugerido del archivo:", app)
         self.assertIn("Toma una foto completa y legible del termo", app)

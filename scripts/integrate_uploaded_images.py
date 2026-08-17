@@ -122,6 +122,28 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
     return images, lot_report
 
 
+def validate_published_lots(image_dir: Path) -> dict:
+    lots = sorted(path for path in image_dir.iterdir() if path.is_dir())
+    if [lot.name for lot in lots] != list(LOT_NAMES):
+        raise ValueError(f"Publicación incompleta: se requieren {', '.join(LOT_NAMES)}")
+    seen_keys: set[str] = set()
+    seen_hashes: set[str] = set()
+    total = 0
+    for lot in lots:
+        images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
+        if len(images) > MAX_IMAGES_PER_LOT:
+            raise ValueError(f"{lot.name}: publicación mayor a {MAX_IMAGES_PER_LOT} imágenes")
+        for image in images:
+            key = normalize_name(re.sub(r"_\d+$", "", image.stem))
+            digest = hashlib.sha256(image.read_bytes()).hexdigest()
+            if key in seen_keys or digest in seen_hashes:
+                raise ValueError(f"Duplicado detectado después de publicar: {image.relative_to(image_dir)}")
+            seen_keys.add(key)
+            seen_hashes.add(digest)
+        total += len(images)
+    return {"status": "ok", "folders": len(lots), "images": total, "duplicates": 0}
+
+
 def build_indices(products: list[dict]) -> dict[str, dict[str, list[dict]]]:
     fields = ("codigoDia", "skuIntl")
     indices = {field: defaultdict(list) for field in fields}
@@ -288,6 +310,8 @@ def integrate(
         if lot.name not in used_output_lots:
             (lot / ".gitkeep").write_text("", encoding="utf-8")
 
+    post_publish_audit = validate_published_lots(image_output)
+
     products.sort(key=lambda product: (
         product.get("visual") is None,
         product.get("stockPriority") != "active",
@@ -342,12 +366,13 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v6",
+        "version": "manual-upload-v7",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
         "duplicatePolicy": "keep-first-lot-ignore-later",
         "packing": "fill-lote-01-first-then-02-03-04",
+        "postPublishAudit": post_publish_audit,
         "lots": lots,
         "totals": totals,
         "files": file_rows,
