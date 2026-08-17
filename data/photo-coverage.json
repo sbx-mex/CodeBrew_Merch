@@ -1,35 +1,50 @@
 {
   "status": "ok",
-  "version": "manual-upload-v3",
+  "version": "manual-upload-v4",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
     "skuIntl"
   ],
   "duplicateProtection": "one-photo-per-article",
+  "duplicatePolicy": "keep-first-lot-ignore-later",
   "packing": "fill-lote-01-first-then-02-03-04",
   "lots": [
     {
       "folder": "lote-01",
-      "images": 37
+      "images": 37,
+      "accepted": 37,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-02",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-03",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-04",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     }
   ],
   "totals": {
     "imageFiles": 37,
+    "publishedImageFiles": 37,
     "matchedImageFiles": 37,
     "unmatchedImageFiles": 0,
+    "duplicateImageFilesIgnored": 0,
     "matchedProducts": 40,
     "activeProducts": 891,
     "activeWithPhoto": 36,

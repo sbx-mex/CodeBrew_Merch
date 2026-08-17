@@ -53,19 +53,31 @@
   "manualImageLots": [
     {
       "folder": "lote-01",
-      "images": 37
+      "images": 37,
+      "accepted": 37,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-02",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-03",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     },
     {
       "folder": "lote-04",
-      "images": 0
+      "images": 0,
+      "accepted": 0,
+      "duplicatesIgnored": 0,
+      "ignoredFiles": []
     }
   ]
 }
