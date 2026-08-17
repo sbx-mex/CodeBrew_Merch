@@ -667,6 +667,17 @@
       ]
     },
     {
+      "file": null,
+      "uploadedFrom": "lote-01/11178957.jpeg",
+      "identifier": "11178957",
+      "status": "ignored-duplicate-article",
+      "matchedBy": "skuIntl",
+      "kept": [
+        "lote-01/011178957_1.jpg"
+      ],
+      "products": []
+    },
+    {
       "file": "lote-01/11372.jpeg",
       "uploadedFrom": "lote-01/11372.jpeg",
       "identifier": "11372",
@@ -1012,17 +1023,6 @@
           "stockPriority": "active"
         }
       ]
-    },
-    {
-      "file": null,
-      "uploadedFrom": "lote-01/16919.jpeg",
-      "identifier": "16919",
-      "status": "ignored-duplicate-article",
-      "matchedBy": "codigoDia",
-      "kept": [
-        "lote-01/011178957_1.jpg"
-      ],
-      "products": []
     },
     {
       "file": "lote-01/16923.jpeg",
