@@ -11,7 +11,7 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 0
+      "images": 17
     },
     {
       "folder": "lote-02",
@@ -23,24 +23,143 @@
     },
     {
       "folder": "lote-04",
-      "images": 7
+      "images": 0
     }
   ],
   "totals": {
-    "imageFiles": 7,
-    "matchedImageFiles": 7,
+    "imageFiles": 17,
+    "matchedImageFiles": 17,
     "unmatchedImageFiles": 0,
-    "matchedProducts": 7,
-    "activeProducts": 886,
-    "activeWithPhoto": 4,
-    "activeMissingPhoto": 882,
+    "matchedProducts": 20,
+    "activeProducts": 891,
+    "activeWithPhoto": 17,
+    "activeMissingPhoto": 874,
     "secondaryProducts": 136,
-    "appendedOperationalProducts": 3
+    "appendedOperationalProducts": 8
   },
   "files": [
     {
+      "file": "lote-01/011170102.jpeg",
+      "uploadedFrom": "lote-01/011170102.jpeg",
+      "identifier": "11170102",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16643--pos-58701",
+          "codigoDia": "16643",
+          "skuIntl": "11170102",
+          "skuPos": "58701",
+          "displayName": "DiscoveryCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170147.jpeg",
+      "uploadedFrom": "lote-01/011170147.jpeg",
+      "identifier": "11170147",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16688--pos-58728",
+          "codigoDia": "16688",
+          "skuIntl": "11170147",
+          "skuPos": "58728",
+          "displayName": "Disc2ozMxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170149.jpeg",
+      "uploadedFrom": "lote-01/011170149.jpeg",
+      "identifier": "11170149",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16689--pos-58726",
+          "codigoDia": "16689",
+          "skuIntl": "11170149",
+          "skuPos": "58726",
+          "displayName": "Disc2ozCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170174.jpeg",
+      "uploadedFrom": "lote-01/011170174.jpeg",
+      "identifier": "11170174",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16681--pos-58739",
+          "codigoDia": "16681",
+          "skuIntl": "11170174",
+          "skuPos": "58739",
+          "displayName": "DiscCC24MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011170187.jpeg",
+      "uploadedFrom": "lote-01/011170187.jpeg",
+      "identifier": "11170187",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16601--pos-58743",
+          "codigoDia": "16601",
+          "skuIntl": "11170187",
+          "skuPos": "58743",
+          "displayName": "ToteBag MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011176710.jpeg",
+      "uploadedFrom": "lote-01/011176710.jpeg",
+      "identifier": "11176710",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16664--pos-58791",
+          "codigoDia": "16664",
+          "skuIntl": "11176710",
+          "skuPos": "58791",
+          "displayName": "Sp26CC24Dome",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178919.jpeg",
+      "uploadedFrom": "lote-01/011178919.jpeg",
+      "identifier": "11178919",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16922--pos-58811",
+          "codigoDia": "16922",
+          "skuIntl": "11178919",
+          "skuPos": "58811",
+          "displayName": "Sp26Mug14Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/11186646.jpg",
-      "uploadedFrom": "lote-04/11186646.jpg",
+      "uploadedFrom": "lote-01/11186646.jpg",
       "identifier": "11186646",
       "status": "matched",
       "matchedBy": "skuIntl",
@@ -57,7 +176,7 @@
     },
     {
       "file": "lote-01/11186650.jpg",
-      "uploadedFrom": "lote-04/11186650.jpg",
+      "uploadedFrom": "lote-01/11186650.jpg",
       "identifier": "11186650",
       "status": "matched",
       "matchedBy": "skuIntl",
@@ -74,7 +193,7 @@
     },
     {
       "file": "lote-01/11186658.jpg",
-      "uploadedFrom": "lote-04/11186658.jpg",
+      "uploadedFrom": "lote-01/11186658.jpg",
       "identifier": "11186658",
       "status": "matched",
       "matchedBy": "skuIntl",
@@ -91,7 +210,7 @@
     },
     {
       "file": "lote-01/11186659.jpg",
-      "uploadedFrom": "lote-04/11186659.jpg",
+      "uploadedFrom": "lote-01/11186659.jpg",
       "identifier": "11186659",
       "status": "matched",
       "matchedBy": "skuIntl",
@@ -107,8 +226,83 @@
       ]
     },
     {
+      "file": "lote-01/16531.jpeg",
+      "uploadedFrom": "lote-01/16531.jpeg",
+      "identifier": "16531",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16531--pos-58769",
+          "codigoDia": "16531",
+          "skuIntl": "NA",
+          "skuPos": "58769",
+          "displayName": "Sp26NEBlack",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16531--pos-58775",
+          "codigoDia": "16531",
+          "skuIntl": "NA",
+          "skuPos": "58775",
+          "displayName": "Sp26NEWhite",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16532.jpeg",
+      "uploadedFrom": "lote-01/16532.jpeg",
+      "identifier": "16532",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16532--pos-58771",
+          "codigoDia": "16532",
+          "skuIntl": "NA",
+          "skuPos": "58771",
+          "displayName": "Sp26NECrossB",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16532--pos-58773",
+          "codigoDia": "16532",
+          "skuIntl": "NA",
+          "skuPos": "58773",
+          "displayName": "Sp26NELlavero",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16955.jpeg",
+      "uploadedFrom": "lote-01/16955.jpeg",
+      "identifier": "16955",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16955--pos-58842",
+          "codigoDia": "16955",
+          "skuIntl": "NA",
+          "skuPos": "58842",
+          "displayName": "WC26NESBX",
+          "stockPriority": "active"
+        },
+        {
+          "articleKey": "dia-16955--pos-58840",
+          "codigoDia": "16955",
+          "skuIntl": "NA",
+          "skuPos": "58840",
+          "displayName": "WC26NESiren",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/17359.jpg",
-      "uploadedFrom": "lote-04/17359.jpg",
+      "uploadedFrom": "lote-01/17359.jpg",
       "identifier": "17359",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -125,7 +319,7 @@
     },
     {
       "file": "lote-01/17360.jpg",
-      "uploadedFrom": "lote-04/17360.jpg",
+      "uploadedFrom": "lote-01/17360.jpg",
       "identifier": "17360",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -142,7 +336,7 @@
     },
     {
       "file": "lote-01/17362.jpg",
-      "uploadedFrom": "lote-04/17362.jpg",
+      "uploadedFrom": "lote-01/17362.jpg",
       "identifier": "17362",
       "status": "matched",
       "matchedBy": "codigoDia",

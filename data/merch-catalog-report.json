@@ -3,15 +3,15 @@
   "version": "manual-catalog-v1",
   "engineFiles": 3,
   "visualSourceFiles": 3,
-  "products": 1022,
+  "products": 1027,
   "duplicateRowsIgnored": 28,
-  "withSourceImage": 7,
+  "withSourceImage": 20,
   "withApproximation": 0,
   "uniqueVisuals": 0,
   "atlases": 0,
   "featuredImages": 0,
-  "restoredImageFiles": 7,
-  "publishedImageFiles": 7,
+  "restoredImageFiles": 17,
+  "publishedImageFiles": 17,
   "moneyFieldsPublished": 0,
   "imageMode": "manual-upload",
   "categories": {
@@ -44,16 +44,16 @@
   ],
   "visualSourceAudit": [],
   "imageNote": "Una fotografía manual por artículo.",
-  "matchedImageFiles": 7,
+  "matchedImageFiles": 17,
   "unmatchedImageFiles": 0,
-  "activeStockProducts": 886,
-  "activeWithPhoto": 4,
-  "activeMissingPhoto": 882,
+  "activeStockProducts": 891,
+  "activeWithPhoto": 17,
+  "activeMissingPhoto": 874,
   "secondaryProducts": 136,
   "manualImageLots": [
     {
       "folder": "lote-01",
-      "images": 0
+      "images": 17
     },
     {
       "folder": "lote-02",
@@ -65,7 +65,7 @@
     },
     {
       "folder": "lote-04",
-      "images": 7
+      "images": 0
     }
   ]
 }
