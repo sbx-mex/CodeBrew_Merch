@@ -11,7 +11,7 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 27
+      "images": 37
     },
     {
       "folder": "lote-02",
@@ -27,13 +27,13 @@
     }
   ],
   "totals": {
-    "imageFiles": 27,
-    "matchedImageFiles": 27,
+    "imageFiles": 37,
+    "matchedImageFiles": 37,
     "unmatchedImageFiles": 0,
-    "matchedProducts": 30,
+    "matchedProducts": 40,
     "activeProducts": 891,
-    "activeWithPhoto": 26,
-    "activeMissingPhoto": 865,
+    "activeWithPhoto": 36,
+    "activeMissingPhoto": 855,
     "secondaryProducts": 136,
     "appendedOperationalProducts": 8
   },
@@ -323,6 +323,176 @@
           "skuIntl": "11178945",
           "skuPos": "58835",
           "displayName": "WC26Stan20IceF",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178946.jpg",
+      "uploadedFrom": "lote-01/011178946.jpg",
+      "identifier": "11178946",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16913--pos-58814",
+          "codigoDia": "16913",
+          "skuIntl": "11178946",
+          "skuPos": "58814",
+          "displayName": "WC26SS20Twist",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178948.jpeg",
+      "uploadedFrom": "lote-01/011178948.jpeg",
+      "identifier": "11178948",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16915--pos-58821",
+          "codigoDia": "16915",
+          "skuIntl": "11178948",
+          "skuPos": "58821",
+          "displayName": "WC26StanHand20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178952.jpeg",
+      "uploadedFrom": "lote-01/011178952.jpeg",
+      "identifier": "11178952",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16875--pos-58828",
+          "codigoDia": "16875",
+          "skuIntl": "11178952",
+          "skuPos": "58828",
+          "displayName": "WC26SSCC24Grad",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178956.jpeg",
+      "uploadedFrom": "lote-01/011178956.jpeg",
+      "identifier": "11178956",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16916--pos-50735",
+          "codigoDia": "16916",
+          "skuIntl": "11178956",
+          "skuPos": "50735",
+          "displayName": "SII26Quencher30P",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178957_1.jpg",
+      "uploadedFrom": "lote-01/011178957_1.jpg",
+      "identifier": "11178957",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16919--pos-58820",
+          "codigoDia": "16919",
+          "skuIntl": "11178957",
+          "skuPos": "58820",
+          "displayName": "WC26StanQuen30",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178959.jpeg",
+      "uploadedFrom": "lote-01/011178959.jpeg",
+      "identifier": "11178959",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16897--pos-58816",
+          "codigoDia": "16897",
+          "skuIntl": "11178959",
+          "skuPos": "58816",
+          "displayName": "WC26CCSS24Puffy",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178969.jpeg",
+      "uploadedFrom": "lote-01/011178969.jpeg",
+      "identifier": "11178969",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16910--pos-58827",
+          "codigoDia": "16910",
+          "skuIntl": "11178969",
+          "skuPos": "58827",
+          "displayName": "WC26SS16Pink",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178971.jpeg",
+      "uploadedFrom": "lote-01/011178971.jpeg",
+      "identifier": "11178971",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16911--pos-58829",
+          "codigoDia": "16911",
+          "skuIntl": "11178971",
+          "skuPos": "58829",
+          "displayName": "WC26SS16Charm",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011178973.jpg",
+      "uploadedFrom": "lote-01/011178973.jpg",
+      "identifier": "11178973",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16925--pos-58815",
+          "codigoDia": "16925",
+          "skuIntl": "11178973",
+          "skuPos": "58815",
+          "displayName": "WC26SS16Lid",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/011179005.jpeg",
+      "uploadedFrom": "lote-01/011179005.jpeg",
+      "identifier": "11179005",
+      "status": "matched",
+      "matchedBy": "skuIntl",
+      "products": [
+        {
+          "articleKey": "dia-16906--pos-58823",
+          "codigoDia": "16906",
+          "skuIntl": "11179005",
+          "skuPos": "58823",
+          "displayName": "WC26SS30Pride",
           "stockPriority": "active"
         }
       ]

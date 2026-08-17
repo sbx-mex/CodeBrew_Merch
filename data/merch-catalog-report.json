@@ -5,13 +5,13 @@
   "visualSourceFiles": 3,
   "products": 1027,
   "duplicateRowsIgnored": 28,
-  "withSourceImage": 30,
+  "withSourceImage": 40,
   "withApproximation": 0,
   "uniqueVisuals": 0,
   "atlases": 0,
   "featuredImages": 0,
-  "restoredImageFiles": 27,
-  "publishedImageFiles": 27,
+  "restoredImageFiles": 37,
+  "publishedImageFiles": 37,
   "moneyFieldsPublished": 0,
   "imageMode": "manual-upload",
   "categories": {
@@ -44,16 +44,16 @@
   ],
   "visualSourceAudit": [],
   "imageNote": "Una fotografía manual por artículo.",
-  "matchedImageFiles": 27,
+  "matchedImageFiles": 37,
   "unmatchedImageFiles": 0,
   "activeStockProducts": 891,
-  "activeWithPhoto": 26,
-  "activeMissingPhoto": 865,
+  "activeWithPhoto": 36,
+  "activeMissingPhoto": 855,
   "secondaryProducts": 136,
   "manualImageLots": [
     {
       "folder": "lote-01",
-      "images": 27
+      "images": 37
     },
     {
       "folder": "lote-02",
