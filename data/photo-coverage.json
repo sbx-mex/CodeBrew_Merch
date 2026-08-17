@@ -9,6 +9,14 @@
   "duplicateProtection": "one-photo-per-article",
   "duplicatePolicy": "keep-first-lot-ignore-later",
   "packing": "fill-lote-01-first-then-02-03-04",
+  "crossCheck": [
+    "SAP",
+    "Catalogo Micros",
+    "Base_Campaña",
+    "Discovery",
+    "Homologados",
+    "Essentials"
+  ],
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
@@ -52,11 +60,12 @@
     "unmatchedImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
     "matchedProducts": 44,
-    "activeProducts": 891,
+    "activeProducts": 941,
     "activeWithPhoto": 40,
-    "activeMissingPhoto": 851,
-    "secondaryProducts": 136,
-    "appendedOperationalProducts": 8
+    "activeMissingPhoto": 901,
+    "secondaryProducts": 170,
+    "appendedOperationalProducts": 8,
+    "appendedWoeProducts": 84
   },
   "files": [
     {

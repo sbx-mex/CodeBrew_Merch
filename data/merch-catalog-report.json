@@ -3,7 +3,7 @@
   "version": "manual-catalog-v1",
   "engineFiles": 3,
   "visualSourceFiles": 3,
-  "products": 1027,
+  "products": 1111,
   "duplicateRowsIgnored": 28,
   "withSourceImage": 44,
   "withApproximation": 0,
@@ -46,10 +46,10 @@
   "imageNote": "Una fotografía manual por artículo.",
   "matchedImageFiles": 40,
   "unmatchedImageFiles": 0,
-  "activeStockProducts": 891,
+  "activeStockProducts": 941,
   "activeWithPhoto": 40,
-  "activeMissingPhoto": 851,
-  "secondaryProducts": 136,
+  "activeMissingPhoto": 901,
+  "secondaryProducts": 170,
   "manualImageLots": [
     {
       "folder": "lote-01",
@@ -79,5 +79,6 @@
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     }
-  ]
+  ],
+  "appendedWoeProducts": 84
 }
