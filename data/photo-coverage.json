@@ -22,14 +22,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 56,
+    "images": 58,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 57,
-      "accepted": 57,
+      "images": 59,
+      "accepted": 59,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -56,16 +56,16 @@
     }
   ],
   "totals": {
-    "imageFiles": 57,
-    "publishedImageFiles": 56,
-    "matchedImageFiles": 56,
+    "imageFiles": 59,
+    "publishedImageFiles": 58,
+    "matchedImageFiles": 58,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 1,
-    "matchedProducts": 60,
+    "matchedProducts": 62,
     "activeProducts": 1017,
-    "activeWithPhoto": 56,
-    "activeMissingPhoto": 961,
+    "activeWithPhoto": 58,
+    "activeMissingPhoto": 959,
     "secondaryProducts": 169,
     "appendedOperationalProducts": 83,
     "appendedWoeProducts": 84
@@ -878,6 +878,23 @@
       ]
     },
     {
+      "file": "lote-01/16610.jpeg",
+      "uploadedFrom": "lote-01/16610.jpeg",
+      "identifier": "16610",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16610--pos-50747",
+          "codigoDia": "16610",
+          "skuIntl": "11179880",
+          "skuPos": "50747",
+          "displayName": "SII26SS16Resort",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16719.jpeg",
       "uploadedFrom": "lote-01/16719.jpeg",
       "identifier": "16719",
@@ -907,6 +924,23 @@
           "skuIntl": "11176587",
           "skuPos": "50740",
           "displayName": "SII26SSCC16Pony",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16777.jpeg",
+      "uploadedFrom": "lote-01/16777.jpeg",
+      "identifier": "16777",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16777--pos-50746",
+          "codigoDia": "16777",
+          "skuIntl": "11179885",
+          "skuPos": "50746",
+          "displayName": "SII26BTL20Resort",
           "stockPriority": "active"
         }
       ]
