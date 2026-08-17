@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "version": "manual-upload-v6",
+  "version": "manual-upload-v7",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
@@ -9,11 +9,17 @@
   "duplicateProtection": "one-photo-per-article",
   "duplicatePolicy": "keep-first-lot-ignore-later",
   "packing": "fill-lote-01-first-then-02-03-04",
+  "postPublishAudit": {
+    "status": "ok",
+    "folders": 4,
+    "images": 40,
+    "duplicates": 0
+  },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 41,
-      "accepted": 41,
+      "images": 40,
+      "accepted": 40,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -40,11 +46,11 @@
     }
   ],
   "totals": {
-    "imageFiles": 41,
+    "imageFiles": 40,
     "publishedImageFiles": 40,
     "matchedImageFiles": 40,
     "unmatchedImageFiles": 0,
-    "duplicateImageFilesIgnored": 1,
+    "duplicateImageFilesIgnored": 0,
     "matchedProducts": 44,
     "activeProducts": 891,
     "activeWithPhoto": 40,
@@ -722,17 +728,6 @@
           "stockPriority": "active"
         }
       ]
-    },
-    {
-      "file": null,
-      "uploadedFrom": "lote-01/16919.jpeg",
-      "identifier": "16919",
-      "status": "ignored-duplicate-article",
-      "matchedBy": "codigoDia",
-      "kept": [
-        "lote-01/011178957_1.jpg"
-      ],
-      "products": []
     },
     {
       "file": "lote-01/16923.jpeg",
