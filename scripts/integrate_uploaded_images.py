@@ -69,6 +69,12 @@ def load_operational_products(path: Path) -> list[dict]:
     return json.loads(raw)
 
 
+def load_woe_catalog(path: Path) -> list[dict]:
+    text = path.read_text(encoding="utf-8")
+    raw = text.split("window.WOE_CATALOG = ", 1)[1].split(";\nwindow.WOE_META", 1)[0]
+    return json.loads(raw)
+
+
 def load_active_names(path: Path) -> set[str]:
     if not path.is_file():
         return set()
@@ -197,11 +203,54 @@ def add_operational_products(products: list[dict], operational_path: Path, image
     return added
 
 
+def add_woe_merch_products(products: list[dict], woe_catalog_path: Path) -> int:
+    """Añade Merch confirmado por SAP + Micros aunque todavía no tenga fotografía."""
+    indices = build_indices(products)
+    existing_article_keys = {product.get("articleKey") for product in products}
+    added = 0
+    for row in load_woe_catalog(woe_catalog_path):
+        category = str(row.get("merchCategory") or "").strip()
+        codigo = str(row.get("codigoDia") or "").strip()
+        day_key = identifier(codigo)
+        if not category or not day_key or indices["codigoDia"].get(day_key):
+            continue
+        display_name = next((clean for clean in (
+            str((row.get("micros") or [""])[0]).strip(),
+            str(row.get("descripcionSap") or "").strip(),
+        ) if clean), "Artículo Merch")
+        woe_id = str(row.get("idWoe") or "").strip()
+        article_key = f"dia-{slug(codigo, 18)}--pos-sap-{slug(woe_id or display_name, 20)}"
+        if article_key in existing_article_keys:
+            continue
+        product = {
+            "articleKey": article_key,
+            "nameKey": slug(display_name),
+            "codigoDia": codigo,
+            "skuPos": "",
+            "skuIntl": "",
+            "descripcionSci": str(row.get("descripcionSap") or "").strip(),
+            "nombrePos": display_name,
+            "nombreInventario": display_name,
+            "displayName": display_name,
+            "category": category,
+            "section": "Cruce SAP + Micros",
+            "source": "Cruce SAP + Micros",
+            "sourceFile": "Lista_Precios_Base.xlsx",
+            "sourceRow": row.get("sourceRow"),
+        }
+        products.append(product)
+        existing_article_keys.add(article_key)
+        indices["codigoDia"][day_key].append(product)
+        added += 1
+    return added
+
+
 def integrate(
     catalog_path: Path,
     report_path: Path,
     active_list: Path,
     operational_products: Path,
+    woe_catalog: Path,
     source_dir: Path,
     image_output: Path,
     coverage_output: Path,
@@ -210,6 +259,7 @@ def integrate(
     products = payload.get("products", [])
     active_names = load_active_names(active_list)
     images, lots = discover_images(source_dir)
+    appended_woe_products = add_woe_merch_products(products, woe_catalog)
     appended_products = add_operational_products(products, operational_products, {image_identifier(path) for path in images})
     indices = build_indices(products)
 
@@ -336,6 +386,7 @@ def integrate(
         "activeMissingPhoto": active_count - active_with_photo,
         "secondaryProducts": len(products) - active_count,
         "appendedOperationalProducts": appended_products,
+        "appendedWoeProducts": appended_woe_products,
     }
     meta = payload.setdefault("meta", {})
     meta.update({
@@ -353,6 +404,7 @@ def integrate(
         "secondaryProducts": len(products) - active_count,
         "manualImageLots": lots,
         "products": len(products),
+        "appendedWoeProducts": appended_woe_products,
     })
     payload["products"] = products
     catalog_path.write_text(
@@ -372,6 +424,7 @@ def integrate(
         "duplicateProtection": "one-photo-per-article",
         "duplicatePolicy": "keep-first-lot-ignore-later",
         "packing": "fill-lote-01-first-then-02-03-04",
+        "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
         "postPublishAudit": post_publish_audit,
         "lots": lots,
         "totals": totals,
@@ -388,11 +441,12 @@ def main() -> int:
     parser.add_argument("--report", type=Path, default=Path("data/merch-catalog-report.json"))
     parser.add_argument("--active-list", type=Path, default=Path("data/merch-active-products.json"))
     parser.add_argument("--operational-products", type=Path, default=Path("data/products.js"))
+    parser.add_argument("--woe-catalog", type=Path, default=Path("data/woe.js"))
     parser.add_argument("--source-dir", type=Path, default=Path("assets/catalog/images"))
     parser.add_argument("--image-output", type=Path, default=Path(".codebrew-build/images"))
     parser.add_argument("--coverage-output", type=Path, default=Path("data/photo-coverage.json"))
     args = parser.parse_args()
-    result = integrate(args.catalog, args.report, args.active_list, args.operational_products, args.source_dir, args.image_output, args.coverage_output)
+    result = integrate(args.catalog, args.report, args.active_list, args.operational_products, args.woe_catalog, args.source_dir, args.image_output, args.coverage_output)
     print(json.dumps(result["totals"], ensure_ascii=False))
     return 0
 

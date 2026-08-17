@@ -79,6 +79,46 @@ def canonical_text(value: object) -> str:
     return re.sub(r"\s+", " ", str(value or "").strip())
 
 
+def merch_category_from_sources(description, micros, micros_meta, merch) -> str:
+    """Clasifica Merch sólo cuando alguna pestaña operativa lo confirma."""
+    if merch:
+        return ""
+    classification = normalize_header(" ".join(
+        str(value or "")
+        for item in micros_meta
+        for value in (item.get("agrupado"), item.get("familia"), item.get("conteo"))
+    ))
+    merch_confirmation = any(
+        token in classification
+        for token in ("mercancia", "merch", "tumbler", "taza", "mug")
+    )
+    if not merch_confirmation:
+        return ""
+    searchable = normalize_header(" ".join([
+        str(description or ""),
+        *[str(value or "") for value in micros],
+        *[
+            str(value or "")
+            for row in merch
+            for value in (
+                row.get("descripcionSci"), row.get("nombrePos"),
+                row.get("nombreInventario"), row.get("skuIntl"), row.get("skuPos"),
+            )
+        ],
+    ]))
+    if any(token in searchable for token in ("cold cup", "cld cup", "ccup")):
+        return "cold-cup"
+    if any(token in searchable for token in ("water bottle", "wtr btl", "bottle", "botella")):
+        return "bottle"
+    if any(token in searchable for token in ("tumbler", "tmblr", "tumb ")):
+        return "tumbler"
+    if any(token in searchable for token in ("mug", "taza", "ceramic", "cermc")):
+        return "mug"
+    if any(token in searchable for token in ("bag", "tote", "key ring", "llavero", "iman", "magnet")):
+        return "accessory"
+    return "other"
+
+
 def homologate_campaign(value: object):
     """Devuelve campaña homologada sin aplicar coincidencias parciales ambiguas."""
     original = clean_text(value)
@@ -374,17 +414,20 @@ def parse_woe_catalog(workbook, products):
         seen_dia[code] += 1
         micros = micros_by_dia.get(code, [])
         merch = merch_by_dia.get(code, [])
+        micros_meta = micros_meta_by_dia.get(code, [])
+        merch_category = merch_category_from_sources(description, micros, micros_meta, merch)
         catalog.append({
             "idWoe": woe_id,
             "codigoDia": code,
             "descripcionSap": description,
             "micros": micros,
-            "microsMeta": micros_meta_by_dia.get(code, []),
-            "agrupado": sorted({item["agrupado"] for item in micros_meta_by_dia.get(code, []) if item["agrupado"]}),
-            "familia": sorted({item["familia"] for item in micros_meta_by_dia.get(code, []) if item["familia"]}),
-            "conteo": sorted({item["conteo"] for item in micros_meta_by_dia.get(code, []) if item["conteo"]}),
+            "microsMeta": micros_meta,
+            "agrupado": sorted({item["agrupado"] for item in micros_meta if item["agrupado"]}),
+            "familia": sorted({item["familia"] for item in micros_meta if item["familia"]}),
+            "conteo": sorted({item["conteo"] for item in micros_meta if item["conteo"]}),
             "unidadMicros": "",
             "merch": merch,
+            **({"merchCategory": merch_category} if merch_category else {}),
             "validation": {
                 "sap": bool(description),
                 "micros": bool(micros),
@@ -405,17 +448,20 @@ def parse_woe_catalog(workbook, products):
     for code in orphan_codes:
         micros = micros_by_dia.get(code, [])
         merch = merch_by_dia.get(code, [])
+        micros_meta = micros_meta_by_dia.get(code, [])
+        merch_category = merch_category_from_sources("", micros, micros_meta, merch)
         catalog.append({
             "idWoe": "",
             "codigoDia": code,
             "descripcionSap": "",
             "micros": micros,
-            "microsMeta": micros_meta_by_dia.get(code, []),
-            "agrupado": sorted({item["agrupado"] for item in micros_meta_by_dia.get(code, []) if item["agrupado"]}),
-            "familia": sorted({item["familia"] for item in micros_meta_by_dia.get(code, []) if item["familia"]}),
-            "conteo": sorted({item["conteo"] for item in micros_meta_by_dia.get(code, []) if item["conteo"]}),
+            "microsMeta": micros_meta,
+            "agrupado": sorted({item["agrupado"] for item in micros_meta if item["agrupado"]}),
+            "familia": sorted({item["familia"] for item in micros_meta if item["familia"]}),
+            "conteo": sorted({item["conteo"] for item in micros_meta if item["conteo"]}),
             "unidadMicros": "",
             "merch": merch,
+            **({"merchCategory": merch_category} if merch_category else {}),
             "validation": {"sap": False, "micros": bool(micros), "merch": bool(merch)},
             "operationalValidation": {"sapMicros": False, "merchRequired": False},
             "sourceRow": None,

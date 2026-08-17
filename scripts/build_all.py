@@ -71,6 +71,7 @@ def main() -> int:
             "--report", str(STAGE / "merch-catalog-report.json"),
             "--active-list", "data/merch-active-products.json",
             "--operational-products", str(STAGE / "products.js"),
+            "--woe-catalog", str(STAGE / "woe.js"),
             "--source-dir", "assets/catalog/images",
             "--image-output", str(STAGE / "images"),
             "--coverage-output", str(STAGE / "photo-coverage.json"),

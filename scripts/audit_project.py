@@ -152,6 +152,7 @@ def audit(root: Path) -> dict:
         active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
         secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
         products_with_photo = [product for product in catalog_products if product.get("visual")]
+        woe_merch_products = [product for product in catalog_products if product.get("source") == "Cruce SAP + Micros"]
         active_with_photo = sum(product.get("stockPriority") == "active" for product in products_with_photo)
         lot_dirs = sorted(path for path in (root / "assets/catalog/images").iterdir() if path.is_dir())
         catalog_ok = (
@@ -240,6 +241,8 @@ def audit(root: Path) -> dict:
             and all(row.get("status") in {"matched", "ignored-duplicate-article"} for row in coverage.get("files", []))
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
+            and coverage.get("crossCheck") == ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"]
+            and len(woe_merch_products) == catalog_report.get("appendedWoeProducts") == coverage.get("totals", {}).get("appendedWoeProducts")
         )
         checks.append(check(
             "Control de fotos",
