@@ -165,10 +165,11 @@ def audit(root: Path) -> dict:
             and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("publishedImageFiles")
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
             and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
-            and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
-            and coverage.get("version") == "manual-upload-v8-stock-ranked"
+            and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
+            and coverage.get("version") == "manual-upload-v9-pending-safe"
+            and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
             and all(product.get("visualSource") == "manual-upload" for product in products_with_photo)
@@ -177,7 +178,8 @@ def audit(root: Path) -> dict:
             and active_with_photo == catalog_report.get("activeWithPhoto") == catalog_payload.get("meta", {}).get("activeWithPhoto")
             and secondary_count == catalog_report.get("secondaryProducts") == catalog_payload.get("meta", {}).get("secondaryProducts")
         )
-        catalog_detail = f"{len(catalog_products):,} artículos; {len(restored_files)} fotos en 4 lotes; todos los archivos relacionados y {active_with_photo} artículos activos con foto"
+        pending_images = coverage.get("totals", {}).get("pendingRelationImageFiles", 0)
+        catalog_detail = f"{len(catalog_products):,} artículos; {len(restored_files)} fotos conservadas; {active_with_photo} artículos activos con foto y {pending_images} archivo(s) pendiente(s) de relación"
     elif clean_reset:
         active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
         secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
@@ -241,12 +243,13 @@ def audit(root: Path) -> dict:
         coverage = load_json(root / "data/photo-coverage.json")
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v8-stock-ranked"
+            and coverage.get("version") == "manual-upload-v9-pending-safe"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
-            and coverage.get("totals", {}).get("unmatchedImageFiles") == 0
-            and all(row.get("status") in {"matched", "ignored-duplicate-article"} for row in coverage.get("files", []))
+            and coverage.get("totals", {}).get("pendingRelationImageFiles") == coverage.get("totals", {}).get("unmatchedImageFiles")
+            and all(row.get("status") in {"matched", "pending-match", "ignored-duplicate-article"} for row in coverage.get("files", []))
+            and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
             and coverage.get("crossCheck") == ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"]
@@ -255,7 +258,7 @@ def audit(root: Path) -> dict:
         checks.append(check(
             "Control de fotos",
             coverage_ok,
-            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas; cruce exacto por Código Día o SKU Intl",
+            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas y {coverage.get('totals', {}).get('pendingRelationImageFiles', 0)} pendientes; cruce exacto por Código Día o SKU Intl",
         ))
     else:
         cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))

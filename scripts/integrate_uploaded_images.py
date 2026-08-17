@@ -394,7 +394,7 @@ def integrate(
             "file": relative.as_posix(),
             "uploadedFrom": source.relative_to(source_dir).as_posix(),
             "identifier": key,
-            "status": "matched" if matches else "unmatched",
+            "status": "matched" if matches else "pending-match",
             "matchedBy": match_field or None,
             "products": [{
                 "articleKey": product.get("articleKey"),
@@ -424,12 +424,13 @@ def integrate(
     with_photo = sum(bool(product.get("visual")) for product in products)
     uploaded_image_files = sum(lot["images"] for lot in lots)
     duplicate_name_or_content = sum(lot["duplicatesIgnored"] for lot in lots)
-    unmatched_files = sum(row.get("status") == "unmatched" for row in file_rows)
+    unmatched_files = sum(row.get("status") == "pending-match" for row in file_rows)
     totals = {
         "imageFiles": uploaded_image_files,
         "publishedImageFiles": published_files,
         "matchedImageFiles": matched_files,
         "unmatchedImageFiles": unmatched_files,
+        "pendingRelationImageFiles": unmatched_files,
         "duplicateImageFilesIgnored": duplicate_name_or_content + duplicate_article_files,
         "matchedProducts": with_photo,
         "activeProducts": active_count,
@@ -449,6 +450,7 @@ def integrate(
         "publishedImageFiles": published_files,
         "matchedImageFiles": matched_files,
         "unmatchedImageFiles": unmatched_files,
+        "pendingRelationImageFiles": unmatched_files,
         "activeStockProducts": active_count,
         "activeWithPhoto": active_with_photo,
         "activeMissingPhoto": active_count - active_with_photo,
@@ -469,11 +471,12 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v8-stock-ranked",
+        "version": "manual-upload-v9-pending-safe",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
         "duplicatePolicy": "keep-first-lot-ignore-later",
+        "unmatchedPolicy": "preserve-and-report-do-not-guess",
         "packing": "fill-lote-01-first-then-02-03-04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
         "stockPriority": "Merch_Existente15_08(1).csv · existencia mayor a menor",

@@ -74,8 +74,12 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertTrue(all(not counts[index] or counts[index - 1] == 100 for index in range(1, len(counts))))
         self.assertEqual(featured, [])
         self.assertEqual(self.catalog["meta"].get("imageMode"), "manual-upload")
-        self.assertEqual(self.catalog["meta"].get("matchedImageFiles"), len(restored))
-        self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), 0)
+        self.assertEqual(self.catalog["meta"].get("publishedImageFiles"), len(restored))
+        coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
+        self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), coverage["totals"]["pendingRelationImageFiles"])
+        self.assertEqual(coverage["totals"]["publishedImageFiles"], coverage["totals"]["matchedImageFiles"] + coverage["totals"]["pendingRelationImageFiles"])
+        self.assertEqual(coverage["unmatchedPolicy"], "preserve-and-report-do-not-guess")
+        self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article"} for row in coverage["files"]))
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
     def test_missing_empty_lots_are_created_in_a_clean_checkout(self) -> None:

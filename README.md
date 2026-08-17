@@ -18,7 +18,7 @@ Llaves generadas:
 - `articleKey`: `dia-{codigo-dia}--pos-{sku-pos-o-nombre}`.
 - `nameKey`: nombre del artículo normalizado, sin acentos ni caracteres especiales.
 
-Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva y se marca en `data/photo-coverage.json`; nunca se asigna por nombre, semejanza visual o suposición.
+Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva, se marca como `pending-match` en `data/photo-coverage.json` y no detiene la publicación; nunca se asigna por nombre, semejanza visual o suposición. En cuanto el código exista en una pestaña operativa, la siguiente compilación lo relaciona automáticamente.
 
 En Revisión de Merch, los artículos con foto aparecen primero y se ordenan por existencia de mayor a menor. Después se muestran los pendientes con el estado visible **Foto pendiente**. Sólo esas tarjetas muestran la acción compacta **Enviar foto por WhatsApp**. El buscador permanece abierto al seleccionar una coincidencia y cruza Código Día, SAP, SKU internacional, Micros y todas las pestañas operativas, incluso si el artículo aún no tiene ficha visual.
 
