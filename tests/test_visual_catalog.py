@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from openpyxl import load_workbook
 from PIL import Image
 from scripts.integrate_uploaded_images import add_woe_merch_products, discover_images, identifier, validate_published_lots
 
@@ -102,7 +103,7 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
             self.assertEqual(sum(row["duplicatesIgnored"] for row in lots), 1)
 
-    def test_duplicate_content_with_another_name_is_ignored(self) -> None:
+    def test_equal_content_with_distinct_identifiers_is_preserved(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "images"
             for number in range(1, 5):
@@ -111,8 +112,11 @@ class VisualCatalogContractTests(unittest.TestCase):
             image.save(source / "lote-01/16999.jpg")
             image.save(source / "lote-03/11157547.jpg")
             images, lots = discover_images(source)
-            self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
-            self.assertEqual(lots[2]["ignoredFiles"][0]["reason"], "duplicate-content")
+            self.assertEqual(
+                [path.relative_to(source).as_posix() for path in images],
+                ["lote-01/16999.jpg", "lote-03/11157547.jpg"],
+            )
+            self.assertEqual(lots[2]["duplicatesIgnored"], 0)
 
     def test_exact_sap_day_with_photo_is_added_without_micros_classification(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -139,6 +143,23 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(file_row["status"], "matched")
         self.assertEqual(file_row["matchedBy"], "codigoDia")
 
+    def test_excel_keeps_distinct_sku_intl_and_codigo_dia(self) -> None:
+        workbook = load_workbook(ROOT / "Lista_Precios_Base.xlsx", read_only=True, data_only=True)
+        sheet = workbook["Base_Campaña"]
+        matches = [
+            row for row in sheet.iter_rows(min_row=2, values_only=True)
+            if identifier(row[0]) == "11160979" and identifier(row[1]) == "16960"
+        ]
+        workbook.close()
+        self.assertEqual(len(matches), 1)
+        self.assertNotEqual(identifier(matches[0][0]), identifier(matches[0][1]))
+
+    def test_sku_and_day_identifier_files_are_both_preserved(self) -> None:
+        coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
+        rows = {row.get("identifier"): row for row in coverage["files"]}
+        self.assertEqual(rows["16960"].get("file"), "lote-01/16960.jpeg")
+        self.assertEqual(rows["11160979"].get("file"), "lote-01/011160979.jpeg")
+
     def test_post_publish_audit_rejects_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "images"
@@ -146,7 +167,7 @@ class VisualCatalogContractTests(unittest.TestCase):
                 (source / f"lote-{number:02d}").mkdir(parents=True, exist_ok=True)
             image = Image.new("RGB", (20, 20), "green")
             image.save(source / "lote-01/16162.jpg")
-            image.save(source / "lote-04/16378.jpg")
+            image.save(source / "lote-04/16162.png")
             with self.assertRaisesRegex(ValueError, "Duplicado detectado después de publicar"):
                 validate_published_lots(source)
 

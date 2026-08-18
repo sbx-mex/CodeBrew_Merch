@@ -33,6 +33,11 @@ OBSOLETE_ALLOWLIST = (
     Path("icon-512.png"),
     Path("VALIDACION_CORRECCION.md"),
     Path("ELIMINAR_OBSOLETOS.txt"),
+    Path("AUDITORIA_HTML_SAP.json"),
+    Path("scripts/generate_visual_catalog.py"),
+    Path("scripts/cleanup_catalog_images.py"),
+    Path(".github/workflows/cleanup-catalog-images.yml"),
+    Path("engines/image-overrides/16999.png"),
 )
 GENERATED_TARGETS = {"data/app-audit.js", "data/app-audit.json", "data/stock-config.js", "data/ui-config.js", "data/merch-catalog.js", "data/merch-catalog-report.json"}
 
@@ -108,7 +113,6 @@ def audit(root: Path) -> dict:
     parser.feed(html)
     workflow_update = (root / ".github/workflows/update-price-list.yml").read_text(encoding="utf-8")
     workflow_cleanup = (root / ".github/workflows/cleanup-obsolete.yml").read_text(encoding="utf-8")
-    workflow_image_audit = (root / ".github/workflows/cleanup-catalog-images.yml").read_text(encoding="utf-8")
     sw_text = (root / "sw.js").read_text(encoding="utf-8")
 
     checks: list[dict] = []
@@ -129,8 +133,7 @@ def audit(root: Path) -> dict:
         if path.is_file() and path.suffix.lower() in published_image_suffixes
     )
     restored_keys = [re.sub(r"_\d+$", "", path.stem).casefold() for path in restored_files]
-    restored_hashes = [sha256(path) for path in restored_files]
-    unique_restored_files = len(restored_keys) == len(set(restored_keys)) and len(restored_hashes) == len(set(restored_hashes))
+    unique_restored_files = len(restored_keys) == len(set(restored_keys))
     featured_files = sorted((root / "assets/catalog/featured").glob("*.webp"))
     engines = sorted((root / "engines/merch-lists").glob("*.xlsx"))
     visual_sources = sorted((root / "engines/visual-sources").glob("*.zip"))
@@ -178,9 +181,9 @@ def audit(root: Path) -> dict:
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
             and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
             and coverage.get("duplicateProtection") == "one-photo-per-article"
-            and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
+            and coverage.get("duplicatePolicy") == "keep-distinct-identifiers-ignore-repeated-identifier"
             and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
-            and coverage.get("version") == "manual-upload-v10-exact-cross-check"
+            and coverage.get("version") == "manual-upload-v11-identifier-safe"
             and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
@@ -272,7 +275,7 @@ def audit(root: Path) -> dict:
         ]
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v10-exact-cross-check"
+            and coverage.get("version") == "manual-upload-v11-identifier-safe"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
@@ -387,9 +390,8 @@ def audit(root: Path) -> dict:
         and "github.event.workflow_run.conclusion == 'success'" in workflow_cleanup
         and "pip install --requirement scripts/requirements.txt" in workflow_cleanup
         and "scripts/cleanup_obsolete.py --apply" in workflow_cleanup
-        and "contents: read" in workflow_image_audit
-        and "--apply" not in workflow_image_audit
-        and "git push" not in workflow_image_audit
+        and "scripts/build_all.py" in workflow_cleanup
+        and workflow_cleanup.count("unittest discover") >= 2
     )
     cleanup_candidates = [path.as_posix() for path in OBSOLETE_ALLOWLIST if (root / path).exists()]
     checks.append(check(

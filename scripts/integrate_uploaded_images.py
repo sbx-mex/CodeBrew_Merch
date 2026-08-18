@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import shutil
@@ -132,7 +131,6 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
     images: list[Path] = []
     lot_report: list[dict] = []
     seen_keys: dict[str, Path] = {}
-    seen_hashes: dict[str, Path] = {}
     for lot in lots:
         lot_images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
         if len(lot_images) > MAX_IMAGES_PER_LOT:
@@ -143,12 +141,7 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
             if key in seen_keys:
                 ignored.append({"file": image.name, "reason": "duplicate-name", "kept": seen_keys[key].relative_to(source_dir).as_posix()})
                 continue
-            digest = hashlib.sha256(image.read_bytes()).hexdigest()
-            if digest in seen_hashes:
-                ignored.append({"file": image.name, "reason": "duplicate-content", "kept": seen_hashes[digest].relative_to(source_dir).as_posix()})
-                continue
             seen_keys[key] = image
-            seen_hashes[digest] = image
             images.append(image)
         lot_report.append({"folder": lot.name, "images": len(lot_images), "accepted": len(lot_images) - len(ignored), "duplicatesIgnored": len(ignored), "ignoredFiles": ignored})
     return images, lot_report
@@ -159,7 +152,6 @@ def validate_published_lots(image_dir: Path) -> dict:
     if [lot.name for lot in lots] != list(LOT_NAMES):
         raise ValueError(f"Publicación incompleta: se requieren {', '.join(LOT_NAMES)}")
     seen_keys: set[str] = set()
-    seen_hashes: set[str] = set()
     total = 0
     for lot in lots:
         images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
@@ -167,11 +159,9 @@ def validate_published_lots(image_dir: Path) -> dict:
             raise ValueError(f"{lot.name}: publicación mayor a {MAX_IMAGES_PER_LOT} imágenes")
         for image in images:
             key = normalize_name(re.sub(r"_\d+$", "", image.stem))
-            digest = hashlib.sha256(image.read_bytes()).hexdigest()
-            if key in seen_keys or digest in seen_hashes:
+            if key in seen_keys:
                 raise ValueError(f"Duplicado detectado después de publicar: {image.relative_to(image_dir)}")
             seen_keys.add(key)
-            seen_hashes.add(digest)
         total += len(images)
     return {"status": "ok", "folders": len(lots), "images": total, "duplicates": 0}
 
@@ -426,7 +416,7 @@ def integrate(
     active_with_photo = sum(product.get("stockPriority") == "active" and bool(product.get("visual")) for product in products)
     with_photo = sum(bool(product.get("visual")) for product in products)
     uploaded_image_files = sum(lot["images"] for lot in lots)
-    duplicate_name_or_content = sum(lot["duplicatesIgnored"] for lot in lots)
+    duplicate_identifiers = sum(lot["duplicatesIgnored"] for lot in lots)
     unmatched_files = sum(row.get("status") == "pending-match" for row in file_rows)
     totals = {
         "imageFiles": uploaded_image_files,
@@ -434,7 +424,7 @@ def integrate(
         "matchedImageFiles": matched_files,
         "unmatchedImageFiles": unmatched_files,
         "pendingRelationImageFiles": unmatched_files,
-        "duplicateImageFilesIgnored": duplicate_name_or_content + duplicate_article_files,
+        "duplicateImageFilesIgnored": duplicate_identifiers + duplicate_article_files,
         "matchedProducts": with_photo,
         "activeProducts": active_count,
         "activeWithPhoto": active_with_photo,
@@ -474,11 +464,11 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v10-exact-cross-check",
+        "version": "manual-upload-v11-identifier-safe",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
-        "duplicatePolicy": "keep-first-lot-ignore-later",
+        "duplicatePolicy": "keep-distinct-identifiers-ignore-repeated-identifier",
         "unmatchedPolicy": "preserve-and-report-do-not-guess",
         "packing": "fill-lote-01-first-then-02-03-04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],

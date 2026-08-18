@@ -14,6 +14,11 @@ ALLOWLIST = (
     Path("icon-512.png"),
     Path("VALIDACION_CORRECCION.md"),
     Path("ELIMINAR_OBSOLETOS.txt"),
+    Path("AUDITORIA_HTML_SAP.json"),
+    Path("scripts/generate_visual_catalog.py"),
+    Path("scripts/cleanup_catalog_images.py"),
+    Path(".github/workflows/cleanup-catalog-images.yml"),
+    Path("engines/image-overrides/16999.png"),
 )
 TEXT_SUFFIXES = {".html", ".js", ".css", ".json", ".webmanifest", ".md", ".yml", ".yaml", ".py"}
 SKIP_PARTS = {".git", "__pycache__"}
