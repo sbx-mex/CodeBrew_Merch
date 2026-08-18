@@ -1,13 +1,13 @@
 {
   "status": "ok",
-  "version": "manual-upload-v9-pending-safe",
+  "version": "manual-upload-v11-identifier-safe",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
     "skuIntl"
   ],
   "duplicateProtection": "one-photo-per-article",
-  "duplicatePolicy": "keep-first-lot-ignore-later",
+  "duplicatePolicy": "keep-distinct-identifiers-ignore-repeated-identifier",
   "unmatchedPolicy": "preserve-and-report-do-not-guess",
   "packing": "fill-lote-01-first-then-02-03-04",
   "crossCheck": [
@@ -22,14 +22,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 68,
+    "images": 83,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 69,
-      "accepted": 69,
+      "images": 83,
+      "accepted": 83,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -56,21 +56,29 @@
     }
   ],
   "totals": {
-    "imageFiles": 69,
-    "publishedImageFiles": 68,
-    "matchedImageFiles": 68,
-    "unmatchedImageFiles": 0,
-    "pendingRelationImageFiles": 0,
-    "duplicateImageFilesIgnored": 1,
-    "matchedProducts": 72,
+    "imageFiles": 83,
+    "publishedImageFiles": 83,
+    "matchedImageFiles": 82,
+    "unmatchedImageFiles": 1,
+    "pendingRelationImageFiles": 1,
+    "duplicateImageFilesIgnored": 0,
+    "matchedProducts": 86,
     "activeProducts": 1017,
-    "activeWithPhoto": 68,
-    "activeMissingPhoto": 949,
-    "secondaryProducts": 169,
-    "appendedOperationalProducts": 83,
-    "appendedWoeProducts": 84
+    "activeWithPhoto": 80,
+    "activeMissingPhoto": 937,
+    "secondaryProducts": 170,
+    "appendedOperationalProducts": 78,
+    "appendedWoeProducts": 90
   },
   "files": [
+    {
+      "file": "lote-01/011160979.jpeg",
+      "uploadedFrom": "lote-01/011160979.jpeg",
+      "identifier": "11160979",
+      "status": "pending-match",
+      "matchedBy": null,
+      "products": []
+    },
     {
       "file": "lote-01/011170102.jpeg",
       "uploadedFrom": "lote-01/011170102.jpeg",
@@ -623,11 +631,11 @@
       "matchedBy": "codigoDia",
       "products": [
         {
-          "articleKey": "dia-17357--pos-50749",
+          "articleKey": "dia-17357--pos-sap-159943",
           "codigoDia": "17357",
-          "skuIntl": "-",
-          "skuPos": "50749",
-          "displayName": "SII26GlCCColor",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA TRANSP SBX 470ML CJ1PZA",
           "stockPriority": "secondary"
         }
       ]
@@ -640,11 +648,11 @@
       "matchedBy": "codigoDia",
       "products": [
         {
-          "articleKey": "dia-17358--pos-50749",
+          "articleKey": "dia-17358--pos-sap-159944",
           "codigoDia": "17358",
-          "skuIntl": "-",
-          "skuPos": "50749",
-          "displayName": "SII26GlCCColor",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA NARANJA SBX 470ML CJ1PZA",
           "stockPriority": "secondary"
         }
       ]
@@ -657,11 +665,11 @@
       "matchedBy": "codigoDia",
       "products": [
         {
-          "articleKey": "dia-17359--pos-50749",
+          "articleKey": "dia-17359--pos-sap-159945",
           "codigoDia": "17359",
-          "skuIntl": "-",
-          "skuPos": "50749",
-          "displayName": "SII26GlCCColor",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
           "stockPriority": "secondary"
         }
       ]
@@ -769,6 +777,23 @@
       ]
     },
     {
+      "file": "lote-01/14929.jpeg",
+      "uploadedFrom": "lote-01/14929.jpeg",
+      "identifier": "14929",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14929--pos-51367",
+          "codigoDia": "14929",
+          "skuIntl": "11141040",
+          "skuPos": "51367",
+          "displayName": "COR23 PrensaFran",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/15857.jpeg",
       "uploadedFrom": "lote-01/15857.jpeg",
       "identifier": "15857",
@@ -862,6 +887,23 @@
       ]
     },
     {
+      "file": "lote-01/16311.jpeg",
+      "uploadedFrom": "lote-01/16311.jpeg",
+      "identifier": "16311",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16311--pos-52480",
+          "codigoDia": "16311",
+          "skuIntl": "11160990",
+          "skuPos": "52480",
+          "displayName": "COR26SSThruLid",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16312.jpeg",
       "uploadedFrom": "lote-01/16312.jpeg",
       "identifier": "16312",
@@ -909,6 +951,23 @@
           "skuPos": "52566",
           "displayName": "Xm25Tz14Glass",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16477.jpeg",
+      "uploadedFrom": "lote-01/16477.jpeg",
+      "identifier": "16477",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16477--pos-dinamica-con-bebida",
+          "codigoDia": "16477",
+          "skuIntl": "11173043",
+          "skuPos": "Dinámica con bebida",
+          "displayName": "Xm25GlassBear",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -980,6 +1039,23 @@
       ]
     },
     {
+      "file": "lote-01/16572.jpeg",
+      "uploadedFrom": "lote-01/16572.jpeg",
+      "identifier": "16572",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16572--pos-52582",
+          "codigoDia": "16572",
+          "skuIntl": "11174791",
+          "skuPos": "52582",
+          "displayName": "Wt26ReusSV",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16610.jpeg",
       "uploadedFrom": "lote-01/16610.jpeg",
       "identifier": "16610",
@@ -992,6 +1068,57 @@
           "skuIntl": "11179880",
           "skuPos": "50747",
           "displayName": "SII26SS16Resort",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16642.jpeg",
+      "uploadedFrom": "lote-01/16642.jpeg",
+      "identifier": "16642",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16642--pos-sap-152572",
+          "codigoDia": "16642",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "DiscoveryMxPaís",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16672.jpeg",
+      "uploadedFrom": "lote-01/16672.jpeg",
+      "identifier": "16672",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16672--pos-58763",
+          "codigoDia": "16672",
+          "skuIntl": "11176724",
+          "skuPos": "58763",
+          "displayName": "Sp26CookieJP",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16682.jpeg",
+      "uploadedFrom": "lote-01/16682.jpeg",
+      "identifier": "16682",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16682--pos-sap-152612",
+          "codigoDia": "16682",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "DiscSS20MxPais",
           "stockPriority": "active"
         }
       ]
@@ -1116,15 +1243,55 @@
       ]
     },
     {
-      "file": null,
-      "uploadedFrom": "lote-01/16900.jpeg",
-      "identifier": "16900",
-      "status": "ignored-duplicate-article",
+      "file": "lote-01/16903.jpeg",
+      "uploadedFrom": "lote-01/16903.jpeg",
+      "identifier": "16903",
+      "status": "matched",
       "matchedBy": "codigoDia",
-      "kept": [
-        "lote-01/011178941.jpeg"
-      ],
-      "products": []
+      "products": [
+        {
+          "articleKey": "dia-16903--pos-58806",
+          "codigoDia": "16903",
+          "skuIntl": "11178926",
+          "skuPos": "58806",
+          "displayName": "Sp26CC24Or",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16904.jpeg",
+      "uploadedFrom": "lote-01/16904.jpeg",
+      "identifier": "16904",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16904--pos-58818",
+          "codigoDia": "16904",
+          "skuIntl": "11178965",
+          "skuPos": "58818",
+          "displayName": "WC26ToteRoad",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16909.jpeg",
+      "uploadedFrom": "lote-01/16909.jpeg",
+      "identifier": "16909",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16909--pos-58826",
+          "codigoDia": "16909",
+          "skuIntl": "11178944",
+          "skuPos": "58826",
+          "displayName": "WC26SS20BTL",
+          "stockPriority": "active"
+        }
+      ]
     },
     {
       "file": "lote-01/16914.jpeg",
@@ -1139,6 +1306,40 @@
           "skuIntl": "11178947",
           "skuPos": "58795",
           "displayName": "Sp26StanQuen20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16917.jpeg",
+      "uploadedFrom": "lote-01/16917.jpeg",
+      "identifier": "16917",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16917--pos-58809",
+          "codigoDia": "16917",
+          "skuIntl": "11178972",
+          "skuPos": "58809",
+          "displayName": "Sp26Vac16Stan",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16921.jpeg",
+      "uploadedFrom": "lote-01/16921.jpeg",
+      "identifier": "16921",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16921--pos-58808",
+          "codigoDia": "16921",
+          "skuIntl": "11178917",
+          "skuPos": "58808",
+          "displayName": "WC26DW12Oran",
           "stockPriority": "active"
         }
       ]
@@ -1199,6 +1400,23 @@
           "skuPos": "58839",
           "displayName": "WC26Tu24DW",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16960.jpeg",
+      "uploadedFrom": "lote-01/16960.jpeg",
+      "identifier": "16960",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16960--pos-sap-155962",
+          "codigoDia": "16960",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "60979 C2P CORE PLSTC HTCDCP DCHRC 24OZ",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -1266,6 +1484,23 @@
           "skuIntl": "",
           "skuPos": "",
           "displayName": "SII26Mug14Aniv",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/54213.jpeg",
+      "uploadedFrom": "lote-01/54213.jpeg",
+      "identifier": "54213",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-54213--pos-sap-wc26reus",
+          "codigoDia": "54213",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "WC26Reus",
           "stockPriority": "active"
         }
       ]

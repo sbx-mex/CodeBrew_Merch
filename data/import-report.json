@@ -1,9 +1,9 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-18T19:09:04+00:00",
-  "sourceModifiedAtUtc": "2026-08-18T19:09:04+00:00",
-  "latestItemCell": "Base_Campaña!D2",
+  "generatedAtUtc": "2026-08-18T20:35:49+00:00",
+  "sourceModifiedAtUtc": "2026-08-18T20:35:49+00:00",
+  "latestItemCell": "Base_Campaña!D7",
   "latestItem": "SII26GlCCColor",
   "totalValidProducts": 961,
   "sheets": [
@@ -19,17 +19,37 @@
         "SKU POS",
         "C2"
       ],
-      "records": 126,
+      "records": 131,
       "valid": 124,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [
         {
-          "row": 69,
+          "row": 2,
           "reason": "sin identificador útil o sin precio"
         },
         {
-          "row": 70,
+          "row": 3,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 4,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 5,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 6,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 74,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 75,
           "reason": "sin identificador útil o sin precio"
         }
       ],

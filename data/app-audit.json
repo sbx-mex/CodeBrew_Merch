@@ -1,11 +1,11 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-18T19:09:04+00:00",
+  "auditedAtUtc": "2026-08-18T20:35:49+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "33ef667c8a97c3b733e39704a35231193207196a889502ca681fda1dab58a1e1",
+  "sourceSha256": "8aa8a7845baba8de946a1cedfeb98669b60281c655ce0942e9fea73a1c56a013",
   "checksTotal": 14,
-  "checksOk": 14,
-  "warnings": 0,
+  "checksOk": 13,
+  "warnings": 1,
   "errors": 0,
   "checks": [
     {
@@ -21,17 +21,17 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,186 artículos; 68 fotos conservadas; 68 artículos activos con foto y 0 archivo(s) pendiente(s) de relación"
+      "detail": "1,187 artículos; 83 fotos conservadas; 80 artículos activos con foto y 1 archivo(s) pendiente(s) de relación"
     },
     {
       "name": "Listado y Excel de fotos",
       "status": "ok",
-      "detail": "1148 códigos Día; 68 con foto; una pestaña de control"
+      "detail": "1149 códigos Día; 82 con foto; una pestaña de control"
     },
     {
       "name": "Control de fotos",
       "status": "ok",
-      "detail": "68 fotos relacionadas y 0 pendientes; cruce exacto por Código Día o SKU Intl"
+      "detail": "82 fotos relacionadas, 1 pendientes y 0 cruces exactos omitidos"
     },
     {
       "name": "Integridad WOE",
@@ -65,8 +65,8 @@
     },
     {
       "name": "Workflows y obsoletos",
-      "status": "ok",
-      "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
+      "status": "warning",
+      "detail": "Actualización y limpieza protegidas; 5 candidatos controlados"
     },
     {
       "name": "Límites GitHub",
@@ -76,7 +76,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2603 KB auditados en archivos críticos"
+      "detail": "2606 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -85,9 +85,9 @@
       "styles.css": 43421,
       "catalog.css": 9548,
       "app.js": 126318,
-      "data/products.js": 358198,
+      "data/products.js": 358208,
       "data/woe.js": 1179982,
-      "data/merch-catalog.js": 924364,
+      "data/merch-catalog.js": 928107,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
@@ -103,5 +103,11 @@
       "data/ui-config.js": 10000
     }
   },
-  "cleanupCandidates": []
+  "cleanupCandidates": [
+    "AUDITORIA_HTML_SAP.json",
+    "scripts/generate_visual_catalog.py",
+    "scripts/cleanup_catalog_images.py",
+    ".github/workflows/cleanup-catalog-images.yml",
+    "engines/image-overrides/16999.png"
+  ]
 }
