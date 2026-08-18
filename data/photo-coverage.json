@@ -22,7 +22,7 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 69,
+    "images": 68,
     "duplicates": 0
   },
   "lots": [
@@ -57,11 +57,11 @@
   ],
   "totals": {
     "imageFiles": 69,
-    "publishedImageFiles": 69,
+    "publishedImageFiles": 68,
     "matchedImageFiles": 68,
-    "unmatchedImageFiles": 1,
-    "pendingRelationImageFiles": 1,
-    "duplicateImageFilesIgnored": 0,
+    "unmatchedImageFiles": 0,
+    "pendingRelationImageFiles": 0,
+    "duplicateImageFilesIgnored": 1,
     "matchedProducts": 72,
     "activeProducts": 1017,
     "activeWithPhoto": 68,
@@ -1116,6 +1116,17 @@
       ]
     },
     {
+      "file": null,
+      "uploadedFrom": "lote-01/16900.jpeg",
+      "identifier": "16900",
+      "status": "ignored-duplicate-article",
+      "matchedBy": "codigoDia",
+      "kept": [
+        "lote-01/011178941.jpeg"
+      ],
+      "products": []
+    },
+    {
       "file": "lote-01/16914.jpeg",
       "uploadedFrom": "lote-01/16914.jpeg",
       "identifier": "16914",
@@ -1190,14 +1201,6 @@
           "stockPriority": "active"
         }
       ]
-    },
-    {
-      "file": "lote-01/16960.jpeg",
-      "uploadedFrom": "lote-01/16960.jpeg",
-      "identifier": "16960",
-      "status": "pending-match",
-      "matchedBy": null,
-      "products": []
     },
     {
       "file": "lote-01/16977.jpeg",
