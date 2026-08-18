@@ -22,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 concurrency:
   group: codebrew-maintenance
@@ -51,6 +52,9 @@ jobs:
       - name: Construir y auditar motores
         run: python scripts/build_all.py
 
+      - name: Eliminar obsoletos y duplicados validados
+        run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
+
       - name: Auditar estado publicado
         run: python scripts/audit_project.py
 
@@ -59,15 +63,22 @@ jobs:
 
       - name: Publicar datos validados
         run: |
-          if git diff --quiet -- data assets/catalog Control_Fotos_CodeBrew.xlsx; then
+          if git diff --quiet; then
             echo "La lista y el catálogo ya están actualizados."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data
-          git add --all assets/catalog
-          git add Control_Fotos_CodeBrew.xlsx
+          git add --all
           git commit -m "Actualizar motores y catálogo visual"
           git pull --rebase origin main
           git push
+
+      - name: Solicitar publicación de GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "/repos/${GITHUB_REPOSITORY}/pages/builds"
