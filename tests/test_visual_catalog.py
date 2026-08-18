@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import csv
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -80,7 +81,7 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), coverage["totals"]["pendingRelationImageFiles"])
         self.assertEqual(coverage["totals"]["publishedImageFiles"], coverage["totals"]["matchedImageFiles"] + coverage["totals"]["pendingRelationImageFiles"])
         self.assertEqual(coverage["unmatchedPolicy"], "preserve-and-report-do-not-guess")
-        self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article"} for row in coverage["files"]))
+        self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage["files"]))
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
     def test_missing_empty_lots_are_created_in_a_clean_checkout(self) -> None:
@@ -143,6 +144,17 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(file_row["status"], "matched")
         self.assertEqual(file_row["matchedBy"], "codigoDia")
 
+    def test_16672_photo_is_published_with_cache_revision(self) -> None:
+        matches = [product for product in self.products if identifier(product.get("codigoDia")) == "16672"]
+        self.assertEqual(len(matches), 1)
+        product = matches[0]
+        self.assertEqual(product.get("photoMatch"), "codigoDia")
+        self.assertEqual(product.get("photoFile"), "lote-01/16672.jpeg")
+        visual = product.get("visual") or {}
+        image_path = ROOT / visual.get("src", "")
+        self.assertTrue(image_path.is_file())
+        self.assertEqual(visual.get("revision"), hashlib.sha256(image_path.read_bytes()).hexdigest()[:12])
+
     def test_excel_keeps_distinct_sku_intl_and_codigo_dia(self) -> None:
         workbook = load_workbook(ROOT / "Lista_Precios_Base.xlsx", read_only=True, data_only=True)
         sheet = workbook["Base_Campaña"]
@@ -154,11 +166,13 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(matches), 1)
         self.assertNotEqual(identifier(matches[0][0]), identifier(matches[0][1]))
 
-    def test_sku_and_day_identifier_files_are_both_preserved(self) -> None:
+    def test_day_photo_wins_when_sku_file_has_duplicate_content(self) -> None:
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         rows = {row.get("identifier"): row for row in coverage["files"]}
         self.assertEqual(rows["16960"].get("file"), "lote-01/16960.jpeg")
-        self.assertEqual(rows["11160979"].get("file"), "lote-01/011160979.jpeg")
+        self.assertIsNone(rows["11160979"].get("file"))
+        self.assertEqual(rows["11160979"].get("status"), "ignored-duplicate-content")
+        self.assertEqual(rows["11160979"].get("kept"), "lote-01/16960.jpeg")
 
     def test_post_publish_audit_rejects_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -167,7 +181,7 @@ class VisualCatalogContractTests(unittest.TestCase):
                 (source / f"lote-{number:02d}").mkdir(parents=True, exist_ok=True)
             image = Image.new("RGB", (20, 20), "green")
             image.save(source / "lote-01/16162.jpg")
-            image.save(source / "lote-04/16162.png")
+            image.save(source / "lote-04/16378.jpg")
             with self.assertRaisesRegex(ValueError, "Duplicado detectado después de publicar"):
                 validate_published_lots(source)
 
@@ -220,8 +234,9 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("document.cookie", app)
         for token in ("inputmode=\"search\"", "enterkeyhint=\"search\"", "spellcheck=\"false\""):
             self.assertIn(token, html)
-        for token in ("key.startsWith('codebrew-')", "isCoreResource", "freshFirst", "cache:'no-cache'"):
+        for token in ("key.startsWith('codebrew-')", "isCoreResource", "freshFirst", "cache:'reload'"):
             self.assertIn(token, sw)
+        self.assertIn("visual?.revision", app)
         for token in ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel"):
             self.assertNotIn(token, app)
 

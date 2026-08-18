@@ -6,7 +6,7 @@
   "description": "Busca, define piezas y prepara etiquetas listas para imprimir.",
   "menuDescription": "Prepara e imprime etiquetas POS",
   "icon": "▤",
-  "heroImage": "assets/catalog/featured/dia-16999-561d472079ea.webp",
+  "heroImage": "assets/catalog/catalog-hero.webp",
   "sapPriority": false,
   "steps": [
     {

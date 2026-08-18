@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v46-smart-refresh-2026-08-17';
+const CACHE_NAME = 'codebrew-v47-photo-publish-2026-08-18';
 const APP_SHELL = [
   './',
   './index.html',
@@ -54,7 +54,7 @@ self.addEventListener('fetch', event => {
   if (event.request.mode === 'navigate') {
     event.respondWith((async()=>{
       try{
-        const response=await event.preloadResponse||await fetch(event.request,{cache:'no-cache'});
+        const response=await event.preloadResponse||await fetch(event.request,{cache:'reload'});
         if(response?.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy)));}
         return response;
       }catch(error){return caches.match('./index.html');}
@@ -68,7 +68,7 @@ self.addEventListener('fetch', event => {
   const freshFirst = isGeneratedData || isCatalogImage || isCoreResource;
   const timeoutMs = isCoreResource ? 1600 : 2500;
   event.respondWith(
-    (freshFirst ? Promise.race([fetch(event.request,{cache:'no-cache'}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),timeoutMs))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
+    (freshFirst ? Promise.race([fetch(event.request,{cache:'reload'}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),timeoutMs))]).catch(() => caches.match(event.request)) : caches.match(event.request).then(cached => cached || fetch(event.request))).then(response => {
       if (response && response.ok) {
         const copy = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));

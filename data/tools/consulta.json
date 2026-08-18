@@ -6,7 +6,7 @@
   "description": "Consulta el artículo, confirma el precio y escanea en POS.",
   "menuDescription": "Consulta, valida y escanea",
   "icon": "$",
-  "heroImage": "assets/catalog/images/57/visual-5738cc814088.webp",
+  "heroImage": "assets/catalog/catalog-general-hero.webp",
   "sapPriority": false,
   "steps": [
     {

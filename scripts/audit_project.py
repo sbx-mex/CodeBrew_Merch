@@ -146,6 +146,13 @@ def audit(root: Path) -> dict:
         for product in catalog_products
         if (visual := (product.get("visual") or {})).get("src")
     }
+    visual_revisions_ok = all(
+        (visual := (product.get("visual") or {})).get("revision")
+        and (root / str(visual.get("src", ""))).is_file()
+        and visual["revision"] == sha256(root / visual["src"])[:12]
+        for product in catalog_products
+        if product.get("visual")
+    )
     published_visuals = {
         path.relative_to(root).as_posix()
         for path in [*restored_files, *featured_files]
@@ -177,13 +184,14 @@ def audit(root: Path) -> dict:
             and all(image_is_readable(path) for path in restored_files)
             and unique_restored_files
             and referenced_visuals.issubset(published_visuals)
+            and visual_revisions_ok
             and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("publishedImageFiles")
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
             and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
             and coverage.get("duplicateProtection") == "one-photo-per-article"
-            and coverage.get("duplicatePolicy") == "keep-distinct-identifiers-ignore-repeated-identifier"
+            and coverage.get("duplicatePolicy") == "prefer-codigo-dia-remove-repeated-identifier-or-content"
             and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
-            and coverage.get("version") == "manual-upload-v11-identifier-safe"
+            and coverage.get("version") == "manual-upload-v12-publish-safe"
             and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
@@ -275,12 +283,12 @@ def audit(root: Path) -> dict:
         ]
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v11-identifier-safe"
+            and coverage.get("version") == "manual-upload-v12-publish-safe"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
             and coverage.get("totals", {}).get("pendingRelationImageFiles") == coverage.get("totals", {}).get("unmatchedImageFiles")
-            and all(row.get("status") in {"matched", "pending-match", "ignored-duplicate-article"} for row in coverage.get("files", []))
+            and all(row.get("status") in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage.get("files", []))
             and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
@@ -358,6 +366,15 @@ def audit(root: Path) -> dict:
     ))
     local_refs = [value.split("?", 1)[0] for value in parser.references if not re.match(r"^(?:https?:|mailto:|tel:|#)", value)]
     missing_refs = sorted(value for value in set(local_refs) if value and value.lstrip("./") not in GENERATED_TARGETS and not (root / value.lstrip("./")).exists())
+    tool_menu = load_json(root / "data/tool-menu.json")
+    tool_config_paths = [str(value) for value in tool_menu.get("sections", {}).values()]
+    tool_configs = [load_json(root / path) for path in tool_config_paths if (root / path).is_file()]
+    missing_tool_configs = [path for path in tool_config_paths if not (root / path).is_file()]
+    missing_tool_assets = [
+        str(config.get("heroImage")) for config in tool_configs
+        if config.get("heroImage") and not (root / str(config["heroImage"])).is_file()
+    ]
+    missing_refs = sorted(set(missing_refs + missing_tool_configs + missing_tool_assets))
     checks.append(check(
         "Referencias locales",
         not missing_refs,
@@ -373,7 +390,7 @@ def audit(root: Path) -> dict:
     shell_block = sw_text.split("const APP_SHELL = [", 1)[1].split("];", 1)[0] if "const APP_SHELL = [" in sw_text else ""
     shell_refs = re.findall(r"['\"](\./[^'\"]+)['\"]", shell_block)
     missing_shell = [value for value in shell_refs if value != "./" and value[2:] not in GENERATED_TARGETS and not (root / value[2:]).exists()]
-    sw_ok = bool(shell_refs) and not missing_shell and "Lista_Precios_Base.xlsx" not in shell_block and "navigationPreload" in sw_text and "SKIP_WAITING" in sw_text and "key.startsWith('codebrew-')" in sw_text and "isCoreResource" in sw_text and "freshFirst" in sw_text and "cache:'no-cache'" in sw_text
+    sw_ok = bool(shell_refs) and not missing_shell and "Lista_Precios_Base.xlsx" not in shell_block and "navigationPreload" in sw_text and "SKIP_WAITING" in sw_text and "key.startsWith('codebrew-')" in sw_text and "isCoreResource" in sw_text and "freshFirst" in sw_text and "cache:'reload'" in sw_text
     checks.append(check(
         "Caché y modo offline",
         sw_ok,
@@ -384,10 +401,13 @@ def audit(root: Path) -> dict:
         and "engines/**" in workflow_update
         and "scripts/build_all.py" in workflow_update
         and "unittest discover" in workflow_update
-        and "git add --all assets/catalog" in workflow_update
+        and "scripts/cleanup_obsolete.py --apply" in workflow_update
+        and "git add --all" in workflow_update
+        and "pages: write" in workflow_update
+        and "/pages/builds" in workflow_update
         and "cleanup_catalog_images.py --apply" not in workflow_update
-        and "workflow_run:" in workflow_cleanup
-        and "github.event.workflow_run.conclusion == 'success'" in workflow_cleanup
+        and "workflow_run:" not in workflow_cleanup
+        and "workflow_dispatch:" in workflow_cleanup
         and "pip install --requirement scripts/requirements.txt" in workflow_cleanup
         and "scripts/cleanup_obsolete.py --apply" in workflow_cleanup
         and "scripts/build_all.py" in workflow_cleanup

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -152,6 +153,7 @@ def validate_published_lots(image_dir: Path) -> dict:
     if [lot.name for lot in lots] != list(LOT_NAMES):
         raise ValueError(f"Publicación incompleta: se requieren {', '.join(LOT_NAMES)}")
     seen_keys: set[str] = set()
+    seen_hashes: set[str] = set()
     total = 0
     for lot in lots:
         images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
@@ -159,9 +161,11 @@ def validate_published_lots(image_dir: Path) -> dict:
             raise ValueError(f"{lot.name}: publicación mayor a {MAX_IMAGES_PER_LOT} imágenes")
         for image in images:
             key = normalize_name(re.sub(r"_\d+$", "", image.stem))
-            if key in seen_keys:
+            digest = hashlib.sha256(image.read_bytes()).hexdigest()
+            if key in seen_keys or digest in seen_hashes:
                 raise ValueError(f"Duplicado detectado después de publicar: {image.relative_to(image_dir)}")
             seen_keys.add(key)
+            seen_hashes.add(digest)
         total += len(images)
     return {"status": "ok", "folders": len(lots), "images": total, "duplicates": 0}
 
@@ -301,6 +305,11 @@ def integrate(
     appended_products = add_operational_products(products, operational_products, image_keys, set(stock_profile))
     enrich_products_with_woe(products, woe_catalog)
     indices = build_indices(products)
+    images.sort(key=lambda path: (
+        0 if image_identifier(path) in indices["codigoDia"] else
+        1 if image_identifier(path) in indices["skuIntl"] else 2,
+        path.relative_to(source_dir).as_posix(),
+    ))
 
     for product in products:
         stock = product_stock(product, stock_profile)
@@ -331,6 +340,8 @@ def integrate(
     used_output_lots: set[str] = set()
     published_files = 0
     duplicate_article_files = 0
+    duplicate_content_files = 0
+    seen_content: dict[str, Path] = {}
     for source in images:
         key = image_identifier(source)
         match_field = ""
@@ -340,6 +351,21 @@ def integrate(
                 match_field = field
                 matches = indices[field][key]
                 break
+
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest in seen_content:
+            duplicate_content_files += 1
+            file_rows.append({
+                "file": None,
+                "uploadedFrom": source.relative_to(source_dir).as_posix(),
+                "identifier": key,
+                "status": "ignored-duplicate-content",
+                "matchedBy": match_field or None,
+                "kept": seen_content[digest].relative_to(source_dir).as_posix(),
+                "products": [],
+            })
+            continue
+        seen_content[digest] = source
 
         previous_files = {assigned_files[product.get("articleKey")] for product in matches if product.get("articleKey") in assigned_files}
         if previous_files:
@@ -377,6 +403,7 @@ def integrate(
                 "kind": "uploaded",
                 "width": width,
                 "height": height,
+                "revision": digest[:12],
             }
             product["imageNote"] = f"Fotografía integrada y relacionada por {match_field}."
             product["photoMatch"] = match_field
@@ -424,7 +451,7 @@ def integrate(
         "matchedImageFiles": matched_files,
         "unmatchedImageFiles": unmatched_files,
         "pendingRelationImageFiles": unmatched_files,
-        "duplicateImageFilesIgnored": duplicate_identifiers + duplicate_article_files,
+        "duplicateImageFilesIgnored": duplicate_identifiers + duplicate_article_files + duplicate_content_files,
         "matchedProducts": with_photo,
         "activeProducts": active_count,
         "activeWithPhoto": active_with_photo,
@@ -464,11 +491,11 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v11-identifier-safe",
+        "version": "manual-upload-v12-publish-safe",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
-        "duplicatePolicy": "keep-distinct-identifiers-ignore-repeated-identifier",
+        "duplicatePolicy": "prefer-codigo-dia-remove-repeated-identifier-or-content",
         "unmatchedPolicy": "preserve-and-report-do-not-guess",
         "packing": "fill-lote-01-first-then-02-03-04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
