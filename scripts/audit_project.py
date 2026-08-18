@@ -87,6 +87,18 @@ def expected_photo_upload_name(value: object) -> str:
     return f"{key}.jpg"
 
 
+def normalized_identifier(value: object) -> str:
+    key = re.sub(r"[^a-z0-9]", "", str(value or "").casefold())
+    if not key or key in {"na", "none"}:
+        return ""
+    return (key.lstrip("0") or "0") if key.isdigit() else key
+
+
+def load_js_array(path: Path, assignment: str, end_marker: str) -> list[dict]:
+    text = path.read_text(encoding="utf-8")
+    return json.loads(text.split(assignment, 1)[1].split(end_marker, 1)[0])
+
+
 def audit(root: Path) -> dict:
     report = load_json(root / "data/import-report.json")
     catalog_report = load_json(root / "data/merch-catalog-report.json")
@@ -168,7 +180,7 @@ def audit(root: Path) -> dict:
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "keep-first-lot-ignore-later"
             and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
-            and coverage.get("version") == "manual-upload-v9-pending-safe"
+            and coverage.get("version") == "manual-upload-v10-exact-cross-check"
             and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
@@ -241,9 +253,26 @@ def audit(root: Path) -> dict:
     ))
     if image_mode == "manual-upload":
         coverage = load_json(root / "data/photo-coverage.json")
+        operational_products = load_js_array(root / "data/products.js", "window.PRODUCTS = ", ";\nwindow.PRODUCT_META")
+        woe_products = load_js_array(root / "data/woe.js", "window.WOE_CATALOG = ", ";\nwindow.WOE_META")
+        exact_table_keys = {
+            normalized_identifier(row.get(field))
+            for row in [*operational_products, *catalog_products]
+            for field in ("codigoDia", "skuIntl")
+            if normalized_identifier(row.get(field))
+        }
+        exact_table_keys.update(
+            normalized_identifier(row.get("codigoDia"))
+            for row in woe_products
+            if normalized_identifier(row.get("codigoDia"))
+        )
+        unresolved_exact_files = [
+            row for row in coverage.get("files", [])
+            if row.get("status") == "pending-match" and normalized_identifier(row.get("identifier")) in exact_table_keys
+        ]
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v9-pending-safe"
+            and coverage.get("version") == "manual-upload-v10-exact-cross-check"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
@@ -254,11 +283,12 @@ def audit(root: Path) -> dict:
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
             and coverage.get("crossCheck") == ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"]
             and len(woe_merch_products) == catalog_report.get("appendedWoeProducts") == coverage.get("totals", {}).get("appendedWoeProducts")
+            and not unresolved_exact_files
         )
         checks.append(check(
             "Control de fotos",
             coverage_ok,
-            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas y {coverage.get('totals', {}).get('pendingRelationImageFiles', 0)} pendientes; cruce exacto por Código Día o SKU Intl",
+            f"{coverage.get('totals', {}).get('matchedImageFiles', 0)} fotos relacionadas, {coverage.get('totals', {}).get('pendingRelationImageFiles', 0)} pendientes y {len(unresolved_exact_files)} cruces exactos omitidos",
         ))
     else:
         cross_checked = sum(source.get("visualSources", {}).get("crossChecked", 0) for source in catalog_report.get("sources", []))

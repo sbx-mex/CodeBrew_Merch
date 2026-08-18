@@ -248,8 +248,9 @@ def enrich_products_with_woe(products: list[dict], woe_catalog_path: Path) -> No
         product["microsNames"] = sorted({str(name).strip() for row in relations for name in row.get("micros", []) if str(name).strip()})
 
 
-def add_woe_merch_products(products: list[dict], woe_catalog_path: Path) -> int:
-    """Añade Merch confirmado por SAP + Micros aunque todavía no tenga fotografía."""
+def add_woe_merch_products(products: list[dict], woe_catalog_path: Path, image_keys: set[str] | None = None) -> int:
+    """Añade Merch confirmado o respaldado por una foto con Código Día exacto."""
+    image_keys = image_keys or set()
     indices = build_indices(products)
     existing_article_keys = {product.get("articleKey") for product in products}
     added = 0
@@ -257,7 +258,8 @@ def add_woe_merch_products(products: list[dict], woe_catalog_path: Path) -> int:
         category = str(row.get("merchCategory") or "").strip()
         codigo = str(row.get("codigoDia") or "").strip()
         day_key = identifier(codigo)
-        if not category or not day_key or indices["codigoDia"].get(day_key):
+        photo_backed = bool(day_key and day_key in image_keys)
+        if (not category and not photo_backed) or not day_key or indices["codigoDia"].get(day_key):
             continue
         display_name = next((clean for clean in (
             str((row.get("micros") or [""])[0]).strip(),
@@ -277,8 +279,8 @@ def add_woe_merch_products(products: list[dict], woe_catalog_path: Path) -> int:
             "nombrePos": display_name,
             "nombreInventario": display_name,
             "displayName": display_name,
-            "category": category,
-            "section": "Cruce SAP + Micros",
+            "category": category or category_for(f"{row.get('descripcionSap', '')} {display_name}"),
+            "section": "Cruce SAP + Foto" if photo_backed and not category else "Cruce SAP + Micros",
             "source": "Cruce SAP + Micros",
             "sourceFile": "Lista_Precios_Base.xlsx",
             "sourceRow": row.get("sourceRow"),
@@ -304,8 +306,9 @@ def integrate(
     products = payload.get("products", [])
     stock_profile = load_stock_profile(active_list)
     images, lots = discover_images(source_dir)
-    appended_woe_products = add_woe_merch_products(products, woe_catalog)
-    appended_products = add_operational_products(products, operational_products, {image_identifier(path) for path in images}, set(stock_profile))
+    image_keys = {image_identifier(path) for path in images}
+    appended_woe_products = add_woe_merch_products(products, woe_catalog, image_keys)
+    appended_products = add_operational_products(products, operational_products, image_keys, set(stock_profile))
     enrich_products_with_woe(products, woe_catalog)
     indices = build_indices(products)
 
@@ -471,7 +474,7 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v9-pending-safe",
+        "version": "manual-upload-v10-exact-cross-check",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",

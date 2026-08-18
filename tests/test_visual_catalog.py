@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 from PIL import Image
-from scripts.integrate_uploaded_images import discover_images, identifier, validate_published_lots
+from scripts.integrate_uploaded_images import add_woe_merch_products, discover_images, identifier, validate_published_lots
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,6 +113,31 @@ class VisualCatalogContractTests(unittest.TestCase):
             images, lots = discover_images(source)
             self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
             self.assertEqual(lots[2]["ignoredFiles"][0]["reason"], "duplicate-content")
+
+    def test_exact_sap_day_with_photo_is_added_without_micros_classification(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            woe_path = Path(temp) / "woe.js"
+            woe_path.write_text(
+                'window.WOE_CATALOG = [{"idWoe":"155962","codigoDia":"16960",'
+                '"descripcionSap":"60979 C2P CORE PLSTC HTCDCP DCHRC 24OZ",'
+                '"micros":[],"merchCategory":"","sourceRow":1573}];\nwindow.WOE_META = {};\n',
+                encoding="utf-8",
+            )
+            products: list[dict] = []
+            self.assertEqual(add_woe_merch_products(products, woe_path, {"16960"}), 1)
+            self.assertEqual(products[0]["codigoDia"], "16960")
+            self.assertEqual(products[0]["section"], "Cruce SAP + Foto")
+
+    def test_16960_photo_is_resolved_by_codigo_dia(self) -> None:
+        matches = [product for product in self.products if identifier(product.get("codigoDia")) == "16960"]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(matches[0].get("photoMatch"), "codigoDia")
+        self.assertEqual(matches[0].get("photoFile"), "lote-01/16960.jpeg")
+        self.assertEqual((matches[0].get("visual") or {}).get("src"), "assets/catalog/images/lote-01/16960.jpeg")
+        coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
+        file_row = next(row for row in coverage["files"] if row.get("identifier") == "16960")
+        self.assertEqual(file_row["status"], "matched")
+        self.assertEqual(file_row["matchedBy"], "codigoDia")
 
     def test_post_publish_audit_rejects_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
