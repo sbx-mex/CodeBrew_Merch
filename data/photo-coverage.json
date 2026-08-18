@@ -454,23 +454,6 @@
       ]
     },
     {
-      "file": "lote-01/011178957_1.jpg",
-      "uploadedFrom": "lote-01/011178957_1.jpg",
-      "identifier": "11178957",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16919--pos-58820",
-          "codigoDia": "16919",
-          "skuIntl": "11178957",
-          "skuPos": "58820",
-          "displayName": "WC26StanQuen30",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
       "file": "lote-01/011178959.jpeg",
       "uploadedFrom": "lote-01/011178959.jpeg",
       "identifier": "11178959",
@@ -1323,6 +1306,23 @@
           "skuIntl": "11178972",
           "skuPos": "58809",
           "displayName": "Sp26Vac16Stan",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16919.jpeg",
+      "uploadedFrom": "lote-01/16919.jpeg",
+      "identifier": "16919",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16919--pos-58820",
+          "codigoDia": "16919",
+          "skuIntl": "11178957",
+          "skuPos": "58820",
+          "displayName": "WC26StanQuen30",
           "stockPriority": "active"
         }
       ]

@@ -1,11 +1,11 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-18T20:36:13+00:00",
+  "auditedAtUtc": "2026-08-18T20:41:04+00:00",
   "sourceFile": "Lista_Precios_Base.xlsx",
   "sourceSha256": "8aa8a7845baba8de946a1cedfeb98669b60281c655ce0942e9fea73a1c56a013",
   "checksTotal": 14,
-  "checksOk": 13,
-  "warnings": 1,
+  "checksOk": 14,
+  "warnings": 0,
   "errors": 0,
   "checks": [
     {
@@ -65,8 +65,8 @@
     },
     {
       "name": "Workflows y obsoletos",
-      "status": "warning",
-      "detail": "Actualización y limpieza protegidas; 5 candidatos controlados"
+      "status": "ok",
+      "detail": "Actualización y limpieza protegidas; 0 candidatos controlados"
     },
     {
       "name": "Límites GitHub",
@@ -87,7 +87,7 @@
       "app.js": 126318,
       "data/products.js": 358208,
       "data/woe.js": 1179982,
-      "data/merch-catalog.js": 928107,
+      "data/merch-catalog.js": 928101,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
@@ -103,11 +103,5 @@
       "data/ui-config.js": 10000
     }
   },
-  "cleanupCandidates": [
-    "AUDITORIA_HTML_SAP.json",
-    "scripts/generate_visual_catalog.py",
-    "scripts/cleanup_catalog_images.py",
-    ".github/workflows/cleanup-catalog-images.yml",
-    "engines/image-overrides/16999.png"
-  ]
+  "cleanupCandidates": []
 }
