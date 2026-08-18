@@ -22,14 +22,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 65,
+    "images": 69,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 65,
-      "accepted": 65,
+      "images": 69,
+      "accepted": 69,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -56,16 +56,16 @@
     }
   ],
   "totals": {
-    "imageFiles": 65,
-    "publishedImageFiles": 65,
-    "matchedImageFiles": 65,
-    "unmatchedImageFiles": 0,
-    "pendingRelationImageFiles": 0,
+    "imageFiles": 69,
+    "publishedImageFiles": 69,
+    "matchedImageFiles": 68,
+    "unmatchedImageFiles": 1,
+    "pendingRelationImageFiles": 1,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 69,
+    "matchedProducts": 72,
     "activeProducts": 1017,
-    "activeWithPhoto": 65,
-    "activeMissingPhoto": 952,
+    "activeWithPhoto": 68,
+    "activeMissingPhoto": 949,
     "secondaryProducts": 169,
     "appendedOperationalProducts": 83,
     "appendedWoeProducts": 84
@@ -1192,6 +1192,14 @@
       ]
     },
     {
+      "file": "lote-01/16960.jpeg",
+      "uploadedFrom": "lote-01/16960.jpeg",
+      "identifier": "16960",
+      "status": "pending-match",
+      "matchedBy": null,
+      "products": []
+    },
+    {
       "file": "lote-01/16977.jpeg",
       "uploadedFrom": "lote-01/16977.jpeg",
       "identifier": "16977",
@@ -1204,6 +1212,57 @@
           "skuIntl": "-",
           "skuPos": "58751",
           "displayName": "IMÁN MÉXICO",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16989.jpeg",
+      "uploadedFrom": "lote-01/16989.jpeg",
+      "identifier": "16989",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16989--pos-sap-156338",
+          "codigoDia": "16989",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "SII26SS12Aniv",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17298.jpeg",
+      "uploadedFrom": "lote-01/17298.jpeg",
+      "identifier": "17298",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17298--pos-sap-156350",
+          "codigoDia": "17298",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "SII26SSBTL12Aniv",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17299.jpeg",
+      "uploadedFrom": "lote-01/17299.jpeg",
+      "identifier": "17299",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17299--pos-sap-156351",
+          "codigoDia": "17299",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "SII26Mug14Aniv",
           "stockPriority": "active"
         }
       ]
