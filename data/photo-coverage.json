@@ -22,14 +22,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 58,
+    "images": 65,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 59,
-      "accepted": 59,
+      "images": 65,
+      "accepted": 65,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -56,16 +56,16 @@
     }
   ],
   "totals": {
-    "imageFiles": 59,
-    "publishedImageFiles": 58,
-    "matchedImageFiles": 58,
+    "imageFiles": 65,
+    "publishedImageFiles": 65,
+    "matchedImageFiles": 65,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
-    "duplicateImageFilesIgnored": 1,
-    "matchedProducts": 62,
+    "duplicateImageFilesIgnored": 0,
+    "matchedProducts": 69,
     "activeProducts": 1017,
-    "activeWithPhoto": 58,
-    "activeMissingPhoto": 959,
+    "activeWithPhoto": 65,
+    "activeMissingPhoto": 952,
     "secondaryProducts": 169,
     "appendedOperationalProducts": 83,
     "appendedWoeProducts": 84
@@ -667,17 +667,6 @@
       ]
     },
     {
-      "file": null,
-      "uploadedFrom": "lote-01/11178957.jpeg",
-      "identifier": "11178957",
-      "status": "ignored-duplicate-article",
-      "matchedBy": "skuIntl",
-      "kept": [
-        "lote-01/011178957_1.jpg"
-      ],
-      "products": []
-    },
-    {
       "file": "lote-01/11372.jpeg",
       "uploadedFrom": "lote-01/11372.jpeg",
       "identifier": "11372",
@@ -707,6 +696,40 @@
           "skuIntl": "11141050",
           "skuPos": "51358",
           "displayName": "COR23 Tz14 Rain",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/14886.jpeg",
+      "uploadedFrom": "lote-01/14886.jpeg",
+      "identifier": "14886",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14886--pos-51386",
+          "codigoDia": "14886",
+          "skuIntl": "11141051",
+          "skuPos": "51386",
+          "displayName": "COR23 Tz14Green",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/14926.jpeg",
+      "uploadedFrom": "lote-01/14926.jpeg",
+      "identifier": "14926",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-14926--pos-51391",
+          "codigoDia": "14926",
+          "skuIntl": "11141189",
+          "skuPos": "51391",
+          "displayName": "COR23 ToteBag",
           "stockPriority": "active"
         }
       ]
@@ -788,6 +811,57 @@
       ]
     },
     {
+      "file": "lote-01/16125.jpeg",
+      "uploadedFrom": "lote-01/16125.jpeg",
+      "identifier": "16125",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16125--pos-52329",
+          "codigoDia": "16125",
+          "skuIntl": "11164285",
+          "skuPos": "52329",
+          "displayName": "SI25CC24Colors",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16129.jpeg",
+      "uploadedFrom": "lote-01/16129.jpeg",
+      "identifier": "16129",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16129--pos-52320",
+          "codigoDia": "16129",
+          "skuIntl": "11164293",
+          "skuPos": "52320",
+          "displayName": "SI25Tz14Glass",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16284.jpeg",
+      "uploadedFrom": "lote-01/16284.jpeg",
+      "identifier": "16284",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16284--pos-52483",
+          "codigoDia": "16284",
+          "skuIntl": "11160991",
+          "skuPos": "52483",
+          "displayName": "COR25SS16Sleeve",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16312.jpeg",
       "uploadedFrom": "lote-01/16312.jpeg",
       "identifier": "16312",
@@ -817,6 +891,23 @@
           "skuIntl": "NA",
           "skuPos": "52336",
           "displayName": "COR25CircCup",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16438.jpeg",
+      "uploadedFrom": "lote-01/16438.jpeg",
+      "identifier": "16438",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16438--pos-52566",
+          "codigoDia": "16438",
+          "skuIntl": "11173047",
+          "skuPos": "52566",
+          "displayName": "Xm25Tz14Glass",
           "stockPriority": "active"
         }
       ]
@@ -1020,6 +1111,23 @@
           "skuIntl": "11178970",
           "skuPos": "58803",
           "displayName": "Sp26SSCC16Band",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16914.jpeg",
+      "uploadedFrom": "lote-01/16914.jpeg",
+      "identifier": "16914",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16914--pos-58795",
+          "codigoDia": "16914",
+          "skuIntl": "11178947",
+          "skuPos": "58795",
+          "displayName": "Sp26StanQuen20",
           "stockPriority": "active"
         }
       ]
