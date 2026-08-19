@@ -1,0 +1,3 @@
+.codebrew-build/
+__pycache__/
+*.py[cod]
