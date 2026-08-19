@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Preparar Python
         uses: actions/setup-python@v6
@@ -60,7 +62,9 @@ jobs:
         run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
 
       - name: Auditar estado publicado
-        run: python scripts/audit_project.py
+        run: |
+          python scripts/audit_project.py
+          test -z "$(find . -type f -not -path './.git/*' \( -name '*.pyc' -o -path '*/__pycache__/*' \) -print -quit)"
 
       - name: Ejecutar pruebas funcionales
         run: python -m unittest discover -s tests -p "test_*.py"

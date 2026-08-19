@@ -20,11 +20,14 @@ jobs:
   auditar:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
         with:
           ref: main
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v6
@@ -52,8 +55,10 @@ jobs:
       - name: Validar proyecto limpio
         if: ${{ inputs.aplicar }}
         run: |
+          git diff --check
           python scripts/audit_project.py --output "$RUNNER_TEMP/audit-after.json" --js-output "$RUNNER_TEMP/audit-after.js"
           python -m unittest discover -s tests -p "test_*.py"
+          test -z "$(find . -type f -not -path './.git/*' \( -name '*.pyc' -o -path '*/__pycache__/*' \) -print -quit)"
 
       - name: Mostrar resultado
         run: cat "$RUNNER_TEMP/cleanup-report.json" >> "$GITHUB_STEP_SUMMARY"
