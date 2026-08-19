@@ -32,6 +32,8 @@ jobs:
   validate-and-generate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v5
@@ -49,8 +51,10 @@ jobs:
       - name: Validar recursos estáticos
         run: test -f assets/catalog/catalog-hero.webp
 
-      - name: Construir y auditar motores
-        run: python scripts/build_all.py
+      - name: Normalizar Código Día, optimizar y auditar
+        run: |
+          python scripts/build_all.py
+          git diff --check
 
       - name: Eliminar obsoletos y duplicados validados
         run: python scripts/cleanup_obsolete.py --apply --report "$RUNNER_TEMP/cleanup-report.json"
