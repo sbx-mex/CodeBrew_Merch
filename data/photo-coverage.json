@@ -22,7 +22,7 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 82,
+    "images": 83,
     "duplicates": 0
   },
   "lots": [
@@ -57,15 +57,15 @@
   ],
   "totals": {
     "imageFiles": 83,
-    "publishedImageFiles": 82,
-    "matchedImageFiles": 82,
+    "publishedImageFiles": 83,
+    "matchedImageFiles": 83,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
-    "duplicateImageFilesIgnored": 1,
-    "matchedProducts": 86,
+    "duplicateImageFilesIgnored": 0,
+    "matchedProducts": 87,
     "activeProducts": 1017,
-    "activeWithPhoto": 80,
-    "activeMissingPhoto": 937,
+    "activeWithPhoto": 81,
+    "activeMissingPhoto": 936,
     "secondaryProducts": 170,
     "appendedOperationalProducts": 78,
     "appendedWoeProducts": 90
@@ -686,6 +686,23 @@
           "skuIntl": "11178970",
           "skuPos": "58803",
           "displayName": "Sp26SSCC16Band",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16902.jpeg",
+      "uploadedFrom": "lote-01/16902.jpeg",
+      "identifier": "16902",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16902--pos-58830",
+          "codigoDia": "16902",
+          "skuIntl": "11178920",
+          "skuPos": "58830",
+          "displayName": "WC26Tu20Yellow",
           "stockPriority": "active"
         }
       ]
@@ -1496,15 +1513,6 @@
           "stockPriority": "active"
         }
       ]
-    },
-    {
-      "file": null,
-      "uploadedFrom": "lote-01/011160979.jpeg",
-      "identifier": "11160979",
-      "status": "ignored-duplicate-content",
-      "matchedBy": null,
-      "kept": "lote-01/16960.jpeg",
-      "products": []
     }
   ]
 }
