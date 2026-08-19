@@ -212,11 +212,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
         sw = (ROOT / "sw.js").read_text(encoding="utf-8")
-        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogLoadMore", "microsCatalogResults", "merch-catalog.js"):
+        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogLoadMore", "catalogLoadAll", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
         self.assertNotIn("microsGroupFilter", html)
         self.assertNotIn("microsFamilyFilter", html)
-        self.assertIn("catalogVisibleLimit = 5", app)
+        self.assertIn("catalogVisibleLimit = 15", app)
         self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
         self.assertIn("exportStockExcel", app)
         for token in ("isSapPrecountHtml", ".mat-column-lcodSAP", "sunidadMedidaBase", "stockMeta?.preCount", "Inventario previo · Rectificación", "Inventario_Preconteo_Rectificacion"):
@@ -232,7 +232,8 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-catalog-visual", app)
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
-        self.assertNotIn("woeSearchClear", html + app)
+        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "persistCatalogState", "restoreCatalogState", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
+            self.assertIn(token, app)
         self.assertIn("missingPhotoWhatsappUrl", app)
         self.assertIn("525521107475", app)
         self.assertIn("https://wa.me/", app)

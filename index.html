@@ -143,6 +143,7 @@
         <div class="woe-search-row">
           <div class="woe-search-box">
             <input id="woeSearch" placeholder="Código Día o SKU internacional" autocomplete="off" inputmode="search" enterkeyhint="search" spellcheck="false" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <button id="woeSearchClear" class="woe-search-clear" type="button" aria-label="Borrar búsqueda" title="Borrar búsqueda" hidden>×</button>
             <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
           </div>
           <button id="woeAdd" type="button">Agregar coincidencia</button>
@@ -153,9 +154,18 @@
           <label id="microsCountFilterWrap" class="micros-count-filter mode-catalog-content" for="microsCountFilter">Ver Conteo<select id="microsCountFilter"><option value="all">Selecciona un conteo</option></select></label>
           <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
         </div>
+        <div class="catalog-controls mode-merch-content" aria-label="Orden y disponibilidad del catálogo">
+          <label for="catalogPhotoFilter">Fotografía<select id="catalogPhotoFilter"><option value="all">Todas</option><option value="with-photo">Con foto</option><option value="missing-photo">Foto pendiente</option></select></label>
+          <label for="catalogSort">Ordenar<select id="catalogSort"><option value="priority">Recomendados</option><option value="stock">Mayor existencia</option><option value="name">Nombre A–Z</option><option value="day">Código Día</option></select></label>
+          <button id="catalogReset" class="ghost catalog-reset" type="button">Limpiar filtros</button>
+        </div>
+        <div id="catalogActiveFilters" class="catalog-active-filters mode-merch-content" aria-live="polite"></div>
         <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>
-        <div id="catalogGrid" class="catalog-grid mode-merch-content" aria-label="Vista visual destacada del catálogo"></div>
-        <button id="catalogLoadMore" class="catalog-load-more ghost mode-merch-content" type="button" hidden>Ver más artículos</button>
+        <div id="catalogGrid" class="catalog-grid mode-merch-content" aria-label="Vista visual destacada del catálogo" aria-busy="false"></div>
+        <div class="catalog-pagination mode-merch-content">
+          <button id="catalogLoadMore" class="catalog-load-more ghost" type="button" hidden>Ver más artículos</button>
+          <button id="catalogLoadAll" class="catalog-load-all ghost" type="button" hidden>Mostrar todos</button>
+        </div>
         <p class="catalog-image-note mode-merch-content">Las fotos disponibles aparecen primero. Si falta una, puedes compartirla desde la tarjeta.</p>
         <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
         <div class="woe-actions">

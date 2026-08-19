@@ -23,8 +23,10 @@
 .woe-counter { align-self: flex-start; border-color: rgba(0,98,65,.2); background: rgba(255,255,255,.84); color: #073f2f; box-shadow: 0 18px 42px rgba(30,57,50,.1); backdrop-filter: blur(10px); }
 .woe-counter span { color: #5e6f69; }
 .woe-search-panel { margin-top: 18px; padding: clamp(20px, 4vw, 34px); }
-.woe-search-box input { height: 58px; padding-left: 50px; border: 2px solid #bfd6cc; border-radius: 18px; background: #fff; font-size: 17px; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
+.woe-search-box input { height: 58px; padding-right: 50px; padding-left: 50px; border: 2px solid #bfd6cc; border-radius: 18px; background: #fff; font-size: 17px; box-shadow: inset 0 1px 0 rgba(255,255,255,.7); }
 .woe-search-box::before { content: "⌕"; position: absolute; z-index: 2; left: 17px; top: 11px; color: #006241; font-size: 29px; font-weight: 900; line-height: 1; pointer-events: none; }
+.woe-search-clear { position: absolute; z-index: 2; top: 10px; right: 10px; width: 38px; height: 38px; min-height: 38px; padding: 0; border-radius: 50%; background: #edf4f1; color: #174737; font-size: 24px; line-height: 1; }
+.woe-search-clear[hidden] { display: none; }
 .woe-search-row > button { min-height: 58px; padding-inline: 22px; border-radius: 18px; }
 .micros-catalog-results { margin: 0 0 18px; overflow: hidden; border: 1px solid #dce6e1; border-radius: 18px; background: #fff; }
 .micros-catalog-results[hidden] { display: none; }
@@ -38,11 +40,20 @@
 .micros-result button { min-height: 38px; padding: 8px 14px; border-radius: 11px; }
 .catalog-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 20px 0 14px; }
 .catalog-filters { display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: thin; }
-.catalog-filter { flex: 0 0 auto; min-height: 38px; padding: 8px 13px; border: 1px solid #d5e1dc; border-radius: 999px; background: #fff; color: #52645d; font-size: 12px; font-weight: 900; }
+.catalog-filter { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; min-height: 40px; padding: 8px 11px 8px 13px; border: 1px solid #d5e1dc; border-radius: 999px; background: #fff; color: #52645d; font-size: 12px; font-weight: 900; }
+.catalog-filter b { display: grid; place-items: center; min-width: 23px; height: 23px; padding: 0 6px; border-radius: 999px; background: #edf4f1; color: #356253; font-size: 10px; }
 .catalog-filter.active { border-color: #006241; background: #006241; color: #fff; box-shadow: 0 7px 16px rgba(0,98,65,.2); }
+.catalog-filter.active b { background: rgba(255,255,255,.18); color: #fff; }
 .catalog-summary { flex: 0 0 auto; color: #5e6f69; font-size: 12px; font-weight: 800; }
+.catalog-controls { display: grid; grid-template-columns: minmax(150px,220px) minmax(170px,240px) auto; gap: 10px; align-items: end; margin: -4px 0 10px; }
+.catalog-controls label { margin: 0; color: #52645d; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.catalog-controls select { margin-top: 5px; padding: 10px 12px; border-radius: 12px; font-size: 14px; }
+.catalog-reset { min-height: 42px; padding: 10px 15px; font-size: 13px; }
+.catalog-active-filters { display: flex; gap: 7px; flex-wrap: wrap; min-height: 31px; margin: 0 0 14px; }
+.catalog-active-filters span { padding: 6px 10px; border-radius: 999px; background: #e9f4ef; color: #07583c; font-size: 11px; font-weight: 800; }
+.catalog-active-filters .is-default { background: #f4f1eb; color: #6e756f; font-weight: 700; }
 .catalog-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
-.catalog-card { min-width: 0; overflow: hidden; border: 1px solid #dfe6e2; border-radius: 22px; background: #fff; box-shadow: 0 8px 24px rgba(30,57,50,.06); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.catalog-card { min-width: 0; overflow: hidden; border: 1px solid #dfe6e2; border-radius: 22px; background: #fff; box-shadow: 0 8px 24px rgba(30,57,50,.06); content-visibility: auto; contain-intrinsic-size: 420px; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .catalog-card:hover { transform: translateY(-3px); border-color: #9dc7b5; box-shadow: 0 18px 38px rgba(30,57,50,.12); }
 .catalog-thumb,.woe-row-thumb {
   --catalog-image: none;
@@ -55,6 +66,7 @@
   background-position: var(--catalog-position, var(--catalog-x) var(--catalog-y));
 }
 .catalog-thumb { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; min-height: 0; border-radius: 0; image-rendering: auto; }
+.catalog-thumb img { display: block; width: 100%; height: 100%; object-fit: contain; background: #fffdf9; }
 .catalog-card.needs-photo .catalog-thumb { background: linear-gradient(145deg,#fafcfb,#edf4f1); }
 .catalog-missing-visual { display: grid; justify-items: center; gap: 7px; color: #718079; }
 .catalog-missing-visual svg { width: 30px; height: 30px; fill: #9aaca4; }
@@ -86,8 +98,10 @@
 .catalog-photo-request small { margin-top: 2px; color: #527266; font-size: 9px; line-height: 1.2; }
 .catalog-card.has-photo { border-color: #b8d8ca; }
 .catalog-image-note { margin: 12px 2px 18px; color: #7a756c; font-size: 11px; font-style: italic; }
-.catalog-load-more { display: block; width: min(360px,100%); margin: 22px auto 6px; border: 1px solid #9fc4b4; background: #f4faf7; color: #006241; font-weight: 900; }
-.catalog-load-more[hidden] { display: none; }
+.catalog-pagination { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 22px auto 6px; }
+.catalog-load-more,.catalog-load-all { width: min(280px,100%); margin: 0; border: 1px solid #9fc4b4; background: #f4faf7; color: #006241; font-weight: 900; }
+.catalog-load-all { background: #fff; }
+.catalog-load-more[hidden],.catalog-load-all[hidden] { display: none; }
 .catalog-empty { grid-column: 1 / -1; padding: 42px 20px; border: 1px dashed #bdcac4; border-radius: 20px; background: #f7f5f0; color: #61716a; text-align: center; }
 .woe-selection { margin-top: 20px; }
 .woe-chip { padding-left: 9px; }
@@ -106,6 +120,8 @@
   .woe-hero { min-height: 410px; padding: 24px; background-position: 68% center; }
   .woe-hero::after { background: linear-gradient(180deg, rgba(249,245,237,.76), rgba(249,245,237,.98) 72%); }
   .catalog-toolbar { display: block; }
+  .catalog-controls { grid-template-columns: 1fr 1fr; }
+  .catalog-reset { grid-column: 1 / -1; }
   .catalog-summary { display: block; margin-top: 9px; }
   .catalog-grid { grid-template-columns: 1fr; }
   .micros-results-head { display: grid; }
