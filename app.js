@@ -4,7 +4,7 @@ const products = window.PRODUCTS || [];
 const woeCatalog = window.WOE_CATALOG || [];
 const visualCatalog = window.MERCH_VISUAL_CATALOG?.products || [];
 const stockConfig = window.STOCK_CONFIG || {};
-const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Busca por SAP, Día, SKU o nombre.',woeReady:'Listado listo para exportar.',stockEmpty:'Adjunta el HTML SAP más actual.',stockReady:'Lectura lista para confirmar.'}};
+const uiConfig = window.UI_CONFIG || {messages:{woeEmpty:'Busca por SAP, DÃ­a, SKU o nombre.',woeReady:'Listado listo para exportar.',stockEmpty:'Adjunta el HTML SAP mÃ¡s actual.',stockReady:'Lectura lista para confirmar.'}};
 const woeSelection = new Map();
 const catalogItemByKey = new Map();
 let catalogCategory = 'all';
@@ -38,11 +38,11 @@ const APP_MODES = ['consulta','catalog','merch','export','etiquetado'];
 const MODE_TO_PANEL = {consulta:'consulta',catalog:'woe',merch:'woe',export:'woe',etiquetado:'etiquetado'};
 const MERCH_PRODUCT_CATEGORIES = new Set(['mug','tumbler','cold-cup','bottle','accessory','other']);
 const TOOL_FALLBACKS = {
-consulta:{id:'consulta',menuTitle:'Precio & POS',shortTitle:'Precio & POS',eyebrow:'Consulta rápida',description:'Consulta el artículo, confirma el precio y escanea en POS.',menuDescription:'Consulta, valida y escanea',icon:'$',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:false,steps:[{title:'Busca',text:'SKU, Día o nombre.'},{title:'Valida',text:'Confirma artículo y precio.'},{title:'Escanea',text:'Usa el código en POS.'}]},
-catalog:{id:'catalog',menuTitle:'WOE | Catálogo',shortTitle:'WOE | Catálogo',eyebrow:'Catálogo General',description:'Filtra por Conteo Micros o busca por SAP, Día, SKU o nombre.',menuDescription:'Encuentra y valida artículos',icon:'#',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:true,steps:[{title:'Busca',text:'Empieza por SAP o Día.'},{title:'Comprueba',text:'Valida SAP + Micros.'},{title:'Selecciona',text:'Agrega piezas y exporta.'}]},
-merch:{id:'merch',menuTitle:'Revisión de Merch',shortTitle:'Merch',eyebrow:'Tumblers · Tazas · Mercancía',description:'Revisa Merch y confirma el Código SAP.',menuDescription:'Tumblers, tazas y mercancía',icon:'M',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:true,steps:[{title:'Filtra',text:'Tumbler, Taza o Mercancía.'},{title:'Compara',text:'Confirma SAP + Día.'},{title:'Agrega',text:'Selecciona las piezas.'}]},
-export:{id:'export',menuTitle:'Exportar inventario',shortTitle:'Exportar',eyebrow:'HTML → CodeBrew',description:'Carga tu reporte WOE, cruza inventario y exporta PDF o Excel.',menuDescription:'HTML → CodeBrew · PDF / Excel',icon:'↗',heroImage:'assets/stock_pdf_woe.jpeg',sapPriority:false,steps:[{title:'Guarda',text:'WOE → Página web completa.'},{title:'Transfiere',text:'Correo u OneDrive.'},{title:'Adjunta',text:'CodeBrew cruza SAP.'}]},
-etiquetado:{id:'etiquetado',menuTitle:'Etiquetas',shortTitle:'Etiquetas',eyebrow:'Etiquetado POS',description:'Busca, define piezas y prepara etiquetas listas para imprimir.',menuDescription:'Prepara e imprime etiquetas POS',icon:'▤',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:false,steps:[{title:'Identifica',text:'Busca o escanea.'},{title:'Captura',text:'Define piezas.'},{title:'Genera',text:'Crea el PDF.'}]}
+consulta:{id:'consulta',menuTitle:'Precio & POS',shortTitle:'Precio & POS',eyebrow:'Consulta rÃ¡pida',description:'Consulta el artÃ­culo, confirma el precio y escanea en POS.',menuDescription:'Consulta, valida y escanea',icon:'$',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:false,steps:[{title:'Busca',text:'SKU, DÃ­a o nombre.'},{title:'Valida',text:'Confirma artÃ­culo y precio.'},{title:'Escanea',text:'Usa el cÃ³digo en POS.'}]},
+catalog:{id:'catalog',menuTitle:'WOE | CatÃ¡logo',shortTitle:'WOE | CatÃ¡logo',eyebrow:'CatÃ¡logo General',description:'Filtra por Conteo Micros o busca por SAP, DÃ­a, SKU o nombre.',menuDescription:'Encuentra y valida artÃ­culos',icon:'#',heroImage:'assets/catalog/catalog-general-hero.webp',sapPriority:true,steps:[{title:'Busca',text:'Empieza por SAP o DÃ­a.'},{title:'Comprueba',text:'Valida SAP + Micros.'},{title:'Selecciona',text:'Agrega piezas y exporta.'}]},
+merch:{id:'merch',menuTitle:'RevisiÃ³n de Merch',shortTitle:'Merch',eyebrow:'Tumblers Â· Tazas Â· MercancÃ­a',description:'Revisa Merch y confirma el CÃ³digo SAP.',menuDescription:'Tumblers, tazas y mercancÃ­a',icon:'M',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:true,steps:[{title:'Filtra',text:'Tumbler, Taza o MercancÃ­a.'},{title:'Compara',text:'Confirma SAP + DÃ­a.'},{title:'Agrega',text:'Selecciona las piezas.'}]},
+export:{id:'export',menuTitle:'Exportar inventario',shortTitle:'Exportar',eyebrow:'HTML â†’ CodeBrew',description:'Carga tu reporte WOE, cruza inventario y exporta PDF o Excel.',menuDescription:'HTML â†’ CodeBrew Â· PDF / Excel',icon:'â†—',heroImage:'assets/stock_pdf_woe.jpeg',sapPriority:false,steps:[{title:'Guarda',text:'WOE â†’ PÃ¡gina web completa.'},{title:'Transfiere',text:'Correo u OneDrive.'},{title:'Adjunta',text:'CodeBrew cruza SAP.'}]},
+etiquetado:{id:'etiquetado',menuTitle:'Etiquetas',shortTitle:'Etiquetas',eyebrow:'Etiquetado POS',description:'Busca, define piezas y prepara etiquetas listas para imprimir.',menuDescription:'Prepara e imprime etiquetas POS',icon:'â–¤',heroImage:'assets/catalog/catalog-hero.webp',sapPriority:false,steps:[{title:'Identifica',text:'Busca o escanea.'},{title:'Captura',text:'Define piezas.'},{title:'Genera',text:'Crea el PDF.'}]}
 };
 let toolMenuConfig = {order:[...APP_MODES]};
 let toolConfigs = {...TOOL_FALLBACKS};
@@ -59,9 +59,9 @@ if(source.protocol!=='https:'||source.hostname!=='cdn.jsdelivr.net'){reject(new 
 const script=document.createElement('script');let settled=false;
 const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve();};
 script.src=source.href;script.async=true;script.crossOrigin='anonymous';script.referrerPolicy='no-referrer';
-script.onload=()=>test()?finish():finish(new Error('La librería no quedó disponible'));
-script.onerror=()=>finish(new Error('No se pudo cargar la librería operativa'));
-const timer=setTimeout(()=>finish(new Error('La carga tardó demasiado')),20000);
+script.onload=()=>test()?finish():finish(new Error('La librerÃ­a no quedÃ³ disponible'));
+script.onerror=()=>finish(new Error('No se pudo cargar la librerÃ­a operativa'));
+const timer=setTimeout(()=>finish(new Error('La carga tardÃ³ demasiado')),20000);
 document.head.appendChild(script);
 }).catch(error=>{externalLoads.delete(url);throw error;});
 externalLoads.set(url,promise);return promise;
@@ -77,10 +77,10 @@ function yieldToMain(){return new Promise(resolve=>(window.requestIdleCallback?r
 function setStockBusy(busy,current=0,total=0){
 const panel=$('stockPanel'),wrap=$('stockProgressWrap'),progress=$('stockProgress'),output=$('stockProgressText');
 panel.setAttribute('aria-busy',String(busy));wrap.hidden=!busy;$('stockAttach').disabled=busy;
-const percent=total?Math.round((current/total)*100):0;progress.value=percent;output.textContent=total?`${current} de ${total} páginas`:'Preparando…';
+const percent=total?Math.round((current/total)*100):0;progress.value=percent;output.textContent=total?`${current} de ${total} pÃ¡ginas`:'Preparandoâ€¦';
 }
 function updateConnectivity(){
-const online=navigator.onLine,target=$('connectionStatus');document.body.classList.toggle('offline',!online);target.classList.toggle('offline',!online);target.textContent=online?'En línea':'Sin conexión';target.title=online?'Conexión disponible':'La consulta continúa con los datos guardados';
+const online=navigator.onLine,target=$('connectionStatus');document.body.classList.toggle('offline',!online);target.classList.toggle('offline',!online);target.textContent=online?'En lÃ­nea':'Sin conexiÃ³n';target.title=online?'ConexiÃ³n disponible':'La consulta continÃºa con los datos guardados';
 }
 function safeToolImage(value){
 const source=String(value||'').trim();
@@ -106,7 +106,7 @@ function renderModeMenu(){
 const grid=$('modeMenuGrid');if(!grid)return;
 grid.innerHTML=(toolMenuConfig.order||APP_MODES).map(id=>{
 const tool=toolConfigs[id]||TOOL_FALLBACKS[id],image=safeToolImage(tool.heroImage);
-return `<button type="button" class="tool-card tool-card-${escapeHtml(id)} ${image?'has-image':''}" data-app-mode="${escapeHtml(id)}"${image?` style="--tool-image:url('${image}')"`:''}><span class="tool-card-icon">${escapeHtml(tool.icon||'•')}</span><span><b>${escapeHtml(tool.menuTitle||id)}</b><small>${escapeHtml(tool.menuDescription||tool.description||'')}</small></span></button>`;
+return `<button type="button" class="tool-card tool-card-${escapeHtml(id)} ${image?'has-image':''}" data-app-mode="${escapeHtml(id)}"${image?` style="--tool-image:url('${image}')"`:''}><span class="tool-card-icon">${escapeHtml(tool.icon||'â€¢')}</span><span><b>${escapeHtml(tool.menuTitle||id)}</b><small>${escapeHtml(tool.menuDescription||tool.description||'')}</small></span></button>`;
 }).join('');
 }
 function renderToolContext(){
@@ -117,7 +117,7 @@ context.hidden=false;switcher.hidden=false;$('toolContextEyebrow').textContent=t
 visual.classList.toggle('has-image',Boolean(image));if(image)visual.style.setProperty('--tool-context-image',`url("${image}")`);else visual.style.removeProperty('--tool-context-image');
 $('toolGuideSteps').innerHTML=(tool.steps||[]).map((step,index)=>`<div><b>${index+1}</b><span><strong>${escapeHtml(step.title||'Paso')}</strong>${escapeHtml(step.text||'')}</span></div>`).join('');$('toolGuide').open=false;
 document.querySelectorAll('#toolSwitcher [data-app-mode]').forEach(button=>{const active=button.dataset.appMode===appMode;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});
-if($('woeScopeLabel'))$('woeScopeLabel').textContent=appMode==='merch'?'Revisión de Merch':'Catálogo General';
+if($('woeScopeLabel'))$('woeScopeLabel').textContent=appMode==='merch'?'RevisiÃ³n de Merch':'CatÃ¡logo General';
 if($('woeTotal')){const total=appMode==='merch'?visualCatalog.filter(isMerchProduct).length:(window.MERCH_VISUAL_CATALOG?.meta?.products||visualCatalog.length||window.WOE_META?.catalogRows||woeCatalog.length);$('woeTotal').textContent=Number(total).toLocaleString('es-MX');}
 }
 function bindModeButtons(){document.addEventListener('click',event=>{const button=event.target.closest?.('[data-app-mode]');if(button)selectAppMode(button.dataset.appMode);});}
@@ -136,17 +136,17 @@ function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(
 function priceOnly(p, tier){ return priceFor(p, tier) || '-'; }
 function qrValue(p){return String(window.POS_MIRROR?.[p?.skuPos]||p?.skuPos||p?.botonPos||p?.nombrePos||'').trim();}
 function posButtonText(p){
-const button = p?.botonPos || 'Botón por validar';
+const button = p?.botonPos || 'BotÃ³n por validar';
 return p?.campaign ? `${button} / ${p.campaign}` : button;
 }
-function routeText(p){ return `Mercancía → ${posButtonText(p)}`; }
+function routeText(p){ return `MercancÃ­a â†’ ${posButtonText(p)}`; }
 function posStepsHtml(p){
 const btn = posButtonText(p);
 return `<div class="pos-flow-title">Ayuda visual POS</div>
 <div class="pos-flow-visual">
-<div class="pos-step"><b>1</b><span><strong>Identifica Mercancía</strong><br><span class="pos-chip">Mercancía</span></span></div>
-<div class="pos-step"><b>2</b><span><strong>Abre el botón correcto</strong><br>Campaña / Menciona la campaña, su nombre homologado o Discovery.<br><span class="pos-chip">${btn}</span></span></div>
-<div class="pos-step"><b>3</b><span><strong>Escanea el código</strong><br>Usa el código de esta ficha en el POS.</span></div>
+<div class="pos-step"><b>1</b><span><strong>Identifica MercancÃ­a</strong><br><span class="pos-chip">MercancÃ­a</span></span></div>
+<div class="pos-step"><b>2</b><span><strong>Abre el botÃ³n correcto</strong><br>CampaÃ±a / Menciona la campaÃ±a, su nombre homologado o Discovery.<br><span class="pos-chip">${btn}</span></span></div>
+<div class="pos-step"><b>3</b><span><strong>Escanea el cÃ³digo</strong><br>Usa el cÃ³digo de esta ficha en el POS.</span></div>
 </div>`;
 }
 const numericIndex = new Map();
@@ -198,7 +198,7 @@ return qr.toDataURL('image/png');
 const CODE128 = ['212222','222122','222221','121223','121322','131222','122213','122312','132212','221213','221312','231212','112232','122132','122231','113222','123122','123221','223211','221132','221231','213212','223112','312131','311222','321122','321221','312212','322112','322211','212123','212321','232121','111323','131123','131321','112313','132113','132311','211313','231113','231311','112133','112331','132131','113123','113321','133121','313121','211331','231131','213113','213311','213131','311123','311321','331121','312113','312311','332111','314111','221411','431111','111224','111422','121124','121421','141122','141221','112214','112412','122114','122411','142112','142211','241211','221114','413111','241112','134111','111242','121142','121241','114212','124112','124211','411212','421112','421211','212141','214121','412121','111143','111341','131141','114113','114311','411113','411311','113141','114131','311141','411131','211412','211214','211232','2331112'];
 function makeBarcodeSVG(value){
 const text = String(value || '').trim();
-if (!text) return '<div class="no-code">Sin código POS</div>';
+if (!text) return '<div class="no-code">Sin cÃ³digo POS</div>';
 const codes = [104];
 for (const ch of text) { const v = ch.charCodeAt(0) - 32; if (v < 0 || v > 95) continue; codes.push(v); }
 let checksum = 104; for (let i = 1; i < codes.length; i++) checksum += codes[i] * i;
@@ -208,12 +208,12 @@ for (const code of codes) {
 const pattern = CODE128[code];
 for (let i = 0; i < pattern.length; i++) { const w = Number(pattern[i]) * scale; if (i % 2 === 0) bars += `<rect x="${x}" y="0" width="${w}" height="${height}"/>`; x += w; }
 }
-return `<svg class="barcode" viewBox="0 0 ${x} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Código POS ${text}">${bars}</svg>`;
+return `<svg class="barcode" viewBox="0 0 ${x} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CÃ³digo POS ${text}">${bars}</svg>`;
 }
 function tierSelectHtml(p, selected='C1', id='tierSelect'){
 const keys = tierKeys(p);
 if (keys.length <= 1) return '';
-return `<label class="tier-inline">Tier <select id="${id}">${keys.map(k => `<option value="${k}" ${k===selected?'selected':''}>${k} · ${p.tier[k]}</option>`).join('')}</select></label>`;
+return `<label class="tier-inline">Tier <select id="${id}">${keys.map(k => `<option value="${k}" ${k===selected?'selected':''}>${k} Â· ${p.tier[k]}</option>`).join('')}</select></label>`;
 }
 function productSapDesc(p){const d=String(p.codigoDia||'');return woeCatalog.find(x=>String(x.codigoDia||'')===d&&x.descripcionSap)?.descripcionSap||p.descripcion||'';}
 function renderProduct(p, source){
@@ -225,23 +225,23 @@ $('result').className = 'result';
 $('result').innerHTML = `
 <div class="card">
 <div class="info">
-<span class="badge">Mercancía → ${boton}</span>
+<span class="badge">MercancÃ­a â†’ ${boton}</span>
 <div class="title product-pos-name">${p.nombrePos || 'Sin nombre POS'}</div>
-<p class="desc sap-description"><span>Descripción SAP</span>${productSapDesc(p)}</p>
+<p class="desc sap-description"><span>DescripciÃ³n SAP</span>${productSapDesc(p)}</p>
 ${tierSelectHtml(p, currentTier, 'tierSelect')}
 <div class="grid">
-<div class="field"><span>SKU leído</span><b>${source || p.skuIntl || '-'}</b></div>
-<div class="field"><span>Botón POS</span><b>${boton}</b><em>${p.base || ''}</em></div>
-<div class="field main"><span>${window.POS_MIRROR?.[p?.skuPos]?'SKU POS · ESPEJO':'SKU POS'}</span><b>${skuPos || '-'}</b></div>
-<div class="field"><span>Código DIA</span><b>${p.codigoDia || '-'}</b></div>
+<div class="field"><span>SKU leÃ­do</span><b>${source || p.skuIntl || '-'}</b></div>
+<div class="field"><span>BotÃ³n POS</span><b>${boton}</b><em>${p.base || ''}</em></div>
+<div class="field main"><span>${window.POS_MIRROR?.[p?.skuPos]?'SKU POS Â· ESPEJO':'SKU POS'}</span><b>${skuPos || '-'}</b></div>
+<div class="field"><span>CÃ³digo DIA</span><b>${p.codigoDia || '-'}</b></div>
 <div class="field"><span>Nombre POS</span><b>${p.nombrePos || '-'}</b></div>
 <div class="field"><span>Precio</span><b class="price">${priceLabel(p, currentTier)}</b></div>
 </div>
-<div class="pos-help"><b>Flujo POS:</b> ${routeText(p)} → escanear código generado.</div>
+<div class="pos-help"><b>Flujo POS:</b> ${routeText(p)} â†’ escanear cÃ³digo generado.</div>
 <div class="actions" style="margin-top:14px"><button id="addCurrentLabel">Agregar a etiquetado</button></div>
 </div>
 <div class="scanbox">
-<div class="scan-title">Código para escanear en POS</div>
+<div class="scan-title">CÃ³digo para escanear en POS</div>
 <div class="barcode-wrap">${makeBarcodeSVG(skuPos)}<div class="human">${skuPos || ''}</div></div>
 ${posStepsHtml(p)}
 </div>
@@ -253,7 +253,7 @@ $('addCurrentLabel').addEventListener('click', () => { $('labelSku').value = p.s
 function renderNotFound(q){
 currentProduct = null;
 $('result').className = 'result notfound';
-$('result').innerHTML = `<div class="not-card"><div class="title">Artículo no encontrado</div><p>Se buscó: <b>${q || 'sin lectura'}</b></p><p class="desc">Verifica SKU #, Código DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.</p></div>`;
+$('result').innerHTML = `<div class="not-card"><div class="title">ArtÃ­culo no encontrado</div><p>Se buscÃ³: <b>${q || 'sin lectura'}</b></p><p class="desc">Verifica SKU #, CÃ³digo DIA, SKU POS, Nombre POS o Nombre Inventario. Si es producto nuevo, actualiza la Base de Precios.</p></div>`;
 }
 const woeByDay = new Map();
 woeCatalog.forEach(item=>{const key=normalizeSku(item.codigoDia),rows=woeByDay.get(key)||[];if(key){rows.push(item);woeByDay.set(key,rows);}});
@@ -261,7 +261,7 @@ const visualByDay = new Map();
 const visualWoeItems=[];
 visualCatalog.forEach(product=>{
 const day=normalizeSku(product.codigoDia),matches=woeByDay.get(day)||[];
-const linked=matches.length?matches:[{idWoe:'',codigoDia:product.codigoDia,descripcionSap:'',micros:[],merch:[],validation:{sap:false,micros:false,merch:true},origin:'Catálogo visual',sourceRow:product.sourceRow}];
+const linked=matches.length?matches:[{idWoe:'',codigoDia:product.codigoDia,descripcionSap:'',micros:[],merch:[],validation:{sap:false,micros:false,merch:true},origin:'CatÃ¡logo visual',sourceRow:product.sourceRow}];
 linked.forEach(match=>visualWoeItems.push({...match,visualProduct:product,quantity:1}));
 const rows=visualByDay.get(day)||[];rows.push(product);visualByDay.set(day,rows);
 });
@@ -293,17 +293,17 @@ function catalogImageUrl(product){const src=String(product?.visual?.src||'').rep
 function catalogBatchSize(){return window.matchMedia('(max-width:540px)').matches?6:window.matchMedia('(max-width:1150px)').matches?9:15;}
 function persistCatalogState(){try{sessionStorage.setItem('codebrew-catalog-state',JSON.stringify({category:catalogCategory,photo:catalogPhotoState,sort:catalogSort}));}catch(error){}}
 function restoreCatalogState(){try{const saved=JSON.parse(sessionStorage.getItem('codebrew-catalog-state')||'{}');catalogCategory=String(saved.category||'all');catalogPhotoState=['all','with-photo','missing-photo'].includes(saved.photo)?saved.photo:'all';catalogSort=['priority','stock','name','day'].includes(saved.sort)?saved.sort:'priority';}catch(error){}}
-function articleName(item){const product=visualProductFor(item);return product?.descripcionSci||item.descripcionSap||product?.displayName||product?.nombrePos||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'Artículo';}
+function articleName(item){const product=visualProductFor(item);return product?.descripcionSci||item.descripcionSap||product?.displayName||product?.nombrePos||(item.micros||[])[0]||item.merch?.[0]?.descripcionSci||'ArtÃ­culo';}
 function photoUploadName(item){const product=visualProductFor(item),day=normalizeSku(item?.codigoDia||product?.codigoDia);return product?.photoUploadName||(day?`${day}.jpg`:'codigo-dia.jpg');}
 const CODEBREW_PHOTO_PHONE='525521107475';
 function missingPhotoWhatsappUrl(item,nativeApp=false){
 const product=visualProductFor(item),description=product?.displayName||product?.nombrePos||item?.descripcionSap||articleName(item),day=item?.codigoDia||product?.codigoDia||'No identificado',fileName=photoUploadName(item);
-const message=['Foto legible para CodeBrew',`Artículo: ${description}`,`Código Día: ${day}`,'',`Nombre sugerido del archivo: ${fileName}`,'','Toma una foto completa y legible del termo; después adjúntala en este chat.','','Adjunto fotografía del artículo para una próxima actualización.'].join('\n');
+const message=['Foto legible para CodeBrew',`ArtÃ­culo: ${description}`,`CÃ³digo DÃ­a: ${day}`,'',`Nombre sugerido del archivo: ${fileName}`,'','Toma una foto completa y legible del termo; despuÃ©s adjÃºntala en este chat.','','Adjunto fotografÃ­a del artÃ­culo para una prÃ³xima actualizaciÃ³n.'].join('\n');
 const encoded=encodeURIComponent(message);
 return nativeApp?`whatsapp://send?phone=${CODEBREW_PHOTO_PHONE}&text=${encoded}`:`https://wa.me/${CODEBREW_PHOTO_PHONE}?text=${encoded}`;
 }
 function catalogItemKey(item){return woeKey(item,'catalog');}
-function catalogCategoryLabel(value){return ({all:appMode==='merch'?'Todo Merch':'Todo',featured:'Destacados HD',mug:'Tazas',tumbler:'Tumblers',merchandise:'Mercancía','cold-cup':'Cold Cups',bottle:'Botellas',brew:'Café',accessory:'Accesorios',other:'Otros'})[value]||value;}
+function catalogCategoryLabel(value){return ({all:appMode==='merch'?'Todo Merch':'Todo',featured:'Destacados HD',mug:'Tazas',tumbler:'Tumblers',merchandise:'MercancÃ­a','cold-cup':'Cold Cups',bottle:'Botellas',brew:'CafÃ©',accessory:'Accesorios',other:'Otros'})[value]||value;}
 function isMerchProduct(product){return Boolean(product&&MERCH_PRODUCT_CATEGORIES.has(product.category));}
 function isMerchItem(item){const product=visualProductFor(item);return Boolean((product&&isMerchProduct(product))||(item?.merch||[]).length);}
 function matchesCatalogCategory(product,category){
@@ -328,17 +328,17 @@ const unique=[];const seen=new Set();for(const row of matches){const visualKey=r
 if(catalogSort==='stock')unique.sort((a,b)=>(Number(b.visualProduct?.stockQuantity)||0)-(Number(a.visualProduct?.stockQuantity)||0)||articleName(a).localeCompare(articleName(b),'es'));
 if(catalogSort==='name')unique.sort((a,b)=>articleName(a).localeCompare(articleName(b),'es'));
 if(catalogSort==='day')unique.sort((a,b)=>String(a.codigoDia||'').localeCompare(String(b.codigoDia||''),'es',{numeric:true}));
-const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore'),loadAll=$('catalogLoadAll'),remaining=Math.max(0,unique.length-visible.length);$('catalogSummary').textContent=`${visible.length.toLocaleString('es-MX')} visibles · ${unique.length.toLocaleString('es-MX')} coincidencias`;
-loadMore.hidden=!remaining;loadMore.textContent=`Ver ${Math.min(catalogBatchSize(),remaining)} más`;loadAll.hidden=!remaining;loadAll.textContent=`Mostrar todos (${remaining.toLocaleString('es-MX')})`;
-$('catalogActiveFilters').innerHTML=[query?`Búsqueda: “${escapeHtml(raw.trim())}”`:'',catalogCategory!=='all'?catalogCategoryLabel(catalogCategory):'',catalogPhotoState==='with-photo'?'Con foto':catalogPhotoState==='missing-photo'?'Foto pendiente':'',catalogSort!=='priority'?`Orden: ${{stock:'existencia',name:'nombre',day:'Código Día'}[catalogSort]}`:''].filter(Boolean).map(value=>`<span>${value}</span>`).join('')||'<span class="is-default">Mostrando recomendaciones del catálogo</span>';
+const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore'),loadAll=$('catalogLoadAll'),remaining=Math.max(0,unique.length-visible.length);$('catalogSummary').textContent=`${visible.length.toLocaleString('es-MX')} visibles Â· ${unique.length.toLocaleString('es-MX')} coincidencias`;
+loadMore.hidden=!remaining;loadMore.textContent=`Ver ${Math.min(catalogBatchSize(),remaining)} mÃ¡s`;loadAll.hidden=true;
+$('catalogActiveFilters').innerHTML=[query?`BÃºsqueda: â€œ${escapeHtml(raw.trim())}â€`:'',catalogCategory!=='all'?catalogCategoryLabel(catalogCategory):'',catalogPhotoState==='with-photo'?'Con foto':catalogPhotoState==='missing-photo'?'Foto pendiente':'',catalogSort!=='priority'?`Orden: ${{stock:'existencia',name:'nombre',day:'CÃ³digo DÃ­a'}[catalogSort]}`:''].filter(Boolean).map(value=>`<span>${value}</span>`).join('')||'<span class="is-default">Mostrando recomendaciones del catÃ¡logo</span>';
 grid.innerHTML=visible.length?visible.map(item=>{
 const product=item.visualProduct,key=catalogItemKey(item),hasPhoto=Boolean(product.visual?.src);catalogItemByKey.set(key,item);
 const uploadName=photoUploadName(item),photoState=hasPhoto?'':`<div class="catalog-missing-visual" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 4l1.2-1.5h3.6L15 4h3a3 3 0 013 3v10a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h3zm3 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6z"/></svg><strong>Foto pendiente</strong><small>Toma una foto clara del termo</small></div>`;
-const photoRequest=hasPhoto?'':`<aside class="catalog-photo-request"><a href="${missingPhotoWhatsappUrl(item)}" data-photo-whatsapp="${missingPhotoWhatsappUrl(item,true)}" rel="noopener noreferrer" aria-label="Abrir WhatsApp para enviar una foto legible de ${escapeHtml(articleName(item))}, Código Día ${escapeHtml(item.codigoDia||product.codigoDia||'no identificado')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l1.2-1.5h3.6L15 4h3a3 3 0 013 3v10a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h3zm3 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6z"/></svg><span><b>Enviar foto por WhatsApp</b><small>Mensaje listo · ${escapeHtml(uploadName)}</small></span></a></aside>`;
-return `<article class="catalog-card ${product.visualSource==='premium-override'?'is-featured':''} ${hasPhoto?'has-photo':'needs-photo'}"><div class="catalog-thumb">${hasPhoto?`<img src="${catalogImageUrl(product)}" alt="${escapeHtml(articleName(item))}" loading="lazy" decoding="async" width="480" height="480" data-catalog-image>`:photoState}</div><div class="catalog-card-body"><h3>${escapeHtml(articleName(item))}</h3><p class="catalog-card-description">${escapeHtml(product.displayName||product.nombrePos||item.descripcionSap||'Descripción por validar')}</p><div class="catalog-codes"><div><small>SAP</small><b>${escapeHtml(item.idWoe||'Pendiente')}</b></div><div><small>Día</small><b>${escapeHtml(item.codigoDia||'—')}</b></div></div>${photoRequest}<div class="catalog-card-action"><div class="catalog-quantity"><button type="button" data-catalog-step="-1" data-catalog-key="${escapeHtml(key)}" aria-label="Restar pieza">−</button><input type="number" min="1" max="9999" value="1" data-catalog-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"><button type="button" data-catalog-step="1" data-catalog-key="${escapeHtml(key)}" aria-label="Agregar pieza">+</button></div><button type="button" class="catalog-add" data-catalog-add="${escapeHtml(key)}">Añadir al conteo</button></div></div></article>`;
-}).join(''):'<div class="catalog-empty"><b>No encontramos artículos.</b><br>Prueba otra palabra, Código Día, SAP o categoría.</div>';
+const photoRequest=hasPhoto?'':`<aside class="catalog-photo-request"><a href="${missingPhotoWhatsappUrl(item)}" data-photo-whatsapp="${missingPhotoWhatsappUrl(item,true)}" rel="noopener noreferrer" aria-label="Abrir WhatsApp para enviar una foto legible de ${escapeHtml(articleName(item))}, CÃ³digo DÃ­a ${escapeHtml(item.codigoDia||product.codigoDia||'no identificado')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l1.2-1.5h3.6L15 4h3a3 3 0 013 3v10a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h3zm3 3a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6z"/></svg><span><b>Enviar foto por WhatsApp</b><small>Mensaje listo Â· ${escapeHtml(uploadName)}</small></span></a></aside>`;
+return `<article class="catalog-card ${product.visualSource==='premium-override'?'is-featured':''} ${hasPhoto?'has-photo':'needs-photo'}"><div class="catalog-thumb">${hasPhoto?`<img src="${catalogImageUrl(product)}" alt="${escapeHtml(articleName(item))}" loading="lazy" decoding="async" width="480" height="480" data-catalog-image>`:photoState}</div><div class="catalog-card-body"><h3>${escapeHtml(articleName(item))}</h3><p class="catalog-card-description">${escapeHtml(product.displayName||product.nombrePos||item.descripcionSap||'DescripciÃ³n por validar')}</p><div class="catalog-codes"><div><small>SAP</small><b>${escapeHtml(item.idWoe||'Pendiente')}</b></div><div><small>DÃ­a</small><b>${escapeHtml(item.codigoDia||'â€”')}</b></div></div>${photoRequest}<div class="catalog-card-action"><div class="catalog-quantity"><button type="button" data-catalog-step="-1" data-catalog-key="${escapeHtml(key)}" aria-label="Restar pieza">âˆ’</button><input type="number" min="1" max="9999" value="1" data-catalog-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"><button type="button" data-catalog-step="1" data-catalog-key="${escapeHtml(key)}" aria-label="Agregar pieza">+</button></div><button type="button" class="catalog-add" data-catalog-add="${escapeHtml(key)}">AÃ±adir al conteo</button></div></div></article>`;
+}).join(''):'<div class="catalog-empty"><b>No encontramos artÃ­culos.</b><br>Prueba otra palabra, CÃ³digo DÃ­a, SAP o categorÃ­a.</div>';
 if(merchMode)filters.querySelectorAll('[data-catalog-filter]').forEach(button=>button.addEventListener('click',()=>{catalogCategory=button.dataset.catalogFilter;persistCatalogState();renderCatalog($('woeSearch').value);}));
-grid.querySelectorAll('[data-catalog-image]').forEach(image=>image.addEventListener('error',()=>{const card=image.closest('.catalog-card');card?.classList.remove('has-photo');card?.classList.add('needs-photo');image.parentElement.innerHTML='<div class="catalog-missing-visual"><strong>Imagen no disponible</strong><small>Se conservó la ficha del artículo</small></div>';},{once:true}));
+grid.querySelectorAll('[data-catalog-image]').forEach(image=>image.addEventListener('error',()=>{const card=image.closest('.catalog-card');card?.classList.remove('has-photo');card?.classList.add('needs-photo');image.parentElement.innerHTML='<div class="catalog-missing-visual"><strong>Imagen no disponible</strong><small>Se conservÃ³ la ficha del artÃ­culo</small></div>';},{once:true}));
 grid.querySelectorAll('[data-photo-whatsapp]').forEach(link=>link.addEventListener('click',event=>{if(!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))return;event.preventDefault();window.location.assign(link.dataset.photoWhatsapp);}));
 grid.querySelectorAll('[data-catalog-step]').forEach(button=>button.addEventListener('click',()=>{const input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogKey)}"]`);input.value=Math.max(1,Math.min(9999,(Number(input.value)||1)+Number(button.dataset.catalogStep)));}));
 grid.querySelectorAll('[data-catalog-add]').forEach(button=>button.addEventListener('click',()=>{const item=catalogItemByKey.get(button.dataset.catalogAdd),input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogAdd)}"]`);addWoeItem(item,true,Number(input?.value)||1);renderWoeResults();}));
@@ -346,7 +346,7 @@ const results=$('microsCatalogResults');
 if(results){
 const showResults=Boolean(query)||(appMode==='catalog'&&microsCount!=='all'),rows=allMatches.slice(0,40);
 results.hidden=!showResults;
-results.innerHTML=!showResults?'':rows.length?`<div class="micros-results-head"><b>${microsCount!=='all'?`Conteo · ${escapeHtml(microsCount)}`:'Resultados del catálogo'}</b><span>${allMatches.length.toLocaleString('es-MX')} coincidencias · SAP exacto primero</span></div><div class="micros-results-list">${rows.map((row,index)=>{const item=row.item,key=catalogItemKey(item);catalogItemByKey.set(key,item);return `<article class="micros-result"><div><small>Conteo: ${escapeHtml((item.conteo||[])[0]||'Sin clasificación')}</small><b>${escapeHtml(articleName(item))}</b><span>${item.operationalValidation?.sapMicros?'Coincidencia SAP · ':item.idWoe?'SAP disponible · ':'SAP por validar · '}Día ${escapeHtml(item.codigoDia||'—')}</span></div><button type="button" data-micros-add="${escapeHtml(key)}">Añadir</button></article>`;}).join('')}</div>`:'<div class="catalog-empty"><b>Sin coincidencias.</b><br>Prueba otra palabra o Código Día.</div>';
+results.innerHTML=!showResults?'':rows.length?`<div class="micros-results-head"><b>${microsCount!=='all'?`Conteo Â· ${escapeHtml(microsCount)}`:'Resultados del catÃ¡logo'}</b><span>${allMatches.length.toLocaleString('es-MX')} coincidencias Â· SAP exacto primero</span></div><div class="micros-results-list">${rows.map((row,index)=>{const item=row.item,key=catalogItemKey(item);catalogItemByKey.set(key,item);return `<article class="micros-result"><div><small>Conteo: ${escapeHtml((item.conteo||[])[0]||'Sin clasificaciÃ³n')}</small><b>${escapeHtml(articleName(item))}</b><span>${item.operationalValidation?.sapMicros?'Coincidencia SAP Â· ':item.idWoe?'SAP disponible Â· ':'SAP por validar Â· '}DÃ­a ${escapeHtml(item.codigoDia||'â€”')}</span></div><button type="button" data-micros-add="${escapeHtml(key)}">AÃ±adir</button></article>`;}).join('')}</div>`:'<div class="catalog-empty"><b>Sin coincidencias.</b><br>Prueba otra palabra o CÃ³digo DÃ­a.</div>';
 results.querySelectorAll('[data-micros-add]').forEach(button=>button.addEventListener('click',()=>{addWoeItem(catalogItemByKey.get(button.dataset.microsAdd),true,1);renderWoeResults();}));
 }
 }
@@ -376,7 +376,7 @@ const matches=findWoeMatches(query,8);
 box.innerHTML=matches.length?matches.map((item,index)=>`
 <button type="button" class="woe-suggestion" role="option" data-woe-suggestion="${index}">
 <b>${escapeHtml(item.codigoDia)}</b><span>${escapeHtml(articleName(item))}</span><small>${item.idWoe?`SAP ${escapeHtml(item.idWoe)}`:'SAP por validar'}</small>
-</button>`).join(''):`<div class="woe-no-suggestion"><b>Sin coincidencia exacta.</b><br>Intenta con Código Día, SAP, nombre o Conteo.</div>`;
+</button>`).join(''):`<div class="woe-no-suggestion"><b>Sin coincidencia exacta.</b><br>Intenta con CÃ³digo DÃ­a, SAP, nombre o Conteo.</div>`;
 box.hidden=false;input.setAttribute('aria-expanded','true');
 box.querySelectorAll('[data-woe-suggestion]').forEach((button,index)=>button.addEventListener('click',()=>{
 addWoeItem(matches[index]);renderWoeResults();renderWoeSuggestions(input.value);input.focus();
@@ -389,13 +389,13 @@ function updateWoeFlow(){
 const count=selectedWoeItems().length,query=Boolean($('woeSearch')?.value.trim());
 const states=count?{search:'done',select:'done',export:woePdfExported?'done':'active'}:query?{search:'done',select:'active',export:'pending'}:{search:'active',select:'pending',export:'pending'};
 const message=count?(woePdfExported?'PDF generado; puedes conservar o ajustar el listado.':uiConfig.messages?.woeReady):uiConfig.messages?.woeEmpty;
-setOperationalFlow('woeFlow',states,'woeNextAction',message||'Continúa con el siguiente paso.',count>0);
+setOperationalFlow('woeFlow',states,'woeNextAction',message||'ContinÃºa con el siguiente paso.',count>0);
 }
 function updateStockFlow(){
 const loaded=stockRows.length>0,confirmed=stockConfirmed;
 const states=stockPdfExported?{attach:'done',review:'done',export:'done'}:confirmed?{attach:'done',review:'done',export:'active'}:loaded?{attach:'done',review:'active',export:'pending'}:{attach:'active',review:'pending',export:'pending'};
 const message=loaded?(stockPdfExported?'PDF cruzado generado; conserva el reporte como referencia.':confirmed?'Lectura confirmada; genera tu PDF cruzado.':uiConfig.messages?.stockReady):uiConfig.messages?.stockEmpty;
-setOperationalFlow('stockFlow',states,'stockNextAction',message||'Continúa con el siguiente paso.',loaded);
+setOperationalFlow('stockFlow',states,'stockNextAction',message||'ContinÃºa con el siguiente paso.',loaded);
 }
 function persistWoeSelection(){
 try{sessionStorage.setItem('codebrew-woe-selection-v2',JSON.stringify(selectedWoeItems({respectMode:false}).map(({key,item})=>({key,quantity:Number(item.quantity)||1})).slice(0,100)));}catch(error){}
@@ -418,8 +418,8 @@ matches.forEach(item=>{const before=woeSelection.size;addWoeItem(item,false);if(
 renderWoeSelection();
 $('woeSearch').value='';$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');
 $('woeStatus').classList.toggle('warning',missing.length>0);
-if(missing.length)$('woeStatus').innerHTML=`<b>Aviso · sin coincidencia exacta:</b> ${missing.map(escapeHtml).join(', ')}. Si es MERCH, considera que el nombre puede variar: prueba con SKU de lista, SKU POS o Código DIA.`;
-else if(added)$('woeStatus').textContent=`${added} coincidencia${added===1?'':'s'} agregada${added===1?'':'s'} a la selección.`;
+if(missing.length)$('woeStatus').innerHTML=`<b>Aviso Â· sin coincidencia exacta:</b> ${missing.map(escapeHtml).join(', ')}. Si es MERCH, considera que el nombre puede variar: prueba con SKU de lista, SKU POS o CÃ³digo DIA.`;
+else if(added)$('woeStatus').textContent=`${added} coincidencia${added===1?'':'s'} agregada${added===1?'':'s'} a la selecciÃ³n.`;
 else $('woeStatus').textContent='No se agregaron registros nuevos.';
 return {added,missing};
 }
@@ -429,7 +429,7 @@ $('woeSelectedCount').textContent=items.length;
 $('woeExport').disabled=!items.length;
 persistWoeSelection();updateWoeFlow();
 if(!items.length){target.innerHTML=`<span class="woe-empty-selection">${appMode==='merch'?'Sin Merch seleccionado.':'Sin elementos seleccionados.'}</span>`;return;}
-target.innerHTML=items.map(({key,item})=>`<span class="woe-chip"><span class="woe-chip-qty">${Number(item.quantity)||1}</span><b>${escapeHtml(item.idWoe?`SAP ${item.idWoe}`:`Día ${item.codigoDia}`)}</b> · ${escapeHtml(articleName(item))}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">×</button></span>`).join('');
+target.innerHTML=items.map(({key,item})=>`<span class="woe-chip"><span class="woe-chip-qty">${Number(item.quantity)||1}</span><b>${escapeHtml(item.idWoe?`SAP ${item.idWoe}`:`DÃ­a ${item.codigoDia}`)}</b> Â· ${escapeHtml(articleName(item))}<button type="button" aria-label="Quitar ${escapeHtml(item.codigoDia)}" data-woe-remove="${escapeHtml(key)}">Ã—</button></span>`).join('');
 target.querySelectorAll('[data-woe-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRemove);woePdfExported=false;renderWoeSelection();if($('woeResults').children.length)renderWoeResults();}));
 }
 function selectedWoeItems({respectMode=true}={}){
@@ -452,7 +452,7 @@ return selectedWoeItems().map(({item})=>{const status=operationalWoeStatus(item)
 }
 async function generateWoePdf(){
 const rows=pdfWoeRows();
-if(!rows.length){$('woeStatus').classList.add('warning');$('woeStatus').textContent='Agrega al menos un artículo antes de generar el PDF.';return;}
+if(!rows.length){$('woeStatus').classList.add('warning');$('woeStatus').textContent='Agrega al menos un artÃ­culo antes de generar el PDF.';return;}
 const exportButton=$('woeExport'),originalLabel=exportButton.textContent;exportButton.disabled=true;exportButton.textContent='Generando PDF...';
 try{
 await ensureJsPdf();
@@ -498,19 +498,19 @@ y+=rowHeight;
 const totalPages=doc.getNumberOfPages();for(let number=1;number<=totalPages;number++){doc.setPage(number);drawFooter(number,totalPages);}
 doc.save(`WOE_Lista_Doble_Check_${new Date().toISOString().slice(0,10)}.pdf`);
 woePdfExported=true;updateWoeFlow();
-$('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artículos y ${pieces} piezas, con cruce Día → SAP.`;
+$('woeStatus').classList.remove('warning');$('woeStatus').innerHTML=`<b>PDF generado:</b> ${selected} artÃ­culos y ${pieces} piezas, con cruce DÃ­a â†’ SAP.`;
 }catch(error){$('woeStatus').classList.add('warning');$('woeStatus').textContent='No fue posible generar el PDF. Conservamos tu listado para que puedas intentarlo nuevamente.';}
 finally{exportButton.disabled=false;exportButton.textContent=originalLabel;}
 }
 function renderWoeResults(){
 if(!woeSelection.size&&$('woeSearch').value.trim())addWoeQueries($('woeSearch').value);
 const rows=selectedWoeItems(),items=rows.map(row=>row.item),target=$('woeResults');
-if(!items.length){target.innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='No hay registros seleccionados. Busca por artículo, Código Día, SAP o SKU.';return;}
+if(!items.length){target.innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='No hay registros seleccionados. Busca por artÃ­culo, CÃ³digo DÃ­a, SAP o SKU.';return;}
 const reviewed=items.filter(item=>operationalWoeStatus(item).kind==='ok').length,needsReview=items.length-reviewed;
 const pieces=items.reduce((sum,item)=>sum+(Number(item.quantity)||1),0);
-target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artículos</span></div><div><strong>${pieces}</strong><span>piezas</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Visual</th><th>Artículo / Descripción SAP</th><th>#SAP</th><th>#Día</th><th>Piezas</th><th>Validación</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item),product=visualProductFor(item),hasVisual=Boolean(product?.visual?.src);return `<tr><td class="woe-visual-cell" data-label="Visual">${hasVisual?`<span class="woe-row-thumb" style="${visualStyle(product)}" role="img" aria-label="Foto de ${escapeHtml(articleName(item))}"></span>`:'<span class="woe-merch-na">Sin imagen</span>'}</td><td data-label="Artículo"><strong>${escapeHtml(articleName(item))}</strong><small class="woe-table-detail">${escapeHtml(item.descripcionSap||product?.descripcionSci||'Descripción SAP por validar')}</small></td><td data-label="#SAP"><b class="woe-code">${escapeHtml(item.idWoe||'—')}</b></td><td data-label="#Día"><b>${escapeHtml(item.codigoDia||'—')}</b></td><td data-label="Piezas"><input class="woe-qty-input" type="number" min="1" max="9999" value="${Number(item.quantity)||1}" data-woe-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"></td><td data-label="Validación"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'✓':'!'} ${escapeHtml(status.label)}</span></td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar Código Día ${escapeHtml(item.codigoDia)}">×</button></td></tr>`;}).join('')}</tbody></table></div>`;
+target.innerHTML=`<div class="woe-result-summary"><div><strong>${items.length}</strong><span>artÃ­culos</span></div><div><strong>${pieces}</strong><span>piezas</span></div><div class="ok"><strong>${reviewed}</strong><span>validados</span></div><div class="review"><strong>${needsReview}</strong><span>por revisar</span></div></div><div class="woe-table-wrap"><table class="woe-table"><thead><tr><th>Visual</th><th>ArtÃ­culo / DescripciÃ³n SAP</th><th>#SAP</th><th>#DÃ­a</th><th>Piezas</th><th>ValidaciÃ³n</th><th></th></tr></thead><tbody>${rows.map(({key,item})=>{const status=operationalWoeStatus(item),product=visualProductFor(item),hasVisual=Boolean(product?.visual?.src);return `<tr><td class="woe-visual-cell" data-label="Visual">${hasVisual?`<span class="woe-row-thumb" style="${visualStyle(product)}" role="img" aria-label="Foto de ${escapeHtml(articleName(item))}"></span>`:'<span class="woe-merch-na">Sin imagen</span>'}</td><td data-label="ArtÃ­culo"><strong>${escapeHtml(articleName(item))}</strong><small class="woe-table-detail">${escapeHtml(item.descripcionSap||product?.descripcionSci||'DescripciÃ³n SAP por validar')}</small></td><td data-label="#SAP"><b class="woe-code">${escapeHtml(item.idWoe||'â€”')}</b></td><td data-label="#DÃ­a"><b>${escapeHtml(item.codigoDia||'â€”')}</b></td><td data-label="Piezas"><input class="woe-qty-input" type="number" min="1" max="9999" value="${Number(item.quantity)||1}" data-woe-qty="${escapeHtml(key)}" aria-label="Piezas de ${escapeHtml(articleName(item))}"></td><td data-label="ValidaciÃ³n"><span class="woe-op-status ${status.kind}">${status.kind==='ok'?'âœ“':'!'} ${escapeHtml(status.label)}</span></td><td><button type="button" class="woe-row-remove" data-woe-row-remove="${escapeHtml(key)}" aria-label="Quitar CÃ³digo DÃ­a ${escapeHtml(item.codigoDia)}">Ã—</button></td></tr>`;}).join('')}</tbody></table></div>`;
 $('woeStatus').classList.toggle('warning',needsReview>0);
-$('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados · ${needsReview} por revisar · ${pieces} piezas.`:`<b>Listo:</b> ${reviewed} con cruce SAP + Micros · ${pieces} piezas.`;
+$('woeStatus').innerHTML=needsReview?`<b>Doble check:</b> ${reviewed} validados Â· ${needsReview} por revisar Â· ${pieces} piezas.`:`<b>Listo:</b> ${reviewed} con cruce SAP + Micros Â· ${pieces} piezas.`;
 target.querySelectorAll('[data-woe-row-remove]').forEach(button=>button.addEventListener('click',()=>{woeSelection.delete(button.dataset.woeRowRemove);woePdfExported=false;renderWoeSelection();renderWoeResults();}));
 target.querySelectorAll('[data-woe-qty]').forEach(input=>input.addEventListener('change',()=>{const item=woeSelection.get(input.dataset.woeQty);if(!item)return;item.quantity=Math.max(1,Math.min(9999,Math.trunc(Number(input.value)||1)));woePdfExported=false;renderWoeSelection();renderWoeResults();}));
 }
@@ -536,7 +536,7 @@ parser:{yTolerance:2,itemMaxX:210,unitMinX:205,unitMaxX:330,qtyMinX:330,qtyMaxX:
 page:{orientation:'portrait',format:'letter',unit:'pt',width:612,height:792,margin:24,tableTop:112,tableBottom:754,footerY:778},
 columns:[{key:'codigoDia',label:'#DIA',width:45},{key:'idWoe',label:'#SAP',width:45},{key:'descripcionSap',label:'DESCRIPCION SAP',width:160},{key:'nombreMicros',label:'NOMBRE MICROS',width:142},{key:'unidad',label:'UNIDAD STOCK',width:64},{key:'qty',label:'QTY',width:40},{key:'estado',label:'ESTADO',width:68}],
 style:{titleSize:17,metaSize:7.5,headerSize:6.8,bodySize:7,lineHeight:8.2,cellPadding:4,maxLinesPerCell:3,green:[0,98,65],dark:[7,63,47],cream:[249,246,239],line:[221,225,220],warning:[180,83,9]},
-messages:{disclaimer:'Este reporte es un estimado. Realiza un doble check con tu conteo físico del libro y captura en la app al finalizar el servicio.',nameVariation:'El nombre Micros puede variar. Valida por Código DIA cuando el cruce no sea exacto.'}
+messages:{disclaimer:'Este reporte es un estimado. Realiza un doble check con tu conteo fÃ­sico del libro y captura en la app al finalizar el servicio.',nameVariation:'El nombre Micros puede variar. Valida por CÃ³digo DIA cuando el cruce no sea exacto.'}
 };
 }
 function groupStockPdfLines(items){
@@ -551,7 +551,7 @@ line.parts.push(part);
 return lines.sort((a,b)=>b.y-a.y).map(line=>{line.parts.sort((a,b)=>a.x-b.x);line.text=line.parts.map(part=>part.text).join(' ').replace(/\s+/g,' ').trim();return line;});
 }
 function parseStockNumber(value){
-let clean=String(value||'').replace(/[−–—]/g,'-').replace(/\s/g,'').trim(),negative=false;
+let clean=String(value||'').replace(/[âˆ’â€“â€”]/g,'-').replace(/\s/g,'').trim(),negative=false;
 if(/^\(.+\)$/.test(clean)){negative=true;clean=clean.slice(1,-1);}
 if(/^[-+]?\d{1,3}(?:,\d{3})+(?:\.\d+)?$/.test(clean))clean=clean.replace(/,/g,'');
 else if(/^[-+]?\d+,\d+$/.test(clean))clean=clean.replace(',','.');
@@ -619,7 +619,7 @@ const unitParts=sameLine.filter(part=>detailLayout?part.x>=178&&part.x<205:part.
 const stockPart=detailLayout?null:sameLine.filter(part=>part.x>=300&&part.x<370).find(part=>numeric(part)!==null);
 const qty=qtyPart?numeric(qtyPart):null,stockValue=stockPart?numeric(stockPart):null;
 if(qty===null)return null;
-return {sourceSap:anchor.sap,sourceDescription:description||'Descripción no identificada',pdfUnit:joinPdfParts(unitParts).replace(/\s+/g,'')||'N/D',qty,stockValue,page:pageNumber};
+return {sourceSap:anchor.sap,sourceDescription:description||'DescripciÃ³n no identificada',pdfUnit:joinPdfParts(unitParts).replace(/\s+/g,'')||'N/D',qty,stockValue,page:pageNumber};
 }).filter(Boolean);
 }
 function htmlCell(row,column){
@@ -635,11 +635,11 @@ return Boolean(document.querySelector('.mat-column-lcodSAP,.cdk-column-lcodSAP')
 }
 function readSapHtmlMeta(document,fileName){
 const text=String(document.body?.textContent||'').replace(/\s+/g,' ').trim();
-const field=label=>{const match=text.match(new RegExp(`${label}\\s*:\\s*([^:]+?)(?=Número Inventario|Tipo de Inventario|Fecha Grabaci[oó]n|No se aplican|Cod\\.? SAP|$)`,'i'));return match?.[1]?.trim()||'';};
-const reportDate=(text.match(/Fecha\s+Grabaci[oó]n\s*:\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'',rawType=field('Tipo de Inventario')||'Inventario',entered=$('stockStoreInput')?.value?.trim()||'';
-const storeMatch=text.match(/Starbucks\s+(?:MX|M[eé]xico)\s+(.+?)(?=\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b)/i);
+const field=label=>{const match=text.match(new RegExp(`${label}\\s*:\\s*([^:]+?)(?=NÃºmero Inventario|Tipo de Inventario|Fecha Grabaci[oÃ³]n|No se aplican|Cod\\.? SAP|$)`,'i'));return match?.[1]?.trim()||'';};
+const reportDate=(text.match(/Fecha\s+Grabaci[oÃ³]n\s*:\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'',rawType=field('Tipo de Inventario')||'Inventario',entered=$('stockStoreInput')?.value?.trim()||'';
+const storeMatch=text.match(/Starbucks\s+(?:MX|M[eÃ©]xico)\s+(.+?)(?=\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|lunes|martes|mi[eÃ©]rcoles|jueves|viernes|s[aÃ¡]bado|domingo)\b)/i);
 const preCount=isSapPrecountHtml(document);
-return {titleFound:/DATOS\s+INVENTARIO/i.test(text),documentType:'sap-html',preCount,inventoryStage:preCount?'pre-count':'counted',store:entered||(storeMatch?`Starbucks MX ${storeMatch[1].trim()}`:'Tienda no indicada'),reportDate,printedDate:reportDate,printedTime:'',inventoryType:/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`,inventoryNumber:field('Número Inventario'),fileName};
+return {titleFound:/DATOS\s+INVENTARIO/i.test(text),documentType:'sap-html',preCount,inventoryStage:preCount?'pre-count':'counted',store:entered||(storeMatch?`Starbucks MX ${storeMatch[1].trim()}`:'Tienda no indicada'),reportDate,printedDate:reportDate,printedTime:'',inventoryType:/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`,inventoryNumber:field('NÃºmero Inventario'),fileName};
 }
 function parseSapHtml(document){
 const result=[];
@@ -657,21 +657,21 @@ return stockMeta?.preCount||$('stockIncludeZero')?.checked?stockSourceRows:stock
 function applyStockSourceRows(extraWarnings=[]){
 const sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html',source=sap?selectedSapSourceRows():stockSourceRows;
 stockRows=source.map(sap?matchSapInventoryRow:matchStockRow);stockConfirmed=false;stockPdfExported=false;stockValidation=validateStockReading(stockMeta,stockRows,extraWarnings);renderStockResults(extraWarnings);updateStockFlow();
-$('stockExport').disabled=!stockRows.length;$('stockExcel').disabled=!stockRows.length;$('stockPrint').disabled=!stockRows.length;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';
+$('stockExport').disabled=!stockRows.length;$('stockExcel').disabled=!stockRows.length;$('stockPrint').disabled=!stockRows.length;$('stockExport').textContent=stockValidation.valid?'2 Â· Confirmar lectura':'2 Â· Lectura bloqueada';
 }
 function matchSapInventoryRow(row){
 const candidates=stockSapIndex.get(normalizeSku(row.sourceSap))||[];
 if(!candidates.length)return {...row,codigoDia:'',idWoe:row.sourceSap,agrupado:'Sin cruce',familia:row.sourceFamily||'Sin familia',conteo:'Sin conteo',descripcionSap:row.sourceDescription,nombreMicros:'Sin nombre de inventario cruzado',unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
 const ranked=[...candidates].sort((a,b)=>Number(Boolean((b.micros||[]).length))-Number(Boolean((a.micros||[]).length))||String(a.codigoDia).localeCompare(String(b.codigoDia),'es',{numeric:true}));
 const item=ranked[0],unique=new Set(candidates.map(candidate=>`${candidate.codigoDia}|${(candidate.micros||[])[0]||''}`));
-return {...row,codigoDia:item.codigoDia||'',idWoe:row.sourceSap,agrupado:(item.agrupado||[])[0]||'Sin agrupado',familia:(item.familia||[])[0]||row.sourceFamily||'Sin familia',conteo:(item.conteo||[])[0]||'Sin conteo',descripcionSap:row.sourceDescription||item.descripcionSap||'Sin descripción SAP',nombreMicros:(item.micros||[])[0]||'Sin nombre de inventario',unidad:row.pdfUnit,matchType:unique.size>1?'ambiguous':'exact',matchScore:1,alternatives:unique.size};
+return {...row,codigoDia:item.codigoDia||'',idWoe:row.sourceSap,agrupado:(item.agrupado||[])[0]||'Sin agrupado',familia:(item.familia||[])[0]||row.sourceFamily||'Sin familia',conteo:(item.conteo||[])[0]||'Sin conteo',descripcionSap:row.sourceDescription||item.descripcionSap||'Sin descripciÃ³n SAP',nombreMicros:(item.micros||[])[0]||'Sin nombre de inventario',unidad:row.pdfUnit,matchType:unique.size>1?'ambiguous':'exact',matchScore:1,alternatives:unique.size};
 }
 function readSapMeta(lines,fileName){
 const text=lines.map(line=>line.text).join('\n'),field=label=>{const match=text.match(new RegExp(`^${label}\\s*:\\s*([^\\n]+)`,'im'));return match?.[1]?.trim()||'';};
-const titleFound=/datos\s+inventario/i.test(text),reportDate=(text.match(/Fecha\s+Grabaci[oó]n\s*:?\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'';
+const titleFound=/datos\s+inventario/i.test(text),reportDate=(text.match(/Fecha\s+Grabaci[oÃ³]n\s*:?\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'';
 const rawType=field('Tipo de Inventario')||((text.match(/Inventario\s+(Mensal|Semanal)/i)||[])[1]||'Inventario'),inventoryType=/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`;
 const entered=$('stockStoreInput')?.value?.trim()||'';
-return {titleFound,documentType:'sap',store:entered||'Tienda no indicada',reportDate,printedDate:reportDate,printedTime:'',inventoryType,inventoryNumber:field('Número Inventario'),fileName};
+return {titleFound,documentType:'sap',store:entered||'Tienda no indicada',reportDate,printedDate:reportDate,printedTime:'',inventoryType,inventoryNumber:field('NÃºmero Inventario'),fileName};
 }
 function tokenScore(left,right){
 if(left===right)return 1;
@@ -701,7 +701,7 @@ if(ranked.length&&ranked[0].score-(ranked[1]?.score||0)>=.05)chosen=chooseStockA
 if(!cached)stockMatchCache.set(query,chosen||null);
 if(!chosen)return {...row,codigoDia:'',idWoe:'',agrupado:'Sin cruce',familia:'Sin familia',conteo:'Sin conteo',descripcionSap:'Sin cruce SAP',nombreMicros:row.sourceName,unidad:row.pdfUnit,matchType:'unmatched',matchScore:0,alternatives:0};
 const item=chosen.alias.item;
-return {...row,codigoDia:item.codigoDia||'',idWoe:item.idWoe||'',agrupado:(item.agrupado||[])[0]||'Sin agrupado',familia:(item.familia||[])[0]||'Sin familia',conteo:(item.conteo||[])[0]||'Sin conteo',descripcionSap:item.descripcionSap||'Sin descripción SAP',nombreMicros:chosen.alias.name,unidad:row.pdfUnit||item.unidadMicros||'N/D',matchType:chosen.matchType,matchScore:chosen.matchScore,alternatives:chosen.alternatives};
+return {...row,codigoDia:item.codigoDia||'',idWoe:item.idWoe||'',agrupado:(item.agrupado||[])[0]||'Sin agrupado',familia:(item.familia||[])[0]||'Sin familia',conteo:(item.conteo||[])[0]||'Sin conteo',descripcionSap:item.descripcionSap||'Sin descripciÃ³n SAP',nombreMicros:chosen.alias.name,unidad:row.pdfUnit||item.unidadMicros||'N/D',matchType:chosen.matchType,matchScore:chosen.matchScore,alternatives:chosen.alternatives};
 }
 function readStockMeta(lines,items,fileName){
 const aliases=stockConfigValue().parser.titleAliases||['stock on hand'],titleIndex=lines.findIndex(line=>aliases.includes(normalizeText(line.text)));
@@ -724,26 +724,26 @@ function stockFreshness(meta){
 const warnings=[];
 const timestamp=stockTimestamp(meta),today=new Date(),dateMatch=String(meta.reportDate).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 if(!meta.titleFound)warnings.push('El archivo no se identifica como Stock on Hand.');
-if(!timestamp)warnings.push('No fue posible validar la fecha de impresión.');
-if(dateMatch){const reportDay=new Date(Number(dateMatch[3]),Number(dateMatch[2])-1,Number(dateMatch[1]));if(reportDay.toDateString()!==today.toDateString())warnings.push(`El Report Date es ${meta.reportDate}; confirma que sea el reporte más actual.`);}
+if(!timestamp)warnings.push('No fue posible validar la fecha de impresiÃ³n.');
+if(dateMatch){const reportDay=new Date(Number(dateMatch[3]),Number(dateMatch[2])-1,Number(dateMatch[1]));if(reportDay.toDateString()!==today.toDateString())warnings.push(`El Report Date es ${meta.reportDate}; confirma que sea el reporte mÃ¡s actual.`);}
 try{
 const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);
-if(timestamp&&previous&&timestamp<previous)warnings.push('Este PDF es anterior al último reporte leído para la tienda.');
-}catch(error){/* La validación por fecha actual continúa aunque el almacenamiento esté bloqueado. */}
+if(timestamp&&previous&&timestamp<previous)warnings.push('Este PDF es anterior al Ãºltimo reporte leÃ­do para la tienda.');
+}catch(error){/* La validaciÃ³n por fecha actual continÃºa aunque el almacenamiento estÃ© bloqueado. */}
 return warnings;
 }
 function rememberConfirmedStock(meta){
 const timestamp=stockTimestamp(meta);if(!timestamp)return;
-try{const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);if(timestamp>=previous)localStorage.setItem(key,String(timestamp));}catch(error){/* La confirmación funciona aun con almacenamiento bloqueado. */}
+try{const key=`codebrew-stock-${normalizeText(meta.store)||'tienda'}`,previous=Number(localStorage.getItem(key)||0);if(timestamp>=previous)localStorage.setItem(key,String(timestamp));}catch(error){/* La confirmaciÃ³n funciona aun con almacenamiento bloqueado. */}
 }
 function validateStockReading(meta,rows,freshnessWarnings=[]){
 const missingHeader=[];
 const sap=meta?.documentType==='sap'||meta?.documentType==='sap-html';
-if(!meta?.titleFound)missingHeader.push(sap?'encabezado DATOS INVENTARIO':'título Stock on Hand');
+if(!meta?.titleFound)missingHeader.push(sap?'encabezado DATOS INVENTARIO':'tÃ­tulo Stock on Hand');
 if(!sap&&(!meta?.store||meta.store==='Tienda no identificada'))missingHeader.push('tienda');
-if(!meta?.reportDate)missingHeader.push(sap?'Fecha Grabación':'Report Date');
-if(!sap&&!meta?.printedDate)missingHeader.push('fecha de impresión');
-if(!sap&&!meta?.printedTime)missingHeader.push('hora de impresión');
+if(!meta?.reportDate)missingHeader.push(sap?'Fecha GrabaciÃ³n':'Report Date');
+if(!sap&&!meta?.printedDate)missingHeader.push('fecha de impresiÃ³n');
+if(!sap&&!meta?.printedTime)missingHeader.push('hora de impresiÃ³n');
 const invalidItems=rows.filter(row=>!String(sap?row.sourceDescription:row.sourceName||'').trim()).length;
 const invalidUnits=rows.filter(row=>!String(row.pdfUnit||'').trim()||row.pdfUnit==='N/D').length;
 const invalidQty=rows.filter(row=>!Number.isFinite(row.qty)||(!sap&&Math.abs(row.qty)<=Number(stockConfigValue().parser.zeroTolerance||.000001))).length;
@@ -751,15 +751,15 @@ const duplicateKeys=new Set(),duplicates=new Set();
 rows.forEach(row=>{const key=sap?`${normalizeSku(row.sourceSap)}|${normalizeText(row.pdfUnit)}`:`${normalizeText(row.sourceName)}|${normalizeText(row.pdfUnit)}`;if(duplicateKeys.has(key))duplicates.add(key);else duplicateKeys.add(key);});
 const blocking=[];
 if(missingHeader.length)blocking.push(`Falta validar: ${missingHeader.join(', ')}.`);
-if(meta?.headerMismatches?.length)blocking.push(`El encabezado cambia entre páginas: ${meta.headerMismatches.join(', ')}.`);
-if(!rows.length)blocking.push(sap?'No hay artículos para validar.':'No hay artículos con cantidad diferente de cero.');
-if(invalidItems)blocking.push(`${invalidItems} renglón${invalidItems===1?'':'es'} sin artículo.`);
-if(invalidQty)blocking.push(`${invalidQty} cantidad${invalidQty===1?'':'es'} inválida${invalidQty===1?'':'s'}.`);
-if(duplicates.size)blocking.push(`${duplicates.size} artículo${duplicates.size===1?'':'s'} duplicado${duplicates.size===1?'':'s'} por nombre y unidad.`);
+if(meta?.headerMismatches?.length)blocking.push(`El encabezado cambia entre pÃ¡ginas: ${meta.headerMismatches.join(', ')}.`);
+if(!rows.length)blocking.push(sap?'No hay artÃ­culos para validar.':'No hay artÃ­culos con cantidad diferente de cero.');
+if(invalidItems)blocking.push(`${invalidItems} renglÃ³n${invalidItems===1?'':'es'} sin artÃ­culo.`);
+if(invalidQty)blocking.push(`${invalidQty} cantidad${invalidQty===1?'':'es'} invÃ¡lida${invalidQty===1?'':'s'}.`);
+if(duplicates.size)blocking.push(`${duplicates.size} artÃ­culo${duplicates.size===1?'':'s'} duplicado${duplicates.size===1?'':'s'} por nombre y unidad.`);
 const warnings=[...freshnessWarnings];
-if(invalidUnits)warnings.push(`${invalidUnits} renglón${invalidUnits===1?'':'es'} sin unidad; se conservará${invalidUnits===1?'':'n'} como N/D.`);
+if(invalidUnits)warnings.push(`${invalidUnits} renglÃ³n${invalidUnits===1?'':'es'} sin unidad; se conservarÃ¡${invalidUnits===1?'':'n'} como N/D.`);
 const unmatched=rows.filter(row=>row.matchType==='unmatched'||row.matchType==='ambiguous').length;
-if(unmatched)warnings.push(`${unmatched} artículo${unmatched===1?'':'s'} sin cruce exacto; se conservará${unmatched===1?'':'n'} en el PDF.`);
+if(unmatched)warnings.push(`${unmatched} artÃ­culo${unmatched===1?'':'s'} sin cruce exacto; se conservarÃ¡${unmatched===1?'':'n'} en el PDF.`);
 if(!sap&&meta?.reportDate&&meta?.printedDate&&meta.reportDate!==meta.printedDate)warnings.push('Report Date y Printed On corresponden a fechas distintas.');
 return {valid:blocking.length===0,blocking,warnings,missingHeader,invalidItems,invalidUnits,invalidQty,duplicates:duplicates.size,unmatched};
 }
@@ -777,16 +777,16 @@ const sap=stockMeta.documentType==='sap'||stockMeta.documentType==='sap-html',ex
 $('stockConfirmAccept').disabled=!stockValidation?.valid;
 $('stockConfirmExcel').disabled=!stockValidation?.valid;
 $('stockConfirmGrid').classList.toggle('html-source',stockMeta.documentType==='sap-html');
-$('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>${sap?'Tipo de inventario':'Printed On'}</span><b>${escapeHtml(sap?(stockMeta.inventoryType||'Inventario'):(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado'))}</b></div><div><span>Lectura</span><b>${stockRows.length} artículos · ${exact} exactos · ${probable+review} con aviso</b></div>`;
+$('stockConfirmSummary').innerHTML=`<div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha GrabaciÃ³n':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>${sap?'Tipo de inventario':'Printed On'}</span><b>${escapeHtml(sap?(stockMeta.inventoryType||'Inventario'):(`${stockMeta.printedDate||''} ${stockMeta.printedTime||''}`.trim()||'No identificado'))}</b></div><div><span>Lectura</span><b>${stockRows.length} artÃ­culos Â· ${exact} exactos Â· ${probable+review} con aviso</b></div>`;
 const block=$('stockConfirmBlock'),messages=[...(stockValidation?.blocking||[]),...(stockValidation?.warnings||[])];
-block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'Exportación bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
+block.hidden=!messages.length;block.innerHTML=messages.length?`<b>${stockValidation?.valid?'Advertencia':'ExportaciÃ³n bloqueada'}:</b> ${messages.map(escapeHtml).join(' ')}`:'';
 if(typeof dialog.showModal==='function'){if(!dialog.open)dialog.showModal();}else dialog.classList.add('open');
 requestAnimationFrame(()=>(stockValidation?.valid?$('stockConfirmAccept'):$('stockConfirmClose')).focus());
 }
 async function confirmStockReading(){
 updateStockConfirmAction();
 if(!stockValidation?.valid)return;
-stockConfirmed=true;stockPdfExported=false;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 · Exportar PDF cruzado';updateStockFlow();
+stockConfirmed=true;stockPdfExported=false;rememberConfirmedStock(stockMeta);$('stockExport').disabled=false;$('stockExport').textContent='2 Â· Exportar PDF cruzado';updateStockFlow();
 $('stockStatus').classList.toggle('warning',(stockValidation.warnings||[]).length>0||stockRows.some(row=>row.matchType!=='exact'));
 $('stockStatus').innerHTML=`<b>Lectura confirmada:</b> preparando el PDF cruzado en Carta vertical.`;
 closeStockConfirmation();
@@ -803,23 +803,23 @@ if(!stockRows.length){target.innerHTML='';metaBox.hidden=true;return;}
 const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable;
 metaBox.hidden=false;
 const sap=stockMeta.documentType==='sap'||stockMeta.documentType==='sap-html';
-metaBox.innerHTML=`<div><span>Formato</span><b>${stockMeta.preCount?'HTML SAP · Preconteo':stockMeta.documentType==='sap-html'?'HTML SAP':sap?'PDF SAP':'Stock on Hand'}</b></div><div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
-const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} con variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} sin cruce exacto; se conservará${review===1?'':'n'}.`);
+metaBox.innerHTML=`<div><span>Formato</span><b>${stockMeta.preCount?'HTML SAP Â· Preconteo':stockMeta.documentType==='sap-html'?'HTML SAP':sap?'PDF SAP':'Stock on Hand'}</b></div><div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha GrabaciÃ³n':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
+const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} con variaciÃ³n de nombre.`);if(review)warnings.push(`${review} artÃ­culo${review===1?'':'s'} sin cruce exacto; se conservarÃ¡${review===1?'':'n'}.`);
 status.classList.toggle('warning',warnings.length>0);
-status.innerHTML=warnings.length?`<b>Lectura completa con avisos:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
+status.innerHTML=warnings.length?`<b>Lectura completa con avisos:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artÃ­culos cruzados de forma exacta.`;
 const limit=Number(stockConfigValue().parser.previewLimit)||250,ordered=[...stockRows].sort((a,b)=>({unmatched:0,ambiguous:1,probable:2,exact:3}[a.matchType]-{unmatched:0,ambiguous:1,probable:2,exact:3}[b.matchType])||a.nombreMicros.localeCompare(b.nombreMicros,'es'));
 const visible=ordered.slice(0,limit);
-target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>${sap?'artículos leídos':'cantidades ≠ 0'}</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>con aviso</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Conteo</th><th>Descripción SAP</th><th>Nombre inventario</th><th>UMB</th><th>Cantidad</th>${sap?'<th>$ Stock</th>':'<th>Estado</th>'}</tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'—')}</b></td><td><b>${escapeHtml(row.idWoe||'—')}</b></td><td>${escapeHtml(row.conteo||'Sin conteo')}</td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${formatInventoryNumber(row.qty)}</b></td>${sap?`<td>${row.stockValue===null?'Sin valor reportado':escapeHtml(formatInventoryMoney(row.stockValue))}</td>`:`<td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'✓ Exacto':row.matchType==='probable'?'! Variación':'! Sin cruce'}</span></td>`}</tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. La exportación incluirá ${stockRows.length} artículos.</p>`:''}`;
+target.innerHTML=`<div class="stock-summary"><div><strong>${stockRows.length}</strong><span>${sap?'artÃ­culos leÃ­dos':'cantidades â‰  0'}</span></div><div class="ok"><strong>${exact}</strong><span>cruces exactos</span></div><div class="review"><strong>${probable+review}</strong><span>con aviso</span></div></div><div class="woe-table-wrap stock-table-wrap"><table class="woe-table stock-table"><thead><tr><th>#DIA</th><th>#SAP</th><th>Conteo</th><th>DescripciÃ³n SAP</th><th>Nombre inventario</th><th>UMB</th><th>Cantidad</th>${sap?'<th>$ Stock</th>':'<th>Estado</th>'}</tr></thead><tbody>${visible.map(row=>`<tr class="stock-${row.matchType}"><td><b class="woe-code">${escapeHtml(row.codigoDia||'â€”')}</b></td><td><b>${escapeHtml(row.idWoe||'â€”')}</b></td><td>${escapeHtml(row.conteo||'Sin conteo')}</td><td>${escapeHtml(row.descripcionSap)}</td><td><strong>${escapeHtml(row.nombreMicros)}</strong></td><td>${escapeHtml(row.unidad)}</td><td><b>${formatInventoryNumber(row.qty)}</b></td>${sap?`<td>${row.stockValue===null?'Sin valor reportado':escapeHtml(formatInventoryMoney(row.stockValue))}</td>`:`<td><span class="woe-op-status ${row.matchType==='exact'?'ok':'warning'}">${row.matchType==='exact'?'âœ“ Exacto':row.matchType==='probable'?'! VariaciÃ³n':'! Sin cruce'}</span></td>`}</tr>`).join('')}</tbody></table></div>${stockRows.length>limit?`<p class="hint">Vista previa de ${limit} registros. La exportaciÃ³n incluirÃ¡ ${stockRows.length} artÃ­culos.</p>`:''}`;
 }
 function formatInventoryNumber(value){return Number(value).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function formatInventoryMoney(value){return Number(value).toLocaleString('es-MX',{style:'currency',currency:'MXN',minimumFractionDigits:2});}
 async function loadStockHtml(file){
 const status=$('stockStatus');status.textContent='Leyendo HTML SAP de forma local...';
 const source=await file.text(),document=new DOMParser().parseFromString(source,'text/html');
-if(document.querySelector('parsererror'))throw new Error('El HTML no tiene una estructura válida.');
+if(document.querySelector('parsererror'))throw new Error('El HTML no tiene una estructura vÃ¡lida.');
 stockMeta=readSapHtmlMeta(document,file.name);stockDocumentType='sap-html';stockSourceRows=parseSapHtml(document);
 if(!stockMeta.titleFound||!stockSourceRows.length)throw new Error('El HTML no corresponde a un inventario SAP compatible o no contiene renglones.');
-if(stockSourceRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
+if(stockSourceRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validaciÃ³n segura.');
 stockMeta={...stockMeta,pages:1,headerMismatches:[]};
 applyStockSourceRows([]);
 $('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
@@ -828,7 +828,7 @@ async function loadStockFile(file){
 if(!file)return;
 const loadToken=++stockLoadToken;
 try{await stockLoadingTask?.destroy?.();}catch(error){}
-const status=$('stockStatus');stockRows=[];stockSourceRows=[];stockMeta=null;stockDocumentType='unknown';stockPdfName=file.name;stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockExport').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
+const status=$('stockStatus');stockRows=[];stockSourceRows=[];stockMeta=null;stockDocumentType='unknown';stockPdfName=file.name;stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockExport').disabled=true;$('stockExport').textContent='2 Â· Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockResults').innerHTML='';$('stockMeta').hidden=true;
 status.classList.remove('warning');status.textContent='Validando el archivo local...';
 setStockBusy(true);
 let pdf=null;
@@ -836,10 +836,10 @@ try{
 if(file.size>35*1024*1024)throw new Error('El archivo supera 35 MB. Guarda el inventario como HTML o divide el PDF.');
 if(/\.html?$/i.test(file.name)||/text\/html/i.test(file.type)){await loadStockHtml(file);return;}
 const signature=new TextDecoder('ascii').decode(await file.slice(0,5).arrayBuffer());
-if(signature!=='%PDF-')throw new Error('El archivo no tiene una firma PDF válida.');
+if(signature!=='%PDF-')throw new Error('El archivo no tiene una firma PDF vÃ¡lida.');
 await ensurePdfJs();
 const buffer=await file.arrayBuffer(),task=window.pdfjsLib.getDocument({data:new Uint8Array(buffer)});stockLoadingTask=task;pdf=await task.promise;
-if(!pdf.numPages||pdf.numPages>250)throw new Error('El reporte debe contener entre 1 y 250 páginas.');
+if(!pdf.numPages||pdf.numPages>250)throw new Error('El reporte debe contener entre 1 y 250 pÃ¡ginas.');
 const rawRows=[];let firstMeta=null,adaptivePages=0,fallbackPages=0;const headerMismatches=new Set();
 for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
 if(loadToken!==stockLoadToken)throw new DOMException('Lectura reemplazada','AbortError');
@@ -851,26 +851,26 @@ else for(const field of sap?['reportDate','inventoryType','inventoryNumber']:['s
 if(sap)rawRows.push(...parseSapInventoryPage(content.items,pageNumber,normalizeText(lines.map(line=>line.text).join(' ')).includes('detalle de inventario')));
 else lines.forEach(line=>{const row=parseStockRow(line,pageNumber,layout);if(row)rawRows.push(row);});
 setStockBusy(true,pageNumber,pdf.numPages);
-if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo ${stockDocumentType==='sap'?'PDF SAP':'Stock on Hand'} · página ${pageNumber} de ${pdf.numPages}...`;
+if(pageNumber===1||pageNumber%5===0||pageNumber===pdf.numPages)status.textContent=`Leyendo ${stockDocumentType==='sap'?'PDF SAP':'Stock on Hand'} Â· pÃ¡gina ${pageNumber} de ${pdf.numPages}...`;
 if(pageNumber%4===0)await yieldToMain();
 }
-if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validación segura.');
+if(rawRows.length>10000)throw new Error('El reporte contiene demasiados renglones para una validaciÃ³n segura.');
 stockMeta={...(firstMeta||{}),documentType:stockDocumentType,pages:pdf.numPages,adaptivePages,fallbackPages,headerMismatches:[...headerMismatches]};
 const operationalRows=stockDocumentType==='sap'?rawRows.filter(row=>Math.abs(row.qty)>Number(stockConfigValue().parser.zeroTolerance||.000001)||row.stockValue!==null&&Math.abs(row.stockValue)>Number(stockConfigValue().parser.zeroTolerance||.000001)):rawRows;
 stockSourceRows=stockDocumentType==='sap'?rawRows:operationalRows;
 stockRows=(stockDocumentType==='sap'?selectedSapSourceRows():stockSourceRows).map(stockDocumentType==='sap'?matchSapInventoryRow:matchStockRow);
 if(!stockRows.length)throw new Error('No se localizaron renglones operativos. Confirma que el PDF tenga texto seleccionable.');
-const freshness=stockDocumentType==='sap'?[]:stockFreshness(stockMeta);if(stockDocumentType==='stock'){if(fallbackPages)freshness.push(`El lector complementario validó ${fallbackPages} página${fallbackPages===1?'':'s'} con el diseño base.`);else freshness.push(`Estructura detectada automáticamente en ${adaptivePages} página${adaptivePages===1?'':'s'}.`);}stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);updateStockFlow();$('stockExport').disabled=false;$('stockExcel').disabled=false;$('stockPrint').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 · Confirmar lectura':'2 · Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
+const freshness=stockDocumentType==='sap'?[]:stockFreshness(stockMeta);if(stockDocumentType==='stock'){if(fallbackPages)freshness.push(`El lector complementario validÃ³ ${fallbackPages} pÃ¡gina${fallbackPages===1?'':'s'} con el diseÃ±o base.`);else freshness.push(`Estructura detectada automÃ¡ticamente en ${adaptivePages} pÃ¡gina${adaptivePages===1?'':'s'}.`);}stockValidation=validateStockReading(stockMeta,stockRows,freshness);renderStockResults(freshness);updateStockFlow();$('stockExport').disabled=false;$('stockExcel').disabled=false;$('stockPrint').disabled=false;$('stockExport').textContent=stockValidation.valid?'2 Â· Confirmar lectura':'2 Â· Lectura bloqueada';$('stockClear').disabled=false;requestAnimationFrame(openStockConfirmation);
 }catch(error){if(loadToken===stockLoadToken&&error?.name!=='AbortError'){status.classList.add('warning');status.textContent=error?.message||'No fue posible leer el archivo.';$('stockPdfInput').value='';}}
 finally{if(stockLoadingTask&&loadToken===stockLoadToken)stockLoadingTask=null;try{await pdf?.destroy?.();}catch(error){}if(loadToken===stockLoadToken)setStockBusy(false);}
 }
 function clearStockReport(){
-stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockSourceRows=[];stockMeta=null;stockDocumentType='stock';stockPdfName='';stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExcel').disabled=true;$('stockExport').textContent='2 · Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un HTML o PDF SAP.';closeStockConfirmation();$('stockAttach').focus();
+stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTask=null;setStockBusy(false);stockRows=[];stockSourceRows=[];stockMeta=null;stockDocumentType='stock';stockPdfName='';stockConfirmed=false;stockPdfExported=false;stockValidation=null;updateStockFlow();$('stockPdfInput').value='';$('stockExport').disabled=true;$('stockExcel').disabled=true;$('stockExport').textContent='2 Â· Exportar PDF cruzado';$('stockPrint').disabled=true;$('stockClear').disabled=true;$('stockMeta').hidden=true;$('stockResults').innerHTML='';$('stockStatus').classList.remove('warning');$('stockStatus').textContent='Adjunta un HTML o PDF SAP.';closeStockConfirmation();$('stockAttach').focus();
 }
 function printStockView(){
 if(!stockRows.length)return;
-const now=new Date(),sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html',title=stockMeta?.preCount?'Inventario previo · Rectificación':sap?'Inventario Cruzado · Detalle':'Stock on Hand · WOE';
-$('stockPrintHeader').innerHTML=`<h1>${title}</h1><p><b>${escapeHtml(stockStoreName(stockMeta?.store))}</b> · ${escapeHtml(sap?(stockMeta?.inventoryType||'Inventario'):'Referencia operativa')} · ${sap?'Fecha Grabación':'Report Date'} ${escapeHtml(stockMeta?.reportDate||'—')}</p><p>Exportado ${escapeHtml(now.toLocaleDateString('es-MX'))} · ${escapeHtml(now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}))}</p>`;
+const now=new Date(),sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html',title=stockMeta?.preCount?'Inventario previo Â· RectificaciÃ³n':sap?'Inventario Cruzado Â· Detalle':'Stock on Hand Â· WOE';
+$('stockPrintHeader').innerHTML=`<h1>${title}</h1><p><b>${escapeHtml(stockStoreName(stockMeta?.store))}</b> Â· ${escapeHtml(sap?(stockMeta?.inventoryType||'Inventario'):'Referencia operativa')} Â· ${sap?'Fecha GrabaciÃ³n':'Report Date'} ${escapeHtml(stockMeta?.reportDate||'â€”')}</p><p>Exportado ${escapeHtml(now.toLocaleDateString('es-MX'))} Â· ${escapeHtml(now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}))}</p>`;
 document.body.classList.add('print-inventory-detail');
 window.print();
 }
@@ -881,18 +881,18 @@ try{
 await ensureJsPdf();
 const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter',compress:true,putOnlyUsedFonts:true}),pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight();
 const preCount=Boolean(stockMeta?.preCount),exportRows=(preCount?[...stockRows]:stockMeta?.documentType==='sap-html'?stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0)):[...stockRows]).sort(byConteo);
-if(!exportRows.length)throw new Error(preCount?'No hay artículos para rectificar.':'No hay productos con existencia positiva para exportar.');
-const margin=24,tableTop=82,tableBottom=pageHeight-34,columns=[{key:'codigoDia',label:'#DIA',width:43},{key:'idWoe',label:'#SAP',width:48},{key:'conteo',label:'CONTEO',width:104},{key:'descripcionSap',label:'DESCRIPCIÓN SAP',width:190},{key:'nombreMicros',label:'NOMBRE INVENTARIO',width:168},{key:'unidad',label:'UMB',width:42},{key:'qty',label:'CANTIDAD',width:54},{key:'stock',label:'$ STOCK',width:95}],green=[0,98,65],dark=[7,63,47],cream=[249,246,239],line=[221,225,220],warning=[180,83,9],exported=new Date(),exportDate=exported.toLocaleDateString('es-MX'),exportTime=exported.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),exact=exportRows.filter(row=>row.matchType==='exact').length;
-const oneLine=(value,width,fontSize=6.4)=>{let text=String(value||'—').replace(/\s+/g,' ').trim();doc.setFontSize(fontSize);while(text.length>1&&doc.getTextWidth(text)>width-8)text=text.slice(0,-1);return text===String(value||'—').replace(/\s+/g,' ').trim()?text:`${text.slice(0,-1)}…`;};
+if(!exportRows.length)throw new Error(preCount?'No hay artÃ­culos para rectificar.':'No hay productos con existencia positiva para exportar.');
+const margin=24,tableTop=82,tableBottom=pageHeight-34,columns=[{key:'codigoDia',label:'#DIA',width:43},{key:'idWoe',label:'#SAP',width:48},{key:'conteo',label:'CONTEO',width:104},{key:'descripcionSap',label:'DESCRIPCIÃ“N SAP',width:190},{key:'nombreMicros',label:'NOMBRE INVENTARIO',width:168},{key:'unidad',label:'UMB',width:42},{key:'qty',label:'CANTIDAD',width:54},{key:'stock',label:'$ STOCK',width:95}],green=[0,98,65],dark=[7,63,47],cream=[249,246,239],line=[221,225,220],warning=[180,83,9],exported=new Date(),exportDate=exported.toLocaleDateString('es-MX'),exportTime=exported.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),exact=exportRows.filter(row=>row.matchType==='exact').length;
+const oneLine=(value,width,fontSize=6.4)=>{let text=String(value||'â€”').replace(/\s+/g,' ').trim();doc.setFontSize(fontSize);while(text.length>1&&doc.getTextWidth(text)>width-8)text=text.slice(0,-1);return text===String(value||'â€”').replace(/\s+/g,' ').trim()?text:`${text.slice(0,-1)}â€¦`;};
 function header(){
-doc.setFillColor(...green);doc.roundedRect(margin,16,8,48,3,3,'F');doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(preCount?'Inventario previo · Rectificación':'Inventario Cruzado · Detalle',margin+16,32);
-doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`${stockStoreName(stockMeta.store)} · ${stockMeta.inventoryType||'Inventario'} · Fecha Grabación ${stockMeta.reportDate||'—'}`,margin+16,47,{maxWidth:pageWidth-margin*2-16});doc.text(`Exportado ${exportDate} · ${exportTime} · ${exportRows.length} ${preCount?'artículos para rectificar':'productos con existencia'} · ${exact} cruces exactos`,margin+16,60,{maxWidth:pageWidth-margin*2-16});
+doc.setFillColor(...green);doc.roundedRect(margin,16,8,48,3,3,'F');doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(preCount?'Inventario previo Â· RectificaciÃ³n':'Inventario Cruzado Â· Detalle',margin+16,32);
+doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`${stockStoreName(stockMeta.store)} Â· ${stockMeta.inventoryType||'Inventario'} Â· Fecha GrabaciÃ³n ${stockMeta.reportDate||'â€”'}`,margin+16,47,{maxWidth:pageWidth-margin*2-16});doc.text(`Exportado ${exportDate} Â· ${exportTime} Â· ${exportRows.length} ${preCount?'artÃ­culos para rectificar':'productos con existencia'} Â· ${exact} cruces exactos`,margin+16,60,{maxWidth:pageWidth-margin*2-16});
 let x=margin;doc.setFillColor(...dark);doc.rect(x,tableTop,pageWidth-margin*2,22,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);columns.forEach(column=>{doc.text(column.label,x+4,tableTop+14,{maxWidth:column.width-8});x+=column.width;});return tableTop+22;
 }
-function footer(number,total){doc.setDrawColor(...line);doc.line(margin,pageHeight-24,pageWidth-margin,pageHeight-24);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('Diseñado por Jorge Alcantar Aguiar & Enrique César Flores',margin,pageHeight-12);doc.text(`Página ${number} de ${total}`,pageWidth-margin,pageHeight-12,{align:'right'});}
-doc.setProperties({title:preCount?'Inventario previo - Rectificación':'Inventario Cruzado Detalle',subject:preCount?'Preconteo SAP antes de contabilizar':'Cruce de inventario SAP con Código Día y nombre de inventario',creator:'CodeBrew'});
+function footer(number,total){doc.setDrawColor(...line);doc.line(margin,pageHeight-24,pageWidth-margin,pageHeight-24);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('DiseÃ±ado por Jorge Alcantar Aguiar & Enrique CÃ©sar Flores',margin,pageHeight-12);doc.text(`PÃ¡gina ${number} de ${total}`,pageWidth-margin,pageHeight-12,{align:'right'});}
+doc.setProperties({title:preCount?'Inventario previo - RectificaciÃ³n':'Inventario Cruzado Detalle',subject:preCount?'Preconteo SAP antes de contabilizar':'Cruce de inventario SAP con CÃ³digo DÃ­a y nombre de inventario',creator:'CodeBrew'});
 let y=header();exportRows.forEach((row,index)=>{const values={...row,qty:formatInventoryNumber(row.qty),stock:row.stockValue===null?'Sin valor':formatInventoryMoney(row.stockValue)},height=18;if(y+height>tableBottom){doc.addPage('letter','landscape');y=header();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...cream);doc.rect(margin,y,pageWidth-margin*2,height,'F');}let x=margin;columns.forEach(column=>{doc.setDrawColor(...line);doc.setLineWidth(.35);doc.rect(x,y,column.width,height);doc.setTextColor(...(row.matchType==='exact'?dark:warning));doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(6.4);doc.text(oneLine(values[column.key],column.width),x+4,y+11,{maxWidth:column.width-8});x+=column.width;});y+=height;});
-const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);footer(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda',prefix=preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado_Detalle';doc.save(`${prefix}_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').innerHTML=preCount?`<b>Preconteo generado:</b> ${exportRows.length} artículos listos para rectificación antes de contabilizar.`:`<b>Inventario Cruzado generado:</b> ${exportRows.length} productos con existencia. La hora de exportación quedó registrada en el PDF.`;
+const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);footer(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda',prefix=preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado_Detalle';doc.save(`${prefix}_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').innerHTML=preCount?`<b>Preconteo generado:</b> ${exportRows.length} artÃ­culos listos para rectificaciÃ³n antes de contabilizar.`:`<b>Inventario Cruzado generado:</b> ${exportRows.length} productos con existencia. La hora de exportaciÃ³n quedÃ³ registrada en el PDF.`;
 }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar Inventario Cruzado Detalle. La lectura se conserva para volver a intentarlo.';}
 finally{button.disabled=false;button.textContent=original;}
 }
@@ -900,18 +900,18 @@ function exportStockExcel(){
 if(!stockRows.length||!stockMeta)return;
 const preCount=Boolean(stockMeta.preCount),rows=preCount?[...stockRows]:stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0));
 if(!rows.length){$('stockStatus').textContent='No hay productos con existencia para exportar.';return;}
-const headers=['Agrupado','Familia','Conteo','#DIA','#SAP','Descripción SAP','Nombre Inventario','UMB','Cantidad','$ Stock'];
+const headers=['Agrupado','Familia','Conteo','#DIA','#SAP','DescripciÃ³n SAP','Nombre Inventario','UMB','Cantidad','$ Stock'];
 const xml=value=>escapeHtml(String(value??'')).replace(/&#39;/g,'&apos;');
 const cell=(value,type='String')=>`<Cell><Data ss:Type="${type}">${xml(value)}</Data></Cell>`;
 const body=[headers.map(value=>cell(value)).join(''),...rows.map(row=>[cell(row.agrupado||'Sin agrupado'),cell(row.familia||'Sin familia'),cell(row.conteo||'Sin conteo'),cell(row.codigoDia||''),cell(row.idWoe||''),cell(row.descripcionSap||''),cell(row.nombreMicros||''),cell(row.unidad||''),cell(Number(row.qty),'Number'),cell(row.stockValue===null?'':Number(row.stockValue),row.stockValue===null?'String':'Number')].join(''))].map(row=>`<Row>${row}</Row>`).join('');
 const workbook=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Inventario Cruzado"><Table>${body}</Table></Worksheet></Workbook>`;
-const blob=new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a'),store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';link.href=url;link.download=`${preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado'}_${store}_${new Date().toISOString().slice(0,10)}.xls`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('stockStatus').innerHTML=preCount?`<b>Excel de rectificación generado:</b> ${rows.length} artículos antes de contabilizar.`:`<b>Excel generado:</b> ${rows.length} productos con existencia.`;
+const blob=new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a'),store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';link.href=url;link.download=`${preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado'}_${store}_${new Date().toISOString().slice(0,10)}.xls`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('stockStatus').innerHTML=preCount?`<b>Excel de rectificaciÃ³n generado:</b> ${rows.length} artÃ­culos antes de contabilizar.`:`<b>Excel generado:</b> ${rows.length} productos con existencia.`;
 }
 async function generateStockPdf(){
 if(!stockRows.length||!stockMeta)return;
 if(!stockConfirmed||!stockValidation?.valid){openStockConfirmation();return;}
 const finalValidation=validateStockReading(stockMeta,stockRows,[]);
-if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='2 · Lectura bloqueada';openStockConfirmation();return;}
+if(!finalValidation.valid){stockConfirmed=false;stockValidation=finalValidation;$('stockExport').textContent='2 Â· Lectura bloqueada';openStockConfirmation();return;}
 if(stockMeta.documentType==='sap'||stockMeta.documentType==='sap-html')return generateSapInventoryPdf();
 const button=$('stockExport'),original=button.textContent;button.disabled=true;button.textContent='Creando PDF cruzado...';
 try{
@@ -926,11 +926,11 @@ doc.setFont('helvetica','normal');doc.setFontSize(style.metaSize);doc.text(`${st
 doc.setTextColor(...style.warning);doc.setFont('helvetica','bold');doc.text(config.messages.disclaimer,page.margin,70,{maxWidth:pageWidth-page.margin*2});doc.setFont('helvetica','normal');doc.setTextColor(70,82,76);doc.text(`${stockRows.length} cantidades distintas de cero | ${exact} cruces exactos | ${review} con aviso`,page.margin,92);
 let x=tableLeft;doc.setFillColor(...style.dark);doc.rect(x,page.tableTop,pageWidth-page.margin*2,headerHeight,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(style.headerSize);columns.forEach(column=>{doc.text(column.label,x+style.cellPadding,page.tableTop+14,{maxWidth:column.width-style.cellPadding*2});x+=column.width;});return page.tableTop+headerHeight;
 }
-function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo físico',page.margin,page.footerY);doc.text(`Página ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
-doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catálogo Micros',creator:'CodeBrew'});
-let y=drawHeader();[...stockRows].sort(byConteo).forEach((row,index)=>{const estado=row.matchType==='exact'?'Exacto':row.matchType==='probable'?'Variación':'Sin cruce',values={...row,estado,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);if(column.key==='estado')doc.setTextColor(...(row.matchType==='exact'?style.green:style.warning));else doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty','estado'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
-const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artículos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
-}catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leído se conserva para volver a intentarlo.';}
+function drawFooter(number,total){doc.setDrawColor(...style.line);doc.line(page.margin,page.footerY-10,pageWidth-page.margin,page.footerY-10);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('CodeBrew | Estimado para doble check con conteo fÃ­sico',page.margin,page.footerY);doc.text(`PÃ¡gina ${number} de ${total}`,pageWidth-page.margin,page.footerY,{align:'right'});}
+doc.setProperties({title:'Stock on Hand - Referencia operativa',subject:'Cruce Stock on Hand con SAP y catÃ¡logo Micros',creator:'CodeBrew'});
+let y=drawHeader();[...stockRows].sort(byConteo).forEach((row,index)=>{const estado=row.matchType==='exact'?'Exacto':row.matchType==='probable'?'VariaciÃ³n':'Sin cruce',values={...row,estado,qty:row.qty.toFixed(1)},cells=columns.map(column=>safeLines(values[column.key],column.width)),rowHeight=Math.max(18,Math.max(...cells.map(lines=>lines.length))*style.lineHeight+style.cellPadding*2);if(y+rowHeight>page.tableBottom){doc.addPage(page.format,page.orientation);y=drawHeader();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...style.cream);doc.rect(tableLeft,y,pageWidth-page.margin*2,rowHeight,'F');}let x=tableLeft;doc.setDrawColor(...style.line);doc.setLineWidth(.35);columns.forEach((column,columnIndex)=>{doc.rect(x,y,column.width,rowHeight);if(column.key==='estado')doc.setTextColor(...(row.matchType==='exact'?style.green:style.warning));else doc.setTextColor(...style.dark);doc.setFont('helvetica',['codigoDia','idWoe','qty','estado'].includes(column.key)?'bold':'normal');doc.setFontSize(style.bodySize);doc.text(cells[columnIndex],x+style.cellPadding,y+style.cellPadding+style.bodySize,{lineHeightFactor:style.lineHeight/style.bodySize,maxWidth:column.width-style.cellPadding*2});x+=column.width;});y+=rowHeight;});
+const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);drawFooter(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Stock_on_Hand_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').classList.toggle('warning',review>0);$('stockStatus').innerHTML=`<b>PDF generado:</b> ${stockRows.length} artÃ­culos con cantidad diferente de cero. ${review?`${review} incluyen aviso de cruce y fueron conservados.`:'Todos los cruces fueron exactos.'}`;
+}catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar el PDF final. El reporte leÃ­do se conserva para volver a intentarlo.';}
 finally{button.disabled=false;button.textContent=original;}
 }
 function search(raw){const p=findProduct(raw);p?renderProduct(p,raw):renderNotFound(raw)}
@@ -969,14 +969,14 @@ selectAppMode('consulta',{updateHistory,focusTarget:focus});
 function renderAuditHealth(){
 const target=$('appHealth'),audit=window.APP_AUDIT;
 if(!target)return;
-if(!audit){target.className='app-health warning';target.textContent='Auditoría no disponible';return;}
+if(!audit){target.className='app-health warning';target.textContent='AuditorÃ­a no disponible';return;}
 target.className=`app-health ${audit.errors?'error':audit.warnings?'warning':'ok'}`;
-target.textContent=audit.errors?`${audit.errors} errores de control`:audit.warnings?`${audit.checksTotal} controles · ${audit.warnings} oportunidades`:`Motor validado · ${audit.checksTotal} controles`;
+target.textContent=audit.errors?`${audit.errors} errores de control`:audit.warnings?`${audit.checksTotal} controles Â· ${audit.warnings} oportunidades`:`Motor validado Â· ${audit.checksTotal} controles`;
 target.title=(audit.checks||[]).map(item=>`${item.name}: ${item.detail}`).join('\n');
 }
 function updateLabelTier(p){
 const sel = $('labelTier'); const keys = p ? tierKeys(p) : ['C1'];
-sel.innerHTML = (keys.length ? keys : ['C2']).map(k => `<option value="${k}">${k}${p?.tier?.[k] ? ' · '+p.tier[k] : ''}</option>`).join('');
+sel.innerHTML = (keys.length ? keys : ['C2']).map(k => `<option value="${k}">${k}${p?.tier?.[k] ? ' Â· '+p.tier[k] : ''}</option>`).join('');
 if (p && keys.includes('C2')) sel.value = 'C2';
 sel.disabled = !p || keys.length <= 1;
 }
@@ -1007,16 +1007,16 @@ if (!labelItems.length) { $('labelCart').className = 'cart empty-small'; $('labe
 $('labelCart').className = 'cart';
 $('labelCart').innerHTML = labelItems.map((x,i)=>`
 <div class="cart-row">
-<div><strong>${posButtonText(x.product)}</strong><small>${x.product.nombrePos || ''} | ${priceOnly(x.product, x.tier)} · ${x.tier}</small></div>
+<div><strong>${posButtonText(x.product)}</strong><small>${x.product.nombrePos || ''} | ${priceOnly(x.product, x.tier)} Â· ${x.tier}</small></div>
 <div class="sku-col"><small>SKU</small><b>${qrValue(x.product) || '-'}</b></div>
 <input data-i="${i}" class="qtyEdit" type="number" min="1" max="500" value="${x.qty}">
-<button class="remove" data-remove="${i}">×</button>
+<button class="remove" data-remove="${i}">Ã—</button>
 </div>`).join('');
 document.querySelectorAll('.qtyEdit').forEach(inp => inp.addEventListener('change', e => { labelItems[Number(e.target.dataset.i)].qty = Math.max(1, Number(e.target.value)||1); renderCart(); }));
 document.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', e => { labelItems.splice(Number(e.target.dataset.remove),1); renderCart(); }));
 }
 async function generatePdf(){
-try{await Promise.all([ensureJsPdf(),ensureQrious()]);}catch(error){alert('No se pudo cargar el generador PDF. Revisa tu conexión e intenta nuevamente.');return;}
+try{await Promise.all([ensureJsPdf(),ensureQrious()]);}catch(error){alert('No se pudo cargar el generador PDF. Revisa tu conexiÃ³n e intenta nuevamente.');return;}
 const { jsPDF } = window.jspdf;
 const doc = new jsPDF({orientation:'portrait', unit:'in', format:'letter'});
 const labelW = 2, labelH = 1.5;
@@ -1096,7 +1096,7 @@ const zoomWrap=$(ids.zoomWrap), zoom=$(ids.zoom), torch=$(ids.torch);
 if (caps.zoom && Number.isFinite(caps.zoom.min) && Number.isFinite(caps.zoom.max) && caps.zoom.max > caps.zoom.min) {
 zoom.min=caps.zoom.min; zoom.max=caps.zoom.max; zoom.step=caps.zoom.step || .1;
 const initial=Math.min(caps.zoom.max,Math.max(caps.zoom.min,1.15));
-zoom.value=initial; $(ids.zoomValue).textContent=`${Number(initial).toFixed(1)}×`;
+zoom.value=initial; $(ids.zoomValue).textContent=`${Number(initial).toFixed(1)}Ã—`;
 zoomWrap.hidden=false; await safeApply(track,{zoom:initial});
 } else zoomWrap.hidden=true;
 const torchSupported=Boolean(caps.torch);
@@ -1110,7 +1110,7 @@ const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind
 select.innerHTML='';
 devices.forEach((d,i)=>{
 const option=document.createElement('option');
-option.value=d.deviceId; option.textContent=d.label || `Cámara ${i+1}`;
+option.value=d.deviceId; option.textContent=d.label || `CÃ¡mara ${i+1}`;
 if (d.deviceId===cameraState[mode].deviceId) option.selected=true;
 select.appendChild(option);
 });
@@ -1180,7 +1180,7 @@ ctx.putImageData(out, 0, 0);
 function analyzeFrame(source, mode, remember=true){
 const vw=source.videoWidth || source.naturalWidth || source.width || 0;
 const vh=source.videoHeight || source.naturalHeight || source.height || 0;
-if (!vw || !vh) return {focus:0,brightness:0,contrast:0,motion:0,ready:false,reason:'Cámara no lista'};
+if (!vw || !vh) return {focus:0,brightness:0,contrast:0,motion:0,ready:false,reason:'CÃ¡mara no lista'};
 const probe=document.createElement('canvas'); probe.width=240; probe.height=140;
 const ctx=probe.getContext('2d',{willReadFrequently:true});
 const sw=Math.floor(vw*.76),sh=Math.floor(vh*.48);
@@ -1201,10 +1201,10 @@ const focus=lapTotal/Math.max(1,lapCount);
 if(focus>state.focusBaseline)state.focusBaseline=focus;
 const adaptiveFocus=Math.max(10,Math.min(26,(state.focusBaseline||OCR_MIN_FOCUS)*.56));
 let reason='Preparado para leer';
-if(brightness<48)reason='Se necesita más luz';
+if(brightness<48)reason='Se necesita mÃ¡s luz';
 else if(brightness>224)reason='Evita el reflejo directo';
-else if(contrast<22)reason='Acerca el texto al área amarilla';
-else if(motion>24)reason='Mantén estable el dispositivo';
+else if(contrast<22)reason='Acerca el texto al Ã¡rea amarilla';
+else if(motion>24)reason='MantÃ©n estable el dispositivo';
 else if(focus<adaptiveFocus)reason='Aleja ligeramente para enfocar';
 return {focus,brightness,contrast,motion,threshold:adaptiveFocus,ready:reason==='Preparado para leer',reason};
 }
@@ -1223,20 +1223,20 @@ function updateLiveQuality(mode){
 const ids=idsForMode(mode),video=$(ids.video);
 if(!video?.videoWidth || cameraState[mode].scanning)return;
 const q=analyzeFrame(video,mode,true);
-setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth}×${video.videoHeight}`,ready:q.reason});
-$(ids.status).textContent=q.ready?'Cámara lista · puedes leer':q.reason;
+setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth}Ã—${video.videoHeight}`,ready:q.reason});
+$(ids.status).textContent=q.ready?'CÃ¡mara lista Â· puedes leer':q.reason;
 }
 async function waitForSharpFrame(video,statusId,mode,token){
 let best=null;
 for(let attempt=0;attempt<12;attempt++){
 if(token!==cameraState[mode].token)throw new Error('Lectura cancelada');
 const q=analyzeFrame(video,mode,true); if(!best||q.focus>best.focus)best=q;
-setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth||0}×${video.videoHeight||0}`,ready:q.reason});
+setQuality(mode,{quality:q.ready?'Alta':(q.focus>=q.threshold*.72?'Media':'Baja'),focus:String(Math.round(q.focus)),resolution:`${video.videoWidth||0}Ã—${video.videoHeight||0}`,ready:q.reason});
 $(statusId).textContent=q.reason;
 if(q.ready){await new Promise(r=>setTimeout(r,180));return q;}
 await new Promise(r=>setTimeout(r,240));
 }
-throw new Error(best?.reason || 'Aleja ligeramente la cámara hasta que el texto se vea nítido.');
+throw new Error(best?.reason || 'Aleja ligeramente la cÃ¡mara hasta que el texto se vea nÃ­tido.');
 }
 async function runOcr(canvas, statusId, variant){
 const options = {
@@ -1244,7 +1244,7 @@ tessedit_char_whitelist: 'SKUsku#0123456789OIl|SsBb:- ',
 preserve_interword_spaces: '1'
 };
 const { data:{ text, confidence } } = await window.Tesseract.recognize(canvas, 'eng', {
-logger:m => { if(m.status) $(statusId).textContent = `${Math.round((m.progress || 0) * 100)}% OCR · ${variant}`; },
+logger:m => { if(m.status) $(statusId).textContent = `${Math.round((m.progress || 0) * 100)}% OCR Â· ${variant}`; },
 ...options
 });
 return { text, confidence: confidence || 0, sku: extractSku(text), variant };
@@ -1262,9 +1262,9 @@ async function openCamera(videoId,statusId,startId,scanId,stopId,mode,deviceId='
 closeCamera(videoId,statusId,startId,scanId,stopId,mode,false);
 const state=cameraState[mode],ids=idsForMode(mode);
 try{
-if(!window.isSecureContext)throw new Error('La cámara requiere HTTPS');
-if(!navigator.mediaDevices?.getUserMedia)throw new Error('Cámara no soportada');
-$(statusId).textContent='Solicitando permiso de cámara';
+if(!window.isSecureContext)throw new Error('La cÃ¡mara requiere HTTPS');
+if(!navigator.mediaDevices?.getUserMedia)throw new Error('CÃ¡mara no soportada');
+$(statusId).textContent='Solicitando permiso de cÃ¡mara';
 const s=await navigator.mediaDevices.getUserMedia(cameraConstraints(deviceId));
 state.stream=s;state.track=s.getVideoTracks?.()[0]||null;state.deviceId=state.track?.getSettings?.().deviceId||deviceId||'';
 if(mode==='label')labelStream=s;else stream=s;
@@ -1272,11 +1272,11 @@ const video=$(videoId);video.srcObject=s;await video.play();
 const info=await applyCameraEnhancements(mode);
 await populateCameraSelector(mode);
 $(scanId).disabled=false;$(stopId).disabled=false;$(startId).disabled=true;
-$(statusId).textContent='Cámara lista';
-setQuality(mode,{quality:'Midiendo',focus:'-',resolution:`${info.settings.width||video.videoWidth||0}×${info.settings.height||video.videoHeight||0}`,ready:'Mantén estable el dispositivo'});
+$(statusId).textContent='CÃ¡mara lista';
+setQuality(mode,{quality:'Midiendo',focus:'-',resolution:`${info.settings.width||video.videoWidth||0}Ã—${info.settings.height||video.videoHeight||0}`,ready:'MantÃ©n estable el dispositivo'});
 clearInterval(state.qualityTimer);state.qualityTimer=setInterval(()=>updateLiveQuality(mode),450);
 }catch(err){
-$(statusId).textContent=err?.name==='NotAllowedError'?'Permiso de cámara rechazado':(err?.message||'No se pudo abrir la cámara');
+$(statusId).textContent=err?.name==='NotAllowedError'?'Permiso de cÃ¡mara rechazado':(err?.message||'No se pudo abrir la cÃ¡mara');
 $(startId).disabled=false;$(scanId).disabled=true;$(stopId).disabled=true;
 }
 }
@@ -1320,7 +1320,7 @@ return sku;
 }
 async function scanFromCamera(videoId,canvasId,statusId,scanBtnId,targetInputId,mode){
 const state=cameraState[mode],video=$(videoId),canvas=$(canvasId);
-if(!video.videoWidth){$(statusId).textContent='Cámara no lista';return;}
+if(!video.videoWidth){$(statusId).textContent='CÃ¡mara no lista';return;}
 if(state.scanning)return;state.scanning=true;const token=++state.token;$(scanBtnId).disabled=true;
 try{await scanSource(video,canvas,statusId,targetInputId,mode,token,true);}
 catch(e){if(token===state.token)$(statusId).textContent=e.message||'Error OCR';}
@@ -1333,7 +1333,7 @@ if(await safeApply(state.track,{torch:next})){btn.dataset.on=String(next);btn.te
 }
 async function setOpticalZoom(mode,value){
 const state=cameraState[mode],ids=idsForMode(mode),zoom=Number(value);
-if(await safeApply(state.track,{zoom}))$(ids.zoomValue).textContent=`${zoom.toFixed(1)}×`;
+if(await safeApply(state.track,{zoom}))$(ids.zoomValue).textContent=`${zoom.toFixed(1)}Ã—`;
 }
 async function loadImageFile(file){
 if(!file)return null;
@@ -1345,15 +1345,15 @@ img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};img.onerror=()=>{URL.rev
 }
 async function scanPhotoFile(mode,input){
 const file=input.files?.[0],ids=idsForMode(mode),state=cameraState[mode];if(!file)return;
-const token=++state.token;state.scanning=true;$(ids.scan).disabled=true;$(ids.status).textContent='Preparando fotografía';
+const token=++state.token;state.scanning=true;$(ids.scan).disabled=true;$(ids.status).textContent='Preparando fotografÃ­a';
 let image=null,previewUrl='';
 try{
 image=await loadImageFile(file);
 const quality=analyzeFrame(image,mode,false);
-if(!quality.ready&&['Se necesita más luz','Evita el reflejo directo','Aleja ligeramente para enfocar'].includes(quality.reason))throw new Error(quality.reason);
+if(!quality.ready&&['Se necesita mÃ¡s luz','Evita el reflejo directo','Aleja ligeramente para enfocar'].includes(quality.reason))throw new Error(quality.reason);
 previewUrl=URL.createObjectURL(file);const preview=$(ids.preview);preview.src=previewUrl;preview.hidden=false;
 await scanSource(image,$(ids.canvas),ids.status,ids.input,mode,token,false);
-}catch(e){if(token===state.token)$(ids.status).textContent=e.message||'No se pudo reconocer la fotografía';}
+}catch(e){if(token===state.token)$(ids.status).textContent=e.message||'No se pudo reconocer la fotografÃ­a';}
 finally{image?.close?.();if(previewUrl)setTimeout(()=>URL.revokeObjectURL(previewUrl),1000);input.value='';state.scanning=false;if(cameraState[mode].stream)$(ids.scan).disabled=false;}
 }
 function init(){
@@ -1362,8 +1362,8 @@ renderAuditHealth();
 updateConnectivity();window.addEventListener('online',updateConnectivity);window.addEventListener('offline',updateConnectivity);
 const latestItem = String(window.PRODUCT_META?.latestItem || '').trim();
 $('latestItem').textContent = latestItem
-? `Último artículo actualizado: ${latestItem}`
-: 'Último artículo actualizado: información no disponible';
+? `Ãšltimo artÃ­culo actualizado: ${latestItem}`
+: 'Ãšltimo artÃ­culo actualizado: informaciÃ³n no disponible';
 restoreCatalogState();const initialMode=location.hash.slice(1);
 if(APP_MODES.includes(initialMode))selectAppMode(initialMode,{updateHistory:false,focusTarget:false});else showHome();
 window.addEventListener('hashchange',()=>{const target=location.hash.slice(1);if(APP_MODES.includes(target))selectAppMode(target,{updateHistory:false,focusTarget:false});else if(!target)showHome();});
@@ -1381,10 +1381,10 @@ $('woeSearchClear').addEventListener('click',()=>{$('woeSearch').value='';$('woe
 $('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
 $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
 $('woeExport').addEventListener('click',generateWoePdf);
-$('woeClear').addEventListener('click',()=>{woeSelection.clear();woePdfExported=false;renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
+$('woeClear').addEventListener('click',()=>{woeSelection.clear();woePdfExported=false;renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='SelecciÃ³n limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
 $('stockAttach').addEventListener('click',()=>$('stockPdfInput').click());
 $('stockPdfInput').addEventListener('change',event=>loadStockFile(event.target.files?.[0]));
-$('stockIncludeZero').addEventListener('change',()=>{if(!stockSourceRows.length||!['sap','sap-html'].includes(stockMeta?.documentType))return;applyStockSourceRows([`Validación ajustada: artículos en cero ${$('stockIncludeZero').checked?'incluidos':'excluidos'}.`]);});
+$('stockIncludeZero').addEventListener('change',()=>{if(!stockSourceRows.length||!['sap','sap-html'].includes(stockMeta?.documentType))return;applyStockSourceRows([`ValidaciÃ³n ajustada: artÃ­culos en cero ${$('stockIncludeZero').checked?'incluidos':'excluidos'}.`]);});
 $('stockExport').addEventListener('click',generateStockPdf);
 $('stockExcel').addEventListener('click',exportStockExcel);
 $('stockPrint').addEventListener('click',printStockView);
@@ -1429,7 +1429,7 @@ document.addEventListener('visibilitychange',()=>{
 if(document.hidden){
 closeCamera('video','ocrStatus','startCamera','scanBtn','stopCamera','consulta',false);
 closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','labelStopCamera','label',false);
-$('ocrStatus').textContent='Cámara pausada';$('labelOcrStatus').textContent='Cámara pausada';
+$('ocrStatus').textContent='CÃ¡mara pausada';$('labelOcrStatus').textContent='CÃ¡mara pausada';
 }
 });
 window.addEventListener('pagehide',()=>{
@@ -1438,7 +1438,7 @@ closeCamera('labelVideo','labelOcrStatus','labelStartCamera','labelScanBtn','lab
 });
 window.addEventListener('afterprint',()=>document.body.classList.remove('print-inventory-detail'));
 renderCart();
-if('serviceWorker' in navigator)window.addEventListener('load',async()=>{const hadController=Boolean(navigator.serviceWorker.controller);let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||refreshing)return;refreshing=true;const status=$('connectionStatus');if(status)status.textContent='Actualizando…';location.reload();});try{const registration=await navigator.serviceWorker.register('sw.js?v=codebrew-v46-smart-refresh',{updateViaCache:'none'});registration.update();}catch(error){/* Sin conexión: conserva la versión funcional almacenada. */}});
+if('serviceWorker' in navigator)window.addEventListener('load',async()=>{const hadController=Boolean(navigator.serviceWorker.controller);let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||refreshing)return;refreshing=true;const status=$('connectionStatus');if(status)status.textContent='Actualizandoâ€¦';location.reload();});try{const registration=await navigator.serviceWorker.register('sw.js?v=codebrew-v46-smart-refresh',{updateViaCache:'none'});registration.update();}catch(error){/* Sin conexiÃ³n: conserva la versiÃ³n funcional almacenada. */}});
 }
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 })();
