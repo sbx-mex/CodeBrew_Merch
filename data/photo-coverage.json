@@ -28,14 +28,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 83,
+    "images": 89,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 83,
-      "accepted": 83,
+      "images": 89,
+      "accepted": 89,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -62,19 +62,19 @@
     }
   ],
   "totals": {
-    "imageFiles": 83,
-    "publishedImageFiles": 83,
-    "matchedImageFiles": 83,
+    "imageFiles": 89,
+    "publishedImageFiles": 89,
+    "matchedImageFiles": 89,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 87,
+    "matchedProducts": 93,
     "activeProducts": 1017,
     "activeWithPhoto": 81,
     "activeMissingPhoto": 936,
-    "secondaryProducts": 170,
+    "secondaryProducts": 176,
     "appendedOperationalProducts": 72,
-    "appendedWoeProducts": 96
+    "appendedWoeProducts": 102
   },
   "files": [
     {
@@ -1317,6 +1317,23 @@
       ]
     },
     {
+      "file": "lote-01/16969.webp",
+      "uploadedFrom": "lote-01/16969.webp",
+      "identifier": "16969",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16969--pos-sap-155967",
+          "codigoDia": "16969",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86639 C2P F26 PLSTC WTRBTL PSL 24OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16977.webp",
       "uploadedFrom": "lote-01/16977.webp",
       "identifier": "16977",
@@ -1364,6 +1381,23 @@
           "skuPos": "50755",
           "displayName": "SII26SS16Pleat",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16996.webp",
+      "uploadedFrom": "lote-01/16996.webp",
+      "identifier": "16996",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16996--pos-sap-156345",
+          "codigoDia": "16996",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86645 C2P FL26 SS TMBLR DSKTP 12OZ",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -1419,6 +1453,23 @@
       ]
     },
     {
+      "file": "lote-01/17297.webp",
+      "uploadedFrom": "lote-01/17297.webp",
+      "identifier": "17297",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17297--pos-sap-156349",
+          "codigoDia": "17297",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86652 C2P FL26 SS TMBLR CHRM PSL 16OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
       "file": "lote-01/17298.webp",
       "uploadedFrom": "lote-01/17298.webp",
       "identifier": "17298",
@@ -1449,6 +1500,40 @@
           "skuPos": "",
           "displayName": "SII26Mug14Aniv",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17303.webp",
+      "uploadedFrom": "lote-01/17303.webp",
+      "identifier": "17303",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17303--pos-sap-156355",
+          "codigoDia": "17303",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86638 C2P FL26 PLSTC CDCP CNFT 24OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17343.webp",
+      "uploadedFrom": "lote-01/17343.webp",
+      "identifier": "17343",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17343--pos-sap-159937",
+          "codigoDia": "17343",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86653 C1P FL26 SS CLDCP STRW TPPR 16OZ",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -1499,6 +1584,23 @@
           "skuIntl": "",
           "skuPos": "",
           "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17361.webp",
+      "uploadedFrom": "lote-01/17361.webp",
+      "identifier": "17361",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17361--pos-sap-159947",
+          "codigoDia": "17361",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA VERDE SBX 470ML CJ1PZA",
           "stockPriority": "secondary"
         }
       ]
