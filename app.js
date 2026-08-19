@@ -612,24 +612,33 @@ function htmlCell(row,column){
 const cell=row.querySelector(`.mat-column-${column},.cdk-column-${column}`);
 return String(cell?.textContent||'').replace(/\s+/g,' ').trim();
 }
+function htmlInputCell(row,column){
+const cell=row.querySelector(`.mat-column-${column},.cdk-column-${column}`),input=cell?.querySelector('input');
+return String(input?.value||input?.getAttribute('value')||input?.getAttribute('ng-reflect-model')||cell?.textContent||'').replace(/\s+/g,' ').trim();
+}
+function isSapPrecountHtml(document){
+return Boolean(document.querySelector('.mat-column-lcodSAP,.cdk-column-lcodSAP')&&document.querySelector('.mat-column-sdescripcion,.cdk-column-sdescripcion')&&document.querySelector('.mat-column-sunidadMedidaBase,.cdk-column-sunidadMedidaBase'));
+}
 function readSapHtmlMeta(document,fileName){
 const text=String(document.body?.textContent||'').replace(/\s+/g,' ').trim();
 const field=label=>{const match=text.match(new RegExp(`${label}\\s*:\\s*([^:]+?)(?=Número Inventario|Tipo de Inventario|Fecha Grabaci[oó]n|No se aplican|Cod\\.? SAP|$)`,'i'));return match?.[1]?.trim()||'';};
 const reportDate=(text.match(/Fecha\s+Grabaci[oó]n\s*:\s*(\d{1,2}[\/-]\d{1,2}[\/-]\d{4})/i)||[])[1]||'',rawType=field('Tipo de Inventario')||'Inventario',entered=$('stockStoreInput')?.value?.trim()||'';
 const storeMatch=text.match(/Starbucks\s+(?:MX|M[eé]xico)\s+(.+?)(?=\s+(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b)/i);
-return {titleFound:/DATOS\s+INVENTARIO/i.test(text),documentType:'sap-html',store:entered||(storeMatch?`Starbucks MX ${storeMatch[1].trim()}`:'Tienda no indicada'),reportDate,printedDate:reportDate,printedTime:'',inventoryType:/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`,inventoryNumber:field('Número Inventario'),fileName};
+const preCount=isSapPrecountHtml(document);
+return {titleFound:/DATOS\s+INVENTARIO/i.test(text),documentType:'sap-html',preCount,inventoryStage:preCount?'pre-count':'counted',store:entered||(storeMatch?`Starbucks MX ${storeMatch[1].trim()}`:'Tienda no indicada'),reportDate,printedDate:reportDate,printedTime:'',inventoryType:/^inventario\b/i.test(rawType)?rawType:`Inventario ${rawType}`,inventoryNumber:field('Número Inventario'),fileName};
 }
 function parseSapHtml(document){
 const result=[];
+const preCount=isSapPrecountHtml(document);
 [...document.querySelectorAll('mat-row,.mat-row')].forEach((row,index)=>{
-const sourceSap=normalizeSku(htmlCell(row,'codSap')),sourceDescription=htmlCell(row,'description'),sourceFamily=htmlCell(row,'family'),qty=parseStockNumber(htmlCell(row,'amount')),pdfUnit=htmlCell(row,'UMB')||'N/D',stockValue=parseStockNumber(htmlCell(row,'valorStock'));
+const sourceSap=normalizeSku(htmlCell(row,preCount?'lcodSAP':'codSap')),sourceDescription=htmlCell(row,preCount?'sdescripcion':'description'),sourceFamily=preCount?'':htmlCell(row,'family'),rawQty=preCount?htmlInputCell(row,'amount'):htmlCell(row,'amount'),parsedQty=parseStockNumber(rawQty),qty=preCount&&parsedQty===null?0:parsedQty,pdfUnit=htmlCell(row,preCount?'sunidadMedidaBase':'UMB')||'N/D',stockValue=parseStockNumber(htmlCell(row,preCount?'precio':'valorStock'));
 if(sourceSap&&sourceDescription&&qty!==null)result.push({sourceSap,sourceDescription,sourceFamily,pdfUnit,qty,stockValue,page:1,row:index+1});
 });
 return result;
 }
 function selectedSapSourceRows(){
 const tolerance=Number(stockConfigValue().parser.zeroTolerance||.000001);
-return $('stockIncludeZero')?.checked?stockSourceRows:stockSourceRows.filter(row=>Math.abs(row.qty)>tolerance||(row.stockValue!==null&&Math.abs(row.stockValue)>tolerance));
+return stockMeta?.preCount||$('stockIncludeZero')?.checked?stockSourceRows:stockSourceRows.filter(row=>Math.abs(row.qty)>tolerance||(row.stockValue!==null&&Math.abs(row.stockValue)>tolerance));
 }
 function applyStockSourceRows(extraWarnings=[]){
 const sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html',source=sap?selectedSapSourceRows():stockSourceRows;
@@ -780,7 +789,7 @@ if(!stockRows.length){target.innerHTML='';metaBox.hidden=true;return;}
 const exact=stockRows.filter(row=>row.matchType==='exact').length,probable=stockRows.filter(row=>row.matchType==='probable').length,review=stockRows.length-exact-probable;
 metaBox.hidden=false;
 const sap=stockMeta.documentType==='sap'||stockMeta.documentType==='sap-html';
-metaBox.innerHTML=`<div><span>Formato</span><b>${stockMeta.documentType==='sap-html'?'HTML SAP':sap?'PDF SAP':'Stock on Hand'}</b></div><div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
+metaBox.innerHTML=`<div><span>Formato</span><b>${stockMeta.preCount?'HTML SAP · Preconteo':stockMeta.documentType==='sap-html'?'HTML SAP':sap?'PDF SAP':'Stock on Hand'}</b></div><div><span>Tienda</span><b>${escapeHtml(stockStoreName(stockMeta.store))}</b></div><div><span>${sap?'Fecha Grabación':'Report Date'}</span><b>${escapeHtml(stockMeta.reportDate||'No identificado')}</b></div><div><span>Archivo</span><b>${escapeHtml(stockPdfName)}</b></div>`;
 const warnings=[...extraWarnings];if(probable)warnings.push(`${probable} cruce${probable===1?'':'s'} con variación de nombre.`);if(review)warnings.push(`${review} artículo${review===1?'':'s'} sin cruce exacto; se conservará${review===1?'':'n'}.`);
 status.classList.toggle('warning',warnings.length>0);
 status.innerHTML=warnings.length?`<b>Lectura completa con avisos:</b> ${warnings.map(escapeHtml).join(' ')}`:`<b>Reporte actual y listo:</b> ${exact} artículos cruzados de forma exacta.`;
@@ -846,8 +855,8 @@ stockLoadToken++;try{stockLoadingTask?.destroy?.();}catch(error){}stockLoadingTa
 }
 function printStockView(){
 if(!stockRows.length)return;
-const now=new Date(),sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html';
-$('stockPrintHeader').innerHTML=`<h1>${sap?'Inventario Cruzado · Detalle':'Stock on Hand · WOE'}</h1><p><b>${escapeHtml(stockStoreName(stockMeta?.store))}</b> · ${escapeHtml(sap?(stockMeta?.inventoryType||'Inventario'):'Referencia operativa')} · ${sap?'Fecha Grabación':'Report Date'} ${escapeHtml(stockMeta?.reportDate||'—')}</p><p>Exportado ${escapeHtml(now.toLocaleDateString('es-MX'))} · ${escapeHtml(now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}))}</p>`;
+const now=new Date(),sap=stockMeta?.documentType==='sap'||stockMeta?.documentType==='sap-html',title=stockMeta?.preCount?'Inventario previo · Rectificación':sap?'Inventario Cruzado · Detalle':'Stock on Hand · WOE';
+$('stockPrintHeader').innerHTML=`<h1>${title}</h1><p><b>${escapeHtml(stockStoreName(stockMeta?.store))}</b> · ${escapeHtml(sap?(stockMeta?.inventoryType||'Inventario'):'Referencia operativa')} · ${sap?'Fecha Grabación':'Report Date'} ${escapeHtml(stockMeta?.reportDate||'—')}</p><p>Exportado ${escapeHtml(now.toLocaleDateString('es-MX'))} · ${escapeHtml(now.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}))}</p>`;
 document.body.classList.add('print-inventory-detail');
 window.print();
 }
@@ -857,32 +866,32 @@ const button=$('stockExport'),original=button.textContent;button.disabled=true;b
 try{
 await ensureJsPdf();
 const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter',compress:true,putOnlyUsedFonts:true}),pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight();
-const exportRows=(stockMeta?.documentType==='sap-html'?stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0)):[...stockRows]).sort(byConteo);
-if(!exportRows.length)throw new Error('No hay productos con existencia positiva para exportar.');
+const preCount=Boolean(stockMeta?.preCount),exportRows=(preCount?[...stockRows]:stockMeta?.documentType==='sap-html'?stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0)):[...stockRows]).sort(byConteo);
+if(!exportRows.length)throw new Error(preCount?'No hay artículos para rectificar.':'No hay productos con existencia positiva para exportar.');
 const margin=24,tableTop=82,tableBottom=pageHeight-34,columns=[{key:'codigoDia',label:'#DIA',width:43},{key:'idWoe',label:'#SAP',width:48},{key:'conteo',label:'CONTEO',width:104},{key:'descripcionSap',label:'DESCRIPCIÓN SAP',width:190},{key:'nombreMicros',label:'NOMBRE INVENTARIO',width:168},{key:'unidad',label:'UMB',width:42},{key:'qty',label:'CANTIDAD',width:54},{key:'stock',label:'$ STOCK',width:95}],green=[0,98,65],dark=[7,63,47],cream=[249,246,239],line=[221,225,220],warning=[180,83,9],exported=new Date(),exportDate=exported.toLocaleDateString('es-MX'),exportTime=exported.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),exact=exportRows.filter(row=>row.matchType==='exact').length;
 const oneLine=(value,width,fontSize=6.4)=>{let text=String(value||'—').replace(/\s+/g,' ').trim();doc.setFontSize(fontSize);while(text.length>1&&doc.getTextWidth(text)>width-8)text=text.slice(0,-1);return text===String(value||'—').replace(/\s+/g,' ').trim()?text:`${text.slice(0,-1)}…`;};
 function header(){
-doc.setFillColor(...green);doc.roundedRect(margin,16,8,48,3,3,'F');doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('Inventario Cruzado · Detalle',margin+16,32);
-doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`${stockStoreName(stockMeta.store)} · ${stockMeta.inventoryType||'Inventario'} · Fecha Grabación ${stockMeta.reportDate||'—'}`,margin+16,47,{maxWidth:pageWidth-margin*2-16});doc.text(`Exportado ${exportDate} · ${exportTime} · ${exportRows.length} productos con existencia · ${exact} cruces exactos`,margin+16,60,{maxWidth:pageWidth-margin*2-16});
+doc.setFillColor(...green);doc.roundedRect(margin,16,8,48,3,3,'F');doc.setTextColor(...dark);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(preCount?'Inventario previo · Rectificación':'Inventario Cruzado · Detalle',margin+16,32);
+doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(`${stockStoreName(stockMeta.store)} · ${stockMeta.inventoryType||'Inventario'} · Fecha Grabación ${stockMeta.reportDate||'—'}`,margin+16,47,{maxWidth:pageWidth-margin*2-16});doc.text(`Exportado ${exportDate} · ${exportTime} · ${exportRows.length} ${preCount?'artículos para rectificar':'productos con existencia'} · ${exact} cruces exactos`,margin+16,60,{maxWidth:pageWidth-margin*2-16});
 let x=margin;doc.setFillColor(...dark);doc.rect(x,tableTop,pageWidth-margin*2,22,'F');doc.setTextColor(255,255,255);doc.setFontSize(7);columns.forEach(column=>{doc.text(column.label,x+4,tableTop+14,{maxWidth:column.width-8});x+=column.width;});return tableTop+22;
 }
 function footer(number,total){doc.setDrawColor(...line);doc.line(margin,pageHeight-24,pageWidth-margin,pageHeight-24);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(90,101,95);doc.text('Diseñado por Jorge Alcantar Aguiar & Enrique César Flores',margin,pageHeight-12);doc.text(`Página ${number} de ${total}`,pageWidth-margin,pageHeight-12,{align:'right'});}
-doc.setProperties({title:'Inventario Cruzado Detalle',subject:'Cruce de inventario SAP con Código Día y nombre de inventario',creator:'CodeBrew'});
+doc.setProperties({title:preCount?'Inventario previo - Rectificación':'Inventario Cruzado Detalle',subject:preCount?'Preconteo SAP antes de contabilizar':'Cruce de inventario SAP con Código Día y nombre de inventario',creator:'CodeBrew'});
 let y=header();exportRows.forEach((row,index)=>{const values={...row,qty:formatInventoryNumber(row.qty),stock:row.stockValue===null?'Sin valor':formatInventoryMoney(row.stockValue)},height=18;if(y+height>tableBottom){doc.addPage('letter','landscape');y=header();}if(index%2===1||row.matchType!=='exact'){doc.setFillColor(...cream);doc.rect(margin,y,pageWidth-margin*2,height,'F');}let x=margin;columns.forEach(column=>{doc.setDrawColor(...line);doc.setLineWidth(.35);doc.rect(x,y,column.width,height);doc.setTextColor(...(row.matchType==='exact'?dark:warning));doc.setFont('helvetica',['codigoDia','idWoe','qty'].includes(column.key)?'bold':'normal');doc.setFontSize(6.4);doc.text(oneLine(values[column.key],column.width),x+4,y+11,{maxWidth:column.width-8});x+=column.width;});y+=height;});
-const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);footer(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';doc.save(`Inventario_Cruzado_Detalle_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').innerHTML=`<b>Inventario Cruzado generado:</b> ${exportRows.length} productos con existencia. La hora de exportación quedó registrada en el PDF.`;
+const pages=doc.getNumberOfPages();for(let number=1;number<=pages;number++){doc.setPage(number);footer(number,pages);}const store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda',prefix=preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado_Detalle';doc.save(`${prefix}_${store}_${String(stockMeta.reportDate||'').replaceAll('/','-')||new Date().toISOString().slice(0,10)}.pdf`);stockPdfExported=true;updateStockFlow();$('stockStatus').innerHTML=preCount?`<b>Preconteo generado:</b> ${exportRows.length} artículos listos para rectificación antes de contabilizar.`:`<b>Inventario Cruzado generado:</b> ${exportRows.length} productos con existencia. La hora de exportación quedó registrada en el PDF.`;
 }catch(error){$('stockStatus').classList.add('warning');$('stockStatus').textContent='No fue posible generar Inventario Cruzado Detalle. La lectura se conserva para volver a intentarlo.';}
 finally{button.disabled=false;button.textContent=original;}
 }
 function exportStockExcel(){
 if(!stockRows.length||!stockMeta)return;
-const rows=stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0));
+const preCount=Boolean(stockMeta.preCount),rows=preCount?[...stockRows]:stockRows.filter(row=>Number(row.qty)>0||(row.stockValue!==null&&Number(row.stockValue)>0));
 if(!rows.length){$('stockStatus').textContent='No hay productos con existencia para exportar.';return;}
 const headers=['Agrupado','Familia','Conteo','#DIA','#SAP','Descripción SAP','Nombre Inventario','UMB','Cantidad','$ Stock'];
 const xml=value=>escapeHtml(String(value??'')).replace(/&#39;/g,'&apos;');
 const cell=(value,type='String')=>`<Cell><Data ss:Type="${type}">${xml(value)}</Data></Cell>`;
 const body=[headers.map(value=>cell(value)).join(''),...rows.map(row=>[cell(row.agrupado||'Sin agrupado'),cell(row.familia||'Sin familia'),cell(row.conteo||'Sin conteo'),cell(row.codigoDia||''),cell(row.idWoe||''),cell(row.descripcionSap||''),cell(row.nombreMicros||''),cell(row.unidad||''),cell(Number(row.qty),'Number'),cell(row.stockValue===null?'':Number(row.stockValue),row.stockValue===null?'String':'Number')].join(''))].map(row=>`<Row>${row}</Row>`).join('');
 const workbook=`<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Inventario Cruzado"><Table>${body}</Table></Worksheet></Workbook>`;
-const blob=new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a'),store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';link.href=url;link.download=`Inventario_Cruzado_${store}_${new Date().toISOString().slice(0,10)}.xls`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('stockStatus').innerHTML=`<b>Excel generado:</b> ${rows.length} productos con existencia.`;
+const blob=new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a'),store=stockStoreName(stockMeta.store).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'')||'Tienda';link.href=url;link.download=`${preCount?'Inventario_Preconteo_Rectificacion':'Inventario_Cruzado'}_${store}_${new Date().toISOString().slice(0,10)}.xls`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('stockStatus').innerHTML=preCount?`<b>Excel de rectificación generado:</b> ${rows.length} artículos antes de contabilizar.`:`<b>Excel generado:</b> ${rows.length} productos con existencia.`;
 }
 async function generateStockPdf(){
 if(!stockRows.length||!stockMeta)return;

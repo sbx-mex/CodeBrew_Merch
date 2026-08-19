@@ -20,7 +20,7 @@ PERFORMANCE_BUDGETS = {
     "index.html": 35_000,
     "styles.css": 45_000,
     "catalog.css": 30_000,
-    "app.js": 127_000,
+    "app.js": 129_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/merch-catalog.js": 1_000_000,
@@ -355,7 +355,7 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "microsCatalogResults", "catalogFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 5", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "sourceFamily", "selectedSapSourceRows", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 5", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",

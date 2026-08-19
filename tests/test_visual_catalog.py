@@ -196,6 +196,8 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("catalogVisibleLimit = 5", app)
         self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
         self.assertIn("exportStockExcel", app)
+        for token in ("isSapPrecountHtml", ".mat-column-lcodSAP", "sunidadMedidaBase", "stockMeta?.preCount", "Inventario previo · Rectificación", "Inventario_Preconteo_Rectificacion"):
+            self.assertIn(token, app)
         self.assertIn("stockConfirmExcel", html)
         self.assertIn("Catálogo General", html)
         for token in ("renderCatalog", "selectAppMode", "showHome", "articleKey", "quantity", "Código Día", "Código SAP", "label:'CONTEO'", "'Conteo'"):
