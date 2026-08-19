@@ -21,7 +21,7 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,187 artículos; 83 fotos por Código Día en 2.7 MB; 81 artículos activos con foto y 0 pendiente(s)"
+      "detail": "1,187 artículos; 83 fotos por Código Día en 2.0 MB; 81 artículos activos con foto y 0 pendiente(s)"
     },
     {
       "name": "Listado y Excel de fotos",
@@ -51,7 +51,7 @@
     {
       "name": "Experiencia visual Merch",
       "status": "ok",
-      "detail": "87 productos relacionados con foto; prioridad por existencia, nombre dinámico y búsqueda SKU POS"
+      "detail": "87 productos con foto y 706 cruces SAP/Micros; un nombre visible y búsqueda dual"
     },
     {
       "name": "Referencias locales",
@@ -86,10 +86,10 @@
   ],
   "performance": {
     "sizes": {
-      "index.html": 22801,
+      "index.html": 22828,
       "styles.css": 43421,
-      "catalog.css": 12063,
-      "app.js": 133717,
+      "catalog.css": 11928,
+      "app.js": 133987,
       "data/products.js": 358203,
       "data/woe.js": 1179982,
       "data/merch-catalog.js": 930242,

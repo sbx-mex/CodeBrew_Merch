@@ -170,7 +170,7 @@ def audit(root: Path) -> dict:
     for path in restored_files:
         try:
             with Image.open(path) as image:
-                optimized_images = optimized_images and max(image.size) <= 960
+                optimized_images = optimized_images and image.size == (960, 960)
         except OSError:
             optimized_images = False
     optimized_images = optimized_images and published_image_bytes <= 8_000_000
@@ -378,7 +378,7 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNames", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",
@@ -388,16 +388,27 @@ def audit(root: Path) -> dict:
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",
     ))
     photographed_products = [product for product in catalog_products if product.get("visual")]
+    crossed_name_products = [
+        product for product in catalog_products
+        if product.get("sapDescriptions") or product.get("microsNames")
+    ]
+    source_priority_ok = (
+        "inventory=p.microsNames?.[0]" in app_text
+        and "sci=p.sapDescriptions?.[0]" in app_text
+    )
     experience_ok = (
         all(token in html for token in ("Código Día, SKU POS, SKU INTL o nombre", "Nombre Inventario", "Descripción SCI", "Filtros y orden"))
-        and all(token in catalog_css for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"))
+        and all(token in catalog_css for token in ("grid-template-columns: repeat(5", "object-position: center", ".catalog-options", ".catalog-view-bar"))
         and all(product.get("nombreInventario") or product.get("descripcionSci") for product in photographed_products)
+        and source_priority_ok
+        and "catalog-card-description" not in app_text
+        and "Mostrar Descripción SCI" in html
         and any(product.get("skuPos") for product in catalog_products)
     )
     checks.append(check(
         "Experiencia visual Merch",
         experience_ok,
-        f"{len(photographed_products)} productos relacionados con foto; prioridad por existencia, nombre dinámico y búsqueda SKU POS",
+        f"{len(photographed_products)} productos con foto y {len(crossed_name_products)} cruces SAP/Micros; un nombre visible y búsqueda dual",
     ))
     local_refs = [value.split("?", 1)[0] for value in parser.references if not re.match(r"^(?:https?:|mailto:|tel:|#)", value)]
     missing_refs = sorted(value for value in set(local_refs) if value and value.lstrip("./") not in GENERATED_TARGETS and not (root / value.lstrip("./")).exists())

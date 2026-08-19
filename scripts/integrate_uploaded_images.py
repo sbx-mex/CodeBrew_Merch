@@ -22,6 +22,8 @@ MAX_IMAGES_PER_LOT = 100
 LOT_NAMES = tuple(f"lote-{number:02d}" for number in range(1, 5))
 PUBLISHED_SUFFIX = ".webp"
 PUBLISHED_MAX_SIZE = (960, 960)
+PUBLISHED_PRODUCT_SIZE = (900, 900)
+PUBLISHED_BACKGROUND = (255, 253, 249)
 PUBLISHED_QUALITY = 84
 
 
@@ -139,22 +141,21 @@ def canonical_day(matches: list[dict], source: Path) -> str:
 
 
 def encode_catalog_image(source: Path, destination: Path) -> tuple[int, int, str]:
-    """Normaliza orientación y tamaño, y publica WebP ligero sin recortar el artículo."""
+    """Publica un lienzo WebP uniforme sin recortar ni deformar el artículo."""
     if source.stat().st_size >= MAX_FILE_BYTES:
         raise ValueError(f"Imagen mayor a 25 MB: {source}")
     with Image.open(source) as opened:
-        if source.suffix.lower() == PUBLISHED_SUFFIX and max(opened.size) <= max(PUBLISHED_MAX_SIZE):
-            width, height = opened.size
-            opened.verify()
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
-            digest = hashlib.sha256(destination.read_bytes()).hexdigest()
-            return width, height, digest
         image = ImageOps.exif_transpose(opened).convert("RGB")
-        image.thumbnail(PUBLISHED_MAX_SIZE, Image.Resampling.LANCZOS)
+        image.thumbnail(PUBLISHED_PRODUCT_SIZE, Image.Resampling.LANCZOS)
+        canvas = Image.new("RGB", PUBLISHED_MAX_SIZE, PUBLISHED_BACKGROUND)
+        offset = (
+            (PUBLISHED_MAX_SIZE[0] - image.width) // 2,
+            (PUBLISHED_MAX_SIZE[1] - image.height) // 2,
+        )
+        canvas.paste(image, offset)
         encoded = io.BytesIO()
-        image.save(encoded, "WEBP", quality=PUBLISHED_QUALITY, method=6)
-        width, height = image.size
+        canvas.save(encoded, "WEBP", quality=PUBLISHED_QUALITY, method=6)
+        width, height = canvas.size
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_bytes(encoded.getvalue())
     with Image.open(destination) as saved:
@@ -268,7 +269,7 @@ def add_operational_products(products: list[dict], operational_path: Path, image
 
 
 def enrich_products_with_woe(products: list[dict], woe_catalog_path: Path) -> None:
-    """Añade referencias SAP/Micros por Código Día para búsqueda y control de fotos."""
+    """Cruza nombres por Código Día respetando SAP y Micros como fuentes maestras."""
     by_day: dict[str, list[dict]] = defaultdict(list)
     for row in load_woe_catalog(woe_catalog_path):
         day_key = identifier(row.get("codigoDia"))
@@ -276,9 +277,22 @@ def enrich_products_with_woe(products: list[dict], woe_catalog_path: Path) -> No
             by_day[day_key].append(row)
     for product in products:
         relations = by_day.get(identifier(product.get("codigoDia")), [])
-        product["sapIds"] = sorted({str(row.get("idWoe") or "").strip() for row in relations if str(row.get("idWoe") or "").strip()})
-        product["sapDescriptions"] = sorted({str(row.get("descripcionSap") or "").strip() for row in relations if str(row.get("descripcionSap") or "").strip()})
-        product["microsNames"] = sorted({str(name).strip() for row in relations for name in row.get("micros", []) if str(name).strip()})
+        def unique_in_source_order(values):
+            result = []
+            seen = set()
+            for value in values:
+                clean = str(value or "").strip()
+                key = normalize_name(clean)
+                if clean and key not in seen:
+                    seen.add(key)
+                    result.append(clean)
+            return result
+
+        product["sapIds"] = unique_in_source_order(row.get("idWoe") for row in relations)
+        product["sapDescriptions"] = unique_in_source_order(row.get("descripcionSap") for row in relations)
+        product["microsNames"] = unique_in_source_order(
+            name for row in relations for name in row.get("micros", [])
+        )
 
 
 def add_woe_merch_products(products: list[dict], woe_catalog_path: Path, image_keys: set[str] | None = None) -> int:

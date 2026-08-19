@@ -60,6 +60,13 @@ class VisualCatalogContractTests(unittest.TestCase):
                 self.assertEqual(product.get("visualSource"), "pending-upload")
             self.assertIn(product.get("stockPriority"), {"active", "secondary"})
 
+    def test_display_names_keep_sap_and_micros_source_priority(self) -> None:
+        crossed = [product for product in self.products if product.get("sapDescriptions") or product.get("microsNames")]
+        self.assertTrue(crossed)
+        app = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("inventory=p.microsNames?.[0]", app)
+        self.assertIn("sci=p.sapDescriptions?.[0]", app)
+
     def test_github_limits_are_respected(self) -> None:
         excluded = {".git", ".codebrew-build", "__pycache__"}
         for path in ROOT.rglob("*"):
@@ -89,6 +96,9 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(coverage["publishedNaming"], "codigo-dia.webp")
         self.assertEqual(coverage["totals"]["pendingRelationImageFiles"], 0)
         self.assertTrue(all(path.suffix == ".webp" and path.stem.isdigit() for path in restored))
+        for path in restored:
+            with Image.open(path) as image:
+                self.assertEqual(image.size, (960, 960), path.name)
         self.assertLessEqual(sum(path.stat().st_size for path in restored), 8_000_000)
         self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage["files"]))
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
@@ -234,12 +244,14 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-catalog-visual", app)
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
-        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNames", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
+        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
             self.assertIn(token, app)
         for token in ("SKU POS", "SKU internacional", "Nombre Inventario", "Descripción SCI"):
             self.assertIn(token, html + app)
-        for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"):
+        for token in ("grid-template-columns: repeat(5", "object-position: center", ".catalog-options", ".catalog-view-bar"):
             self.assertIn(token, css)
+        self.assertIn("Mostrar Descripción SCI", html)
+        self.assertNotIn("catalog-card-description", app)
         self.assertIn("missingPhotoWhatsappUrl", app)
         self.assertIn("525521107475", app)
         self.assertIn("https://wa.me/", app)
