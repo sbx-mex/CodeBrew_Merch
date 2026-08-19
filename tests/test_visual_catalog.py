@@ -211,12 +211,14 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_interface_contains_catalog_and_quantity_contract(self) -> None:
         html = (ROOT / "index.html").read_text(encoding="utf-8")
         app = (ROOT / "app.js").read_text(encoding="utf-8")
+        css = (ROOT / "catalog.css").read_text(encoding="utf-8")
         sw = (ROOT / "sw.js").read_text(encoding="utf-8")
-        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogLoadMore", "catalogLoadAll", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
+        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogLoadMore", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
+        self.assertNotIn("catalogLoadAll", html + app)
         self.assertNotIn("microsGroupFilter", html)
         self.assertNotIn("microsFamilyFilter", html)
-        self.assertIn("catalogVisibleLimit = 15", app)
+        self.assertIn("catalogVisibleLimit = 12", app)
         self.assertIn("Diseñado por Jorge Alcantar Aguiar & Enrique César Flores", app)
         self.assertIn("exportStockExcel", app)
         for token in ("isSapPrecountHtml", ".mat-column-lcodSAP", "sunidadMedidaBase", "stockMeta?.preCount", "Inventario previo · Rectificación", "Inventario_Preconteo_Rectificacion"):
@@ -232,8 +234,12 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-catalog-visual", app)
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
-        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "persistCatalogState", "restoreCatalogState", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
+        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNames", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
             self.assertIn(token, app)
+        for token in ("SKU POS", "SKU internacional", "Nombre Inventario", "Descripción SCI"):
+            self.assertIn(token, html + app)
+        for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"):
+            self.assertIn(token, css)
         self.assertIn("missingPhotoWhatsappUrl", app)
         self.assertIn("525521107475", app)
         self.assertIn("https://wa.me/", app)

@@ -109,6 +109,7 @@ def audit(root: Path) -> dict:
     catalog_report = load_json(root / "data/merch-catalog-report.json")
     manifest = load_json(root / "manifest.webmanifest")
     html = (root / "index.html").read_text(encoding="utf-8")
+    catalog_css = (root / "catalog.css").read_text(encoding="utf-8")
     parser = HtmlAuditParser()
     parser.feed(html)
     workflow_update = (root / ".github/workflows/update-price-list.yml").read_text(encoding="utf-8")
@@ -374,17 +375,29 @@ def audit(root: Path) -> dict:
         "WOE + Stock On Hand + HTML/PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogSummary", "catalogGrid", "catalogLoadMore", "catalogLoadAll", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
+    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 15", "catalogBatchSize", "catalogPhotoState", "catalogSort", "persistCatalogState", "restoreCatalogState", "data-catalog-image", "catalogLoadAll", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNames", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and all(token not in app_text for token in redundant_catalog_tokens) and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "localStorage.clear" not in app_text and "document.cookie" not in app_text,
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and all(token not in app_text for token in redundant_catalog_tokens) and "catalogLoadAll" not in html + app_text and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "localStorage.clear" not in app_text and "document.cookie" not in app_text,
         f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",
+    ))
+    photographed_products = [product for product in catalog_products if product.get("visual")]
+    experience_ok = (
+        all(token in html for token in ("Código Día, SKU POS, SKU INTL o nombre", "Nombre Inventario", "Descripción SCI", "Filtros y orden"))
+        and all(token in catalog_css for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"))
+        and all(product.get("nombreInventario") or product.get("descripcionSci") for product in photographed_products)
+        and any(product.get("skuPos") for product in catalog_products)
+    )
+    checks.append(check(
+        "Experiencia visual Merch",
+        experience_ok,
+        f"{len(photographed_products)} productos relacionados con foto; prioridad por existencia, nombre dinámico y búsqueda SKU POS",
     ))
     local_refs = [value.split("?", 1)[0] for value in parser.references if not re.match(r"^(?:https?:|mailto:|tel:|#)", value)]
     missing_refs = sorted(value for value in set(local_refs) if value and value.lstrip("./") not in GENERATED_TARGETS and not (root / value.lstrip("./")).exists())
