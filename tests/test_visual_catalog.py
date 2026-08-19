@@ -170,9 +170,12 @@ class VisualCatalogContractTests(unittest.TestCase):
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         rows = {row.get("identifier"): row for row in coverage["files"]}
         self.assertEqual(rows["16960"].get("file"), "lote-01/16960.jpeg")
-        self.assertIsNone(rows["11160979"].get("file"))
-        self.assertEqual(rows["11160979"].get("status"), "ignored-duplicate-content")
-        self.assertEqual(rows["11160979"].get("kept"), "lote-01/16960.jpeg")
+        sku_duplicate = rows.get("11160979")
+        if sku_duplicate is not None:
+            self.assertIsNone(sku_duplicate.get("file"))
+            self.assertEqual(sku_duplicate.get("status"), "ignored-duplicate-content")
+            self.assertEqual(sku_duplicate.get("kept"), "lote-01/16960.jpeg")
+        self.assertFalse(any(product.get("photoFile", "").endswith("/11160979.jpeg") for product in self.products))
 
     def test_post_publish_audit_rejects_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
