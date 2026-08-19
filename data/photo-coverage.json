@@ -28,14 +28,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 89,
+    "images": 91,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 89,
-      "accepted": 89,
+      "images": 91,
+      "accepted": 91,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -62,19 +62,19 @@
     }
   ],
   "totals": {
-    "imageFiles": 89,
-    "publishedImageFiles": 89,
-    "matchedImageFiles": 89,
+    "imageFiles": 91,
+    "publishedImageFiles": 91,
+    "matchedImageFiles": 91,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 93,
+    "matchedProducts": 95,
     "activeProducts": 1017,
     "activeWithPhoto": 81,
     "activeMissingPhoto": 936,
-    "secondaryProducts": 176,
+    "secondaryProducts": 178,
     "appendedOperationalProducts": 72,
-    "appendedWoeProducts": 102
+    "appendedWoeProducts": 104
   },
   "files": [
     {
@@ -1589,6 +1589,23 @@
       ]
     },
     {
+      "file": "lote-01/17360.webp",
+      "uploadedFrom": "lote-01/17360.webp",
+      "identifier": "17360",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17360--pos-sap-159946",
+          "codigoDia": "17360",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA AZUL SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
       "file": "lote-01/17361.webp",
       "uploadedFrom": "lote-01/17361.webp",
       "identifier": "17361",
@@ -1601,6 +1618,23 @@
           "skuIntl": "",
           "skuPos": "",
           "displayName": "VASO VDR SODA VERDE SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17362.webp",
+      "uploadedFrom": "lote-01/17362.webp",
+      "identifier": "17362",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17362--pos-sap-159948",
+          "codigoDia": "17362",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA AMARILLO SBX 470ML CJ1PZA",
           "stockPriority": "secondary"
         }
       ]

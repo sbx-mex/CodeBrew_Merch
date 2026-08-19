@@ -21,17 +21,17 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,193 artículos; 89 fotos por Código Día en 1.8 MB; 81 artículos activos con foto y 0 pendiente(s)"
+      "detail": "1,195 artículos; 91 fotos por Código Día en 1.8 MB; 81 artículos activos con foto y 0 pendiente(s)"
     },
     {
       "name": "Listado y Excel de fotos",
       "status": "ok",
-      "detail": "1155 códigos Día; 89 con foto; una pestaña de control"
+      "detail": "1157 códigos Día; 91 con foto; una pestaña de control"
     },
     {
       "name": "Control de fotos",
       "status": "ok",
-      "detail": "89 fotos relacionadas, 0 pendientes y 0 cruces exactos omitidos"
+      "detail": "91 fotos relacionadas, 0 pendientes y 0 cruces exactos omitidos"
     },
     {
       "name": "Integridad WOE",
@@ -51,7 +51,7 @@
     {
       "name": "Experiencia visual Merch",
       "status": "ok",
-      "detail": "93 productos con foto y 712 cruces SAP/Micros; un nombre visible y búsqueda dual"
+      "detail": "95 productos con foto y 714 cruces SAP/Micros; un nombre visible y búsqueda dual"
     },
     {
       "name": "Referencias locales",
@@ -81,7 +81,7 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2626 KB auditados en archivos críticos"
+      "detail": "2627 KB auditados en archivos críticos"
     }
   ],
   "performance": {
@@ -92,7 +92,7 @@
       "app.js": 133987,
       "data/products.js": 358203,
       "data/woe.js": 1179982,
-      "data/merch-catalog.js": 936212,
+      "data/merch-catalog.js": 938214,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
