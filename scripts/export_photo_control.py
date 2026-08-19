@@ -85,7 +85,7 @@ def control_rows(payload: dict) -> list[list[object]]:
 def write_csv(path: Path, rows: list[list[object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
-        writer = csv.writer(stream)
+        writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(HEADERS)
         writer.writerows(rows)
 

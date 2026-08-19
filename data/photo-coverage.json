@@ -1,6 +1,6 @@
 {
   "status": "ok",
-  "version": "manual-upload-v12-publish-safe",
+  "version": "manual-upload-v13-day-code-webp",
   "source": "assets/catalog/images/lote-01..04",
   "matchOrder": [
     "codigoDia",
@@ -8,7 +8,13 @@
   ],
   "duplicateProtection": "one-photo-per-article",
   "duplicatePolicy": "prefer-codigo-dia-remove-repeated-identifier-or-content",
-  "unmatchedPolicy": "preserve-and-report-do-not-guess",
+  "unmatchedPolicy": "reject-and-report-do-not-guess",
+  "publishedNaming": "codigo-dia.webp",
+  "publishedMaxPixels": [
+    960,
+    960
+  ],
+  "publishedQuality": 84,
   "packing": "fill-lote-01-first-then-02-03-04",
   "crossCheck": [
     "SAP",
@@ -67,64 +73,13 @@
     "activeWithPhoto": 81,
     "activeMissingPhoto": 936,
     "secondaryProducts": 170,
-    "appendedOperationalProducts": 78,
-    "appendedWoeProducts": 90
+    "appendedOperationalProducts": 72,
+    "appendedWoeProducts": 96
   },
   "files": [
     {
-      "file": "lote-01/017357.jpeg",
-      "uploadedFrom": "lote-01/017357.jpeg",
-      "identifier": "17357",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17357--pos-sap-159943",
-          "codigoDia": "17357",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA TRANSP SBX 470ML CJ1PZA",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/017358.jpeg",
-      "uploadedFrom": "lote-01/017358.jpeg",
-      "identifier": "17358",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17358--pos-sap-159944",
-          "codigoDia": "17358",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA NARANJA SBX 470ML CJ1PZA",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/017359.jpeg",
-      "uploadedFrom": "lote-01/017359.jpeg",
-      "identifier": "17359",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17359--pos-sap-159945",
-          "codigoDia": "17359",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/11372.jpeg",
-      "uploadedFrom": "lote-01/11372.jpeg",
+      "file": "lote-01/11372.webp",
+      "uploadedFrom": "lote-01/11372.webp",
       "identifier": "11372",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -140,8 +95,8 @@
       ]
     },
     {
-      "file": "lote-01/14885.jpeg",
-      "uploadedFrom": "lote-01/14885.jpeg",
+      "file": "lote-01/14885.webp",
+      "uploadedFrom": "lote-01/14885.webp",
       "identifier": "14885",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -157,8 +112,8 @@
       ]
     },
     {
-      "file": "lote-01/14886.jpeg",
-      "uploadedFrom": "lote-01/14886.jpeg",
+      "file": "lote-01/14886.webp",
+      "uploadedFrom": "lote-01/14886.webp",
       "identifier": "14886",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -174,8 +129,8 @@
       ]
     },
     {
-      "file": "lote-01/14926.jpeg",
-      "uploadedFrom": "lote-01/14926.jpeg",
+      "file": "lote-01/14926.webp",
+      "uploadedFrom": "lote-01/14926.webp",
       "identifier": "14926",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -191,8 +146,8 @@
       ]
     },
     {
-      "file": "lote-01/14927.jpeg",
-      "uploadedFrom": "lote-01/14927.jpeg",
+      "file": "lote-01/14927.webp",
+      "uploadedFrom": "lote-01/14927.webp",
       "identifier": "14927",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -208,8 +163,8 @@
       ]
     },
     {
-      "file": "lote-01/14928.jpeg",
-      "uploadedFrom": "lote-01/14928.jpeg",
+      "file": "lote-01/14928.webp",
+      "uploadedFrom": "lote-01/14928.webp",
       "identifier": "14928",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -225,8 +180,8 @@
       ]
     },
     {
-      "file": "lote-01/14929.jpeg",
-      "uploadedFrom": "lote-01/14929.jpeg",
+      "file": "lote-01/14929.webp",
+      "uploadedFrom": "lote-01/14929.webp",
       "identifier": "14929",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -242,8 +197,8 @@
       ]
     },
     {
-      "file": "lote-01/15857.jpeg",
-      "uploadedFrom": "lote-01/15857.jpeg",
+      "file": "lote-01/15857.webp",
+      "uploadedFrom": "lote-01/15857.webp",
       "identifier": "15857",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -267,8 +222,8 @@
       ]
     },
     {
-      "file": "lote-01/16078.jpeg",
-      "uploadedFrom": "lote-01/16078.jpeg",
+      "file": "lote-01/16078.webp",
+      "uploadedFrom": "lote-01/16078.webp",
       "identifier": "16078",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -284,8 +239,8 @@
       ]
     },
     {
-      "file": "lote-01/16125.jpeg",
-      "uploadedFrom": "lote-01/16125.jpeg",
+      "file": "lote-01/16125.webp",
+      "uploadedFrom": "lote-01/16125.webp",
       "identifier": "16125",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -301,8 +256,8 @@
       ]
     },
     {
-      "file": "lote-01/16129.jpeg",
-      "uploadedFrom": "lote-01/16129.jpeg",
+      "file": "lote-01/16129.webp",
+      "uploadedFrom": "lote-01/16129.webp",
       "identifier": "16129",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -318,8 +273,8 @@
       ]
     },
     {
-      "file": "lote-01/16284.jpeg",
-      "uploadedFrom": "lote-01/16284.jpeg",
+      "file": "lote-01/16284.webp",
+      "uploadedFrom": "lote-01/16284.webp",
       "identifier": "16284",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -335,8 +290,8 @@
       ]
     },
     {
-      "file": "lote-01/16311.jpeg",
-      "uploadedFrom": "lote-01/16311.jpeg",
+      "file": "lote-01/16311.webp",
+      "uploadedFrom": "lote-01/16311.webp",
       "identifier": "16311",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -352,8 +307,8 @@
       ]
     },
     {
-      "file": "lote-01/16312.jpeg",
-      "uploadedFrom": "lote-01/16312.jpeg",
+      "file": "lote-01/16312.webp",
+      "uploadedFrom": "lote-01/16312.webp",
       "identifier": "16312",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -369,8 +324,8 @@
       ]
     },
     {
-      "file": "lote-01/16378.jpeg",
-      "uploadedFrom": "lote-01/16378.jpeg",
+      "file": "lote-01/16378.webp",
+      "uploadedFrom": "lote-01/16378.webp",
       "identifier": "16378",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -386,8 +341,8 @@
       ]
     },
     {
-      "file": "lote-01/16438.jpeg",
-      "uploadedFrom": "lote-01/16438.jpeg",
+      "file": "lote-01/16438.webp",
+      "uploadedFrom": "lote-01/16438.webp",
       "identifier": "16438",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -403,8 +358,8 @@
       ]
     },
     {
-      "file": "lote-01/16477.jpeg",
-      "uploadedFrom": "lote-01/16477.jpeg",
+      "file": "lote-01/16477.webp",
+      "uploadedFrom": "lote-01/16477.webp",
       "identifier": "16477",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -420,8 +375,8 @@
       ]
     },
     {
-      "file": "lote-01/16531.jpeg",
-      "uploadedFrom": "lote-01/16531.jpeg",
+      "file": "lote-01/16531.webp",
+      "uploadedFrom": "lote-01/16531.webp",
       "identifier": "16531",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -445,8 +400,8 @@
       ]
     },
     {
-      "file": "lote-01/16532.jpeg",
-      "uploadedFrom": "lote-01/16532.jpeg",
+      "file": "lote-01/16532.webp",
+      "uploadedFrom": "lote-01/16532.webp",
       "identifier": "16532",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -470,8 +425,8 @@
       ]
     },
     {
-      "file": "lote-01/16550.jpeg",
-      "uploadedFrom": "lote-01/16550.jpeg",
+      "file": "lote-01/16550.webp",
+      "uploadedFrom": "lote-01/16550.webp",
       "identifier": "16550",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -487,8 +442,8 @@
       ]
     },
     {
-      "file": "lote-01/16572.jpeg",
-      "uploadedFrom": "lote-01/16572.jpeg",
+      "file": "lote-01/16572.webp",
+      "uploadedFrom": "lote-01/16572.webp",
       "identifier": "16572",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -504,8 +459,25 @@
       ]
     },
     {
-      "file": "lote-01/16610.jpeg",
-      "uploadedFrom": "lote-01/16610.jpeg",
+      "file": "lote-01/16601.webp",
+      "uploadedFrom": "lote-01/16601.webp",
+      "identifier": "16601",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16601--pos-sap-152541",
+          "codigoDia": "16601",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "ToteBag MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16610.webp",
+      "uploadedFrom": "lote-01/16610.webp",
       "identifier": "16610",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -521,8 +493,8 @@
       ]
     },
     {
-      "file": "lote-01/16642.jpeg",
-      "uploadedFrom": "lote-01/16642.jpeg",
+      "file": "lote-01/16642.webp",
+      "uploadedFrom": "lote-01/16642.webp",
       "identifier": "16642",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -538,8 +510,42 @@
       ]
     },
     {
-      "file": "lote-01/16672.jpeg",
-      "uploadedFrom": "lote-01/16672.jpeg",
+      "file": "lote-01/16643.webp",
+      "uploadedFrom": "lote-01/16643.webp",
+      "identifier": "16643",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16643--pos-sap-152573",
+          "codigoDia": "16643",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "DiscoveryCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16664.webp",
+      "uploadedFrom": "lote-01/16664.webp",
+      "identifier": "16664",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16664--pos-58791",
+          "codigoDia": "16664",
+          "skuIntl": "11176710",
+          "skuPos": "58791",
+          "displayName": "Sp26CC24Dome",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16672.webp",
+      "uploadedFrom": "lote-01/16672.webp",
       "identifier": "16672",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -555,8 +561,25 @@
       ]
     },
     {
-      "file": "lote-01/16682.jpeg",
-      "uploadedFrom": "lote-01/16682.jpeg",
+      "file": "lote-01/16681.webp",
+      "uploadedFrom": "lote-01/16681.webp",
+      "identifier": "16681",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16681--pos-sap-152611",
+          "codigoDia": "16681",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "DiscCC24MxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16682.webp",
+      "uploadedFrom": "lote-01/16682.webp",
       "identifier": "16682",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -572,8 +595,59 @@
       ]
     },
     {
-      "file": "lote-01/16719.jpeg",
-      "uploadedFrom": "lote-01/16719.jpeg",
+      "file": "lote-01/16684.webp",
+      "uploadedFrom": "lote-01/16684.webp",
+      "identifier": "16684",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16684--pos-sap-152614",
+          "codigoDia": "16684",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Disc2ozChiapas",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16688.webp",
+      "uploadedFrom": "lote-01/16688.webp",
+      "identifier": "16688",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16688--pos-sap-152618",
+          "codigoDia": "16688",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Disc2ozMxPais",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16689.webp",
+      "uploadedFrom": "lote-01/16689.webp",
+      "identifier": "16689",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16689--pos-sap-152619",
+          "codigoDia": "16689",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Disc2ozCDMX",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16719.webp",
+      "uploadedFrom": "lote-01/16719.webp",
       "identifier": "16719",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -589,8 +663,8 @@
       ]
     },
     {
-      "file": "lote-01/16720.jpeg",
-      "uploadedFrom": "lote-01/16720.jpeg",
+      "file": "lote-01/16720.webp",
+      "uploadedFrom": "lote-01/16720.webp",
       "identifier": "16720",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -606,8 +680,8 @@
       ]
     },
     {
-      "file": "lote-01/16777.jpeg",
-      "uploadedFrom": "lote-01/16777.jpeg",
+      "file": "lote-01/16777.webp",
+      "uploadedFrom": "lote-01/16777.webp",
       "identifier": "16777",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -623,8 +697,8 @@
       ]
     },
     {
-      "file": "lote-01/16807.jpeg",
-      "uploadedFrom": "lote-01/16807.jpeg",
+      "file": "lote-01/16807.webp",
+      "uploadedFrom": "lote-01/16807.webp",
       "identifier": "16807",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -640,8 +714,25 @@
       ]
     },
     {
-      "file": "lote-01/16877.jpeg",
-      "uploadedFrom": "lote-01/16877.jpeg",
+      "file": "lote-01/16875.webp",
+      "uploadedFrom": "lote-01/16875.webp",
+      "identifier": "16875",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16875--pos-58828",
+          "codigoDia": "16875",
+          "skuIntl": "11178952",
+          "skuPos": "58828",
+          "displayName": "WC26SSCC24Grad",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16877.webp",
+      "uploadedFrom": "lote-01/16877.webp",
       "identifier": "16877",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -657,8 +748,76 @@
       ]
     },
     {
-      "file": "lote-01/16884.jpeg",
-      "uploadedFrom": "lote-01/16884.jpeg",
+      "file": "lote-01/16879.webp",
+      "uploadedFrom": "lote-01/16879.webp",
+      "identifier": "16879",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16879--pos-58831",
+          "codigoDia": "16879",
+          "skuIntl": "11178922",
+          "skuPos": "58831",
+          "displayName": "WC26Tu16Flower",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16880.webp",
+      "uploadedFrom": "lote-01/16880.webp",
+      "identifier": "16880",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16880--pos-58817",
+          "codigoDia": "16880",
+          "skuIntl": "11178928",
+          "skuPos": "58817",
+          "displayName": "WC26CC24Road",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16881.webp",
+      "uploadedFrom": "lote-01/16881.webp",
+      "identifier": "16881",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16881--pos-50736",
+          "codigoDia": "16881",
+          "skuIntl": "11178933",
+          "skuPos": "50736",
+          "displayName": "SII25CC24Gamer",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16882.webp",
+      "uploadedFrom": "lote-01/16882.webp",
+      "identifier": "16882",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16882--pos-58824",
+          "codigoDia": "16882",
+          "skuIntl": "11178930",
+          "skuPos": "58824",
+          "displayName": "WC26CC24Pride",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16884.webp",
+      "uploadedFrom": "lote-01/16884.webp",
       "identifier": "16884",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -674,8 +833,8 @@
       ]
     },
     {
-      "file": "lote-01/16896.jpeg",
-      "uploadedFrom": "lote-01/16896.jpeg",
+      "file": "lote-01/16896.webp",
+      "uploadedFrom": "lote-01/16896.webp",
       "identifier": "16896",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -691,8 +850,76 @@
       ]
     },
     {
-      "file": "lote-01/16902.jpeg",
-      "uploadedFrom": "lote-01/16902.jpeg",
+      "file": "lote-01/16897.webp",
+      "uploadedFrom": "lote-01/16897.webp",
+      "identifier": "16897",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16897--pos-58816",
+          "codigoDia": "16897",
+          "skuIntl": "11178959",
+          "skuPos": "58816",
+          "displayName": "WC26CCSS24Puffy",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16898.webp",
+      "uploadedFrom": "lote-01/16898.webp",
+      "identifier": "16898",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16898--pos-58810",
+          "codigoDia": "16898",
+          "skuIntl": "11178938",
+          "skuPos": "58810",
+          "displayName": "Sp26Tu16Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16900.webp",
+      "uploadedFrom": "lote-01/16900.webp",
+      "identifier": "16900",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16900--pos-50739",
+          "codigoDia": "16900",
+          "skuIntl": "11178941",
+          "skuPos": "50739",
+          "displayName": "SII26SS16Studded",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16901.webp",
+      "uploadedFrom": "lote-01/16901.webp",
+      "identifier": "16901",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16901--pos-58819",
+          "codigoDia": "16901",
+          "skuIntl": "11178937",
+          "skuPos": "58819",
+          "displayName": "WC26Mug12Stan",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16902.webp",
+      "uploadedFrom": "lote-01/16902.webp",
       "identifier": "16902",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -708,8 +935,8 @@
       ]
     },
     {
-      "file": "lote-01/16903.jpeg",
-      "uploadedFrom": "lote-01/16903.jpeg",
+      "file": "lote-01/16903.webp",
+      "uploadedFrom": "lote-01/16903.webp",
       "identifier": "16903",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -725,8 +952,8 @@
       ]
     },
     {
-      "file": "lote-01/16904.jpeg",
-      "uploadedFrom": "lote-01/16904.jpeg",
+      "file": "lote-01/16904.webp",
+      "uploadedFrom": "lote-01/16904.webp",
       "identifier": "16904",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -742,8 +969,25 @@
       ]
     },
     {
-      "file": "lote-01/16909.jpeg",
-      "uploadedFrom": "lote-01/16909.jpeg",
+      "file": "lote-01/16906.webp",
+      "uploadedFrom": "lote-01/16906.webp",
+      "identifier": "16906",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16906--pos-58823",
+          "codigoDia": "16906",
+          "skuIntl": "11179005",
+          "skuPos": "58823",
+          "displayName": "WC26SS30Pride",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16909.webp",
+      "uploadedFrom": "lote-01/16909.webp",
       "identifier": "16909",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -759,8 +1003,59 @@
       ]
     },
     {
-      "file": "lote-01/16914.jpeg",
-      "uploadedFrom": "lote-01/16914.jpeg",
+      "file": "lote-01/16910.webp",
+      "uploadedFrom": "lote-01/16910.webp",
+      "identifier": "16910",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16910--pos-58827",
+          "codigoDia": "16910",
+          "skuIntl": "11178969",
+          "skuPos": "58827",
+          "displayName": "WC26SS16Pink",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16911.webp",
+      "uploadedFrom": "lote-01/16911.webp",
+      "identifier": "16911",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16911--pos-58829",
+          "codigoDia": "16911",
+          "skuIntl": "11178971",
+          "skuPos": "58829",
+          "displayName": "WC26SS16Charm",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16913.webp",
+      "uploadedFrom": "lote-01/16913.webp",
+      "identifier": "16913",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16913--pos-58814",
+          "codigoDia": "16913",
+          "skuIntl": "11178946",
+          "skuPos": "58814",
+          "displayName": "WC26SS20Twist",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16914.webp",
+      "uploadedFrom": "lote-01/16914.webp",
       "identifier": "16914",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -776,8 +1071,42 @@
       ]
     },
     {
-      "file": "lote-01/16917.jpeg",
-      "uploadedFrom": "lote-01/16917.jpeg",
+      "file": "lote-01/16915.webp",
+      "uploadedFrom": "lote-01/16915.webp",
+      "identifier": "16915",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16915--pos-58821",
+          "codigoDia": "16915",
+          "skuIntl": "11178948",
+          "skuPos": "58821",
+          "displayName": "WC26StanHand20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16916.webp",
+      "uploadedFrom": "lote-01/16916.webp",
+      "identifier": "16916",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16916--pos-50735",
+          "codigoDia": "16916",
+          "skuIntl": "11178956",
+          "skuPos": "50735",
+          "displayName": "SII26Quencher30P",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16917.webp",
+      "uploadedFrom": "lote-01/16917.webp",
       "identifier": "16917",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -793,8 +1122,25 @@
       ]
     },
     {
-      "file": "lote-01/16919.jpeg",
-      "uploadedFrom": "lote-01/16919.jpeg",
+      "file": "lote-01/16918.webp",
+      "uploadedFrom": "lote-01/16918.webp",
+      "identifier": "16918",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16918--pos-58802",
+          "codigoDia": "16918",
+          "skuIntl": "11178943",
+          "skuPos": "58802",
+          "displayName": "Sp26SS20Orange",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16919.webp",
+      "uploadedFrom": "lote-01/16919.webp",
       "identifier": "16919",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -810,8 +1156,25 @@
       ]
     },
     {
-      "file": "lote-01/16921.jpeg",
-      "uploadedFrom": "lote-01/16921.jpeg",
+      "file": "lote-01/16920.webp",
+      "uploadedFrom": "lote-01/16920.webp",
+      "identifier": "16920",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16920--pos-50738",
+          "codigoDia": "16920",
+          "skuIntl": "11178935",
+          "skuPos": "50738",
+          "displayName": "SII26Tu10Gam",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16921.webp",
+      "uploadedFrom": "lote-01/16921.webp",
       "identifier": "16921",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -827,8 +1190,25 @@
       ]
     },
     {
-      "file": "lote-01/16923.jpeg",
-      "uploadedFrom": "lote-01/16923.jpeg",
+      "file": "lote-01/16922.webp",
+      "uploadedFrom": "lote-01/16922.webp",
+      "identifier": "16922",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16922--pos-58811",
+          "codigoDia": "16922",
+          "skuIntl": "11178919",
+          "skuPos": "58811",
+          "displayName": "Sp26Mug14Mom",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16923.webp",
+      "uploadedFrom": "lote-01/16923.webp",
       "identifier": "16923",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -844,8 +1224,42 @@
       ]
     },
     {
-      "file": "lote-01/16955.jpeg",
-      "uploadedFrom": "lote-01/16955.jpeg",
+      "file": "lote-01/16924.webp",
+      "uploadedFrom": "lote-01/16924.webp",
+      "identifier": "16924",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16924--pos-58835",
+          "codigoDia": "16924",
+          "skuIntl": "11178945",
+          "skuPos": "58835",
+          "displayName": "WC26Stan20IceF",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16925.webp",
+      "uploadedFrom": "lote-01/16925.webp",
+      "identifier": "16925",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16925--pos-58815",
+          "codigoDia": "16925",
+          "skuIntl": "11178973",
+          "skuPos": "58815",
+          "displayName": "WC26SS16Lid",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16955.webp",
+      "uploadedFrom": "lote-01/16955.webp",
       "identifier": "16955",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -869,8 +1283,8 @@
       ]
     },
     {
-      "file": "lote-01/16959.jpeg",
-      "uploadedFrom": "lote-01/16959.jpeg",
+      "file": "lote-01/16959.webp",
+      "uploadedFrom": "lote-01/16959.webp",
       "identifier": "16959",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -886,8 +1300,8 @@
       ]
     },
     {
-      "file": "lote-01/16960.jpeg",
-      "uploadedFrom": "lote-01/16960.jpeg",
+      "file": "lote-01/16960.webp",
+      "uploadedFrom": "lote-01/16960.webp",
       "identifier": "16960",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -903,8 +1317,8 @@
       ]
     },
     {
-      "file": "lote-01/16977.jpeg",
-      "uploadedFrom": "lote-01/16977.jpeg",
+      "file": "lote-01/16977.webp",
+      "uploadedFrom": "lote-01/16977.webp",
       "identifier": "16977",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -920,8 +1334,8 @@
       ]
     },
     {
-      "file": "lote-01/16989.jpeg",
-      "uploadedFrom": "lote-01/16989.jpeg",
+      "file": "lote-01/16989.webp",
+      "uploadedFrom": "lote-01/16989.webp",
       "identifier": "16989",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -937,8 +1351,76 @@
       ]
     },
     {
-      "file": "lote-01/17298.jpeg",
-      "uploadedFrom": "lote-01/17298.jpeg",
+      "file": "lote-01/16995.webp",
+      "uploadedFrom": "lote-01/16995.webp",
+      "identifier": "16995",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16995--pos-50755",
+          "codigoDia": "16995",
+          "skuIntl": "11186650",
+          "skuPos": "50755",
+          "displayName": "SII26SS16Pleat",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16997.webp",
+      "uploadedFrom": "lote-01/16997.webp",
+      "identifier": "16997",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16997--pos-50751",
+          "codigoDia": "16997",
+          "skuIntl": "11186646",
+          "skuPos": "50751",
+          "displayName": "SII26SS12Charm",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16998.webp",
+      "uploadedFrom": "lote-01/16998.webp",
+      "identifier": "16998",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16998--pos-50753",
+          "codigoDia": "16998",
+          "skuIntl": "11186658",
+          "skuPos": "50753",
+          "displayName": "SII26SS20Hand",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16999.webp",
+      "uploadedFrom": "lote-01/16999.webp",
+      "identifier": "16999",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16999--pos-50754",
+          "codigoDia": "16999",
+          "skuIntl": "11186659",
+          "skuPos": "50754",
+          "displayName": "SII26BTLSS20",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17298.webp",
+      "uploadedFrom": "lote-01/17298.webp",
       "identifier": "17298",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -954,8 +1436,8 @@
       ]
     },
     {
-      "file": "lote-01/17299.jpeg",
-      "uploadedFrom": "lote-01/17299.jpeg",
+      "file": "lote-01/17299.webp",
+      "uploadedFrom": "lote-01/17299.webp",
       "identifier": "17299",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -971,8 +1453,59 @@
       ]
     },
     {
-      "file": "lote-01/54213.jpeg",
-      "uploadedFrom": "lote-01/54213.jpeg",
+      "file": "lote-01/17357.webp",
+      "uploadedFrom": "lote-01/17357.webp",
+      "identifier": "17357",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17357--pos-sap-159943",
+          "codigoDia": "17357",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA TRANSP SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17358.webp",
+      "uploadedFrom": "lote-01/17358.webp",
+      "identifier": "17358",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17358--pos-sap-159944",
+          "codigoDia": "17358",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA NARANJA SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17359.webp",
+      "uploadedFrom": "lote-01/17359.webp",
+      "identifier": "17359",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17359--pos-sap-159945",
+          "codigoDia": "17359",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/54213.webp",
+      "uploadedFrom": "lote-01/54213.webp",
       "identifier": "54213",
       "status": "matched",
       "matchedBy": "codigoDia",
@@ -983,533 +1516,6 @@
           "skuIntl": "",
           "skuPos": "",
           "displayName": "WC26Reus",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170102.jpeg",
-      "uploadedFrom": "lote-01/011170102.jpeg",
-      "identifier": "11170102",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16643--pos-58701",
-          "codigoDia": "16643",
-          "skuIntl": "11170102",
-          "skuPos": "58701",
-          "displayName": "DiscoveryCDMX",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170147.jpeg",
-      "uploadedFrom": "lote-01/011170147.jpeg",
-      "identifier": "11170147",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16688--pos-58728",
-          "codigoDia": "16688",
-          "skuIntl": "11170147",
-          "skuPos": "58728",
-          "displayName": "Disc2ozMxPais",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170149.jpeg",
-      "uploadedFrom": "lote-01/011170149.jpeg",
-      "identifier": "11170149",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16689--pos-58726",
-          "codigoDia": "16689",
-          "skuIntl": "11170149",
-          "skuPos": "58726",
-          "displayName": "Disc2ozCDMX",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170158.jpeg",
-      "uploadedFrom": "lote-01/011170158.jpeg",
-      "identifier": "11170158",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16684--pos-58737",
-          "codigoDia": "16684",
-          "skuIntl": "11170158",
-          "skuPos": "58737",
-          "displayName": "Disc2ozChiapas",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170174.jpeg",
-      "uploadedFrom": "lote-01/011170174.jpeg",
-      "identifier": "11170174",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16681--pos-58739",
-          "codigoDia": "16681",
-          "skuIntl": "11170174",
-          "skuPos": "58739",
-          "displayName": "DiscCC24MxPais",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011170187.jpeg",
-      "uploadedFrom": "lote-01/011170187.jpeg",
-      "identifier": "11170187",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16601--pos-58743",
-          "codigoDia": "16601",
-          "skuIntl": "11170187",
-          "skuPos": "58743",
-          "displayName": "ToteBag MxPais",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011176710.jpeg",
-      "uploadedFrom": "lote-01/011176710.jpeg",
-      "identifier": "11176710",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16664--pos-58791",
-          "codigoDia": "16664",
-          "skuIntl": "11176710",
-          "skuPos": "58791",
-          "displayName": "Sp26CC24Dome",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178919.jpeg",
-      "uploadedFrom": "lote-01/011178919.jpeg",
-      "identifier": "11178919",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16922--pos-58811",
-          "codigoDia": "16922",
-          "skuIntl": "11178919",
-          "skuPos": "58811",
-          "displayName": "Sp26Mug14Mom",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178922.jpeg",
-      "uploadedFrom": "lote-01/011178922.jpeg",
-      "identifier": "11178922",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16879--pos-58831",
-          "codigoDia": "16879",
-          "skuIntl": "11178922",
-          "skuPos": "58831",
-          "displayName": "WC26Tu16Flower",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178928.jpeg",
-      "uploadedFrom": "lote-01/011178928.jpeg",
-      "identifier": "11178928",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16880--pos-58817",
-          "codigoDia": "16880",
-          "skuIntl": "11178928",
-          "skuPos": "58817",
-          "displayName": "WC26CC24Road",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178930.jpeg",
-      "uploadedFrom": "lote-01/011178930.jpeg",
-      "identifier": "11178930",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16882--pos-58824",
-          "codigoDia": "16882",
-          "skuIntl": "11178930",
-          "skuPos": "58824",
-          "displayName": "WC26CC24Pride",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178933.jpeg",
-      "uploadedFrom": "lote-01/011178933.jpeg",
-      "identifier": "11178933",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16881--pos-50736",
-          "codigoDia": "16881",
-          "skuIntl": "11178933",
-          "skuPos": "50736",
-          "displayName": "SII25CC24Gamer",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178935.jpeg",
-      "uploadedFrom": "lote-01/011178935.jpeg",
-      "identifier": "11178935",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16920--pos-50738",
-          "codigoDia": "16920",
-          "skuIntl": "11178935",
-          "skuPos": "50738",
-          "displayName": "SII26Tu10Gam",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178937.jpeg",
-      "uploadedFrom": "lote-01/011178937.jpeg",
-      "identifier": "11178937",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16901--pos-58819",
-          "codigoDia": "16901",
-          "skuIntl": "11178937",
-          "skuPos": "58819",
-          "displayName": "WC26Mug12Stan",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178938.jpeg",
-      "uploadedFrom": "lote-01/011178938.jpeg",
-      "identifier": "11178938",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16898--pos-58810",
-          "codigoDia": "16898",
-          "skuIntl": "11178938",
-          "skuPos": "58810",
-          "displayName": "Sp26Tu16Mom",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178941.jpeg",
-      "uploadedFrom": "lote-01/011178941.jpeg",
-      "identifier": "11178941",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16900--pos-50739",
-          "codigoDia": "16900",
-          "skuIntl": "11178941",
-          "skuPos": "50739",
-          "displayName": "SII26SS16Studded",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178943.jpeg",
-      "uploadedFrom": "lote-01/011178943.jpeg",
-      "identifier": "11178943",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16918--pos-58802",
-          "codigoDia": "16918",
-          "skuIntl": "11178943",
-          "skuPos": "58802",
-          "displayName": "Sp26SS20Orange",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178945.jpeg",
-      "uploadedFrom": "lote-01/011178945.jpeg",
-      "identifier": "11178945",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16924--pos-58835",
-          "codigoDia": "16924",
-          "skuIntl": "11178945",
-          "skuPos": "58835",
-          "displayName": "WC26Stan20IceF",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178946.jpg",
-      "uploadedFrom": "lote-01/011178946.jpg",
-      "identifier": "11178946",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16913--pos-58814",
-          "codigoDia": "16913",
-          "skuIntl": "11178946",
-          "skuPos": "58814",
-          "displayName": "WC26SS20Twist",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178948.jpeg",
-      "uploadedFrom": "lote-01/011178948.jpeg",
-      "identifier": "11178948",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16915--pos-58821",
-          "codigoDia": "16915",
-          "skuIntl": "11178948",
-          "skuPos": "58821",
-          "displayName": "WC26StanHand20",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178952.jpeg",
-      "uploadedFrom": "lote-01/011178952.jpeg",
-      "identifier": "11178952",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16875--pos-58828",
-          "codigoDia": "16875",
-          "skuIntl": "11178952",
-          "skuPos": "58828",
-          "displayName": "WC26SSCC24Grad",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178956.jpeg",
-      "uploadedFrom": "lote-01/011178956.jpeg",
-      "identifier": "11178956",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16916--pos-50735",
-          "codigoDia": "16916",
-          "skuIntl": "11178956",
-          "skuPos": "50735",
-          "displayName": "SII26Quencher30P",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178959.jpeg",
-      "uploadedFrom": "lote-01/011178959.jpeg",
-      "identifier": "11178959",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16897--pos-58816",
-          "codigoDia": "16897",
-          "skuIntl": "11178959",
-          "skuPos": "58816",
-          "displayName": "WC26CCSS24Puffy",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178969.jpeg",
-      "uploadedFrom": "lote-01/011178969.jpeg",
-      "identifier": "11178969",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16910--pos-58827",
-          "codigoDia": "16910",
-          "skuIntl": "11178969",
-          "skuPos": "58827",
-          "displayName": "WC26SS16Pink",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178971.jpeg",
-      "uploadedFrom": "lote-01/011178971.jpeg",
-      "identifier": "11178971",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16911--pos-58829",
-          "codigoDia": "16911",
-          "skuIntl": "11178971",
-          "skuPos": "58829",
-          "displayName": "WC26SS16Charm",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011178973.jpg",
-      "uploadedFrom": "lote-01/011178973.jpg",
-      "identifier": "11178973",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16925--pos-58815",
-          "codigoDia": "16925",
-          "skuIntl": "11178973",
-          "skuPos": "58815",
-          "displayName": "WC26SS16Lid",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011179005.jpeg",
-      "uploadedFrom": "lote-01/011179005.jpeg",
-      "identifier": "11179005",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16906--pos-58823",
-          "codigoDia": "16906",
-          "skuIntl": "11179005",
-          "skuPos": "58823",
-          "displayName": "WC26SS30Pride",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011186646.jpeg",
-      "uploadedFrom": "lote-01/011186646.jpeg",
-      "identifier": "11186646",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16997--pos-50751",
-          "codigoDia": "16997",
-          "skuIntl": "11186646",
-          "skuPos": "50751",
-          "displayName": "SII26SS12Charm",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011186650.jpeg",
-      "uploadedFrom": "lote-01/011186650.jpeg",
-      "identifier": "11186650",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16995--pos-50755",
-          "codigoDia": "16995",
-          "skuIntl": "11186650",
-          "skuPos": "50755",
-          "displayName": "SII26SS16Pleat",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011186658.jpeg",
-      "uploadedFrom": "lote-01/011186658.jpeg",
-      "identifier": "11186658",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16998--pos-50753",
-          "codigoDia": "16998",
-          "skuIntl": "11186658",
-          "skuPos": "50753",
-          "displayName": "SII26SS20Hand",
-          "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/011186659.jpeg",
-      "uploadedFrom": "lote-01/011186659.jpeg",
-      "identifier": "11186659",
-      "status": "matched",
-      "matchedBy": "skuIntl",
-      "products": [
-        {
-          "articleKey": "dia-16999--pos-50754",
-          "codigoDia": "16999",
-          "skuIntl": "11186659",
-          "skuPos": "50754",
-          "displayName": "SII26BTLSS20",
           "stockPriority": "active"
         }
       ]

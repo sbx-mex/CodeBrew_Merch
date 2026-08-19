@@ -7,18 +7,22 @@ import argparse
 import hashlib
 import json
 import re
+import io
 import shutil
 import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 SUPPORTED_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_FILE_BYTES = 25_000_000
 MAX_IMAGES_PER_LOT = 100
 LOT_NAMES = tuple(f"lote-{number:02d}" for number in range(1, 5))
+PUBLISHED_SUFFIX = ".webp"
+PUBLISHED_MAX_SIZE = (960, 960)
+PUBLISHED_QUALITY = 84
 
 
 def normalize_name(value: object) -> str:
@@ -122,6 +126,41 @@ def image_dimensions(path: Path) -> tuple[int, int]:
     with Image.open(path) as image:
         image.verify()
         return image.width, image.height
+
+
+def canonical_day(matches: list[dict], source: Path) -> str:
+    """Devuelve un único Código Día; nunca adivina entre relaciones ambiguas."""
+    days = {identifier(product.get("codigoDia")) for product in matches if identifier(product.get("codigoDia"))}
+    if len(days) > 1:
+        raise ValueError(
+            f"{source}: el identificador coincide con varios Códigos Día: {', '.join(sorted(days))}"
+        )
+    return next(iter(days), "")
+
+
+def encode_catalog_image(source: Path, destination: Path) -> tuple[int, int, str]:
+    """Normaliza orientación y tamaño, y publica WebP ligero sin recortar el artículo."""
+    if source.stat().st_size >= MAX_FILE_BYTES:
+        raise ValueError(f"Imagen mayor a 25 MB: {source}")
+    with Image.open(source) as opened:
+        if source.suffix.lower() == PUBLISHED_SUFFIX and max(opened.size) <= max(PUBLISHED_MAX_SIZE):
+            width, height = opened.size
+            opened.verify()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            digest = hashlib.sha256(destination.read_bytes()).hexdigest()
+            return width, height, digest
+        image = ImageOps.exif_transpose(opened).convert("RGB")
+        image.thumbnail(PUBLISHED_MAX_SIZE, Image.Resampling.LANCZOS)
+        encoded = io.BytesIO()
+        image.save(encoded, "WEBP", quality=PUBLISHED_QUALITY, method=6)
+        width, height = image.size
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(encoded.getvalue())
+    with Image.open(destination) as saved:
+        saved.verify()
+    digest = hashlib.sha256(destination.read_bytes()).hexdigest()
+    return width, height, digest
 
 
 def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
@@ -300,7 +339,17 @@ def integrate(
     products = payload.get("products", [])
     stock_profile = load_stock_profile(active_list)
     images, lots = discover_images(source_dir)
-    image_keys = {image_identifier(path) for path in images}
+    uploaded_keys = {image_identifier(path) for path in images}
+    base_indices = build_indices(products)
+    image_keys = set(uploaded_keys)
+    for key in uploaded_keys:
+        for field in ("codigoDia", "skuIntl"):
+            for product in base_indices[field].get(key, []):
+                image_keys.update(
+                    identifier(product.get(candidate))
+                    for candidate in ("codigoDia", "skuIntl")
+                    if identifier(product.get(candidate))
+                )
     appended_woe_products = add_woe_merch_products(products, woe_catalog, image_keys)
     appended_products = add_operational_products(products, operational_products, image_keys, set(stock_profile))
     enrich_products_with_woe(products, woe_catalog)
@@ -342,6 +391,8 @@ def integrate(
     duplicate_article_files = 0
     duplicate_content_files = 0
     seen_content: dict[str, Path] = {}
+    published_days: dict[str, Path] = {}
+    invalid_unmatched: list[str] = []
     for source in images:
         key = image_identifier(source)
         match_field = ""
@@ -367,6 +418,10 @@ def integrate(
             continue
         seen_content[digest] = source
 
+        day_key = canonical_day(matches, source)
+        if not day_key:
+            invalid_unmatched.append(source.relative_to(source_dir).as_posix())
+            continue
         previous_files = {assigned_files[product.get("articleKey")] for product in matches if product.get("articleKey") in assigned_files}
         if previous_files:
             duplicate_article_files += 1
@@ -380,16 +435,20 @@ def integrate(
                 "products": [],
             })
             continue
+        if day_key in published_days:
+            raise ValueError(
+                f"Dos fotografías distintas intentan publicar el Código Día {day_key}: "
+                f"{published_days[day_key].relative_to(source_dir)} y {source.relative_to(source_dir)}"
+            )
         for product in matches:
             assigned_files[product.get("articleKey")] = source
 
         target_lot = LOT_NAMES[published_files // MAX_IMAGES_PER_LOT]
-        relative = Path(target_lot) / source.name
+        relative = Path(target_lot) / f"{day_key}{PUBLISHED_SUFFIX}"
         used_output_lots.add(target_lot)
         destination = image_output / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
-        width, height = image_dimensions(destination)
+        width, height, published_digest = encode_catalog_image(source, destination)
+        published_days[day_key] = source
         published_files += 1
         published = (Path("assets/catalog/images") / relative).as_posix()
 
@@ -403,7 +462,7 @@ def integrate(
                 "kind": "uploaded",
                 "width": width,
                 "height": height,
-                "revision": digest[:12],
+                "revision": published_digest[:12],
             }
             product["imageNote"] = f"Fotografía integrada y relacionada por {match_field}."
             product["photoMatch"] = match_field
@@ -412,7 +471,7 @@ def integrate(
 
         file_rows.append({
             "file": relative.as_posix(),
-            "uploadedFrom": source.relative_to(source_dir).as_posix(),
+            "uploadedFrom": relative.as_posix(),
             "identifier": key,
             "status": "matched" if matches else "pending-match",
             "matchedBy": match_field or None,
@@ -425,6 +484,12 @@ def integrate(
                 "stockPriority": product.get("stockPriority"),
             } for product in matches],
         })
+
+    if invalid_unmatched:
+        raise ValueError(
+            "Hay imágenes sin Código Día verificable; corrige estos nombres antes de publicar: "
+            + ", ".join(invalid_unmatched)
+        )
 
     for lot in output_lots:
         if lot.name not in used_output_lots:
@@ -491,12 +556,15 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v12-publish-safe",
+        "version": "manual-upload-v13-day-code-webp",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
         "duplicatePolicy": "prefer-codigo-dia-remove-repeated-identifier-or-content",
-        "unmatchedPolicy": "preserve-and-report-do-not-guess",
+        "unmatchedPolicy": "reject-and-report-do-not-guess",
+        "publishedNaming": "codigo-dia.webp",
+        "publishedMaxPixels": list(PUBLISHED_MAX_SIZE),
+        "publishedQuality": PUBLISHED_QUALITY,
         "packing": "fill-lote-01-first-then-02-03-04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
         "stockPriority": "Merch_Existente15_08(1).csv · existencia mayor a menor",

@@ -31,6 +31,24 @@ def validate_static_assets() -> None:
         raise RuntimeError(f"Recursos estáticos faltantes: {', '.join(missing)}")
 
 
+def sync_tree(source: Path, target: Path) -> None:
+    """Sincroniza exactamente un árbol y elimina archivos obsoletos uno a uno."""
+    target.mkdir(parents=True, exist_ok=True)
+    source_files = {path.relative_to(source) for path in source.rglob("*") if path.is_file()}
+    for path in sorted((path for path in target.rglob("*") if path.is_file()), reverse=True):
+        if path.relative_to(target) not in source_files:
+            path.unlink()
+    for directory in sorted((path for path in source.rglob("*") if path.is_dir())):
+        (target / directory.relative_to(source)).mkdir(parents=True, exist_ok=True)
+    for path in sorted(path for path in source.rglob("*") if path.is_file()):
+        destination = target / path.relative_to(source)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, destination)
+    for directory in sorted((path for path in target.rglob("*") if path.is_dir()), reverse=True):
+        if not any(directory.iterdir()):
+            directory.rmdir()
+
+
 def main() -> int:
     validate_static_assets()
     if STAGE.exists():
@@ -87,21 +105,17 @@ def main() -> int:
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
         for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json"):
-            (STAGE / name).replace(data / name)
-        (STAGE / "merch-active-products.json").replace(data / "merch-active-products.json")
-        (STAGE / "Merch_Existente15_08(1).csv").replace(ROOT / "Merch_Existente15_08(1).csv")
+            shutil.copy2(STAGE / name, data / name)
+        shutil.copy2(STAGE / "merch-active-products.json", data / "merch-active-products.json")
+        shutil.copy2(STAGE / "Merch_Existente15_08(1).csv", ROOT / "Merch_Existente15_08(1).csv")
         image_target = ROOT / "assets/catalog/images"
-        if image_target.exists():
-            shutil.rmtree(image_target)
         image_target.parent.mkdir(parents=True, exist_ok=True)
-        (STAGE / "images").replace(image_target)
+        sync_tree(STAGE / "images", image_target)
         obsolete_atlases = ROOT / "assets/catalog/atlases"
         if obsolete_atlases.exists():
             shutil.rmtree(obsolete_atlases)
         featured_target = ROOT / "assets/catalog/featured"
-        if featured_target.exists():
-            shutil.rmtree(featured_target)
-        (STAGE / "featured").replace(featured_target)
+        sync_tree(STAGE / "featured", featured_target)
         run(
             "scripts/export_photo_control.py",
             "--catalog", "data/merch-catalog.js",

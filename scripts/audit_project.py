@@ -157,6 +157,21 @@ def audit(root: Path) -> dict:
         path.relative_to(root).as_posix()
         for path in [*restored_files, *featured_files]
     }
+    published_image_bytes = sum(path.stat().st_size for path in restored_files)
+    canonical_day_images = all(path.suffix.lower() == ".webp" and path.stem.isdigit() for path in restored_files)
+    visual_day_names_ok = all(
+        Path(product["visual"]["src"]).stem == normalized_identifier(product.get("codigoDia"))
+        for product in catalog_products
+        if product.get("visual")
+    )
+    optimized_images = True
+    for path in restored_files:
+        try:
+            with Image.open(path) as image:
+                optimized_images = optimized_images and max(image.size) <= 960
+        except OSError:
+            optimized_images = False
+    optimized_images = optimized_images and published_image_bytes <= 8_000_000
     image_mode = catalog_report.get("imageMode") or catalog_payload.get("meta", {}).get("imageMode")
     clean_reset = image_mode == "clean-reset"
     common_catalog_ok = (
@@ -183,15 +198,20 @@ def audit(root: Path) -> dict:
             and all(sum(child.is_file() and child.suffix.lower() in published_image_suffixes for child in lot.iterdir()) <= 100 for lot in lot_dirs)
             and all(image_is_readable(path) for path in restored_files)
             and unique_restored_files
-            and referenced_visuals.issubset(published_visuals)
+            and referenced_visuals == published_visuals
             and visual_revisions_ok
+            and canonical_day_images
+            and visual_day_names_ok
+            and optimized_images
             and len(published_visuals) == catalog_report.get("publishedImageFiles") == coverage.get("totals", {}).get("publishedImageFiles")
             and catalog_report.get("matchedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles")
             and len(products_with_photo) == catalog_report.get("withSourceImage") == coverage.get("totals", {}).get("matchedProducts")
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "prefer-codigo-dia-remove-repeated-identifier-or-content"
-            and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
-            and coverage.get("version") == "manual-upload-v12-publish-safe"
+            and coverage.get("unmatchedPolicy") == "reject-and-report-do-not-guess"
+            and coverage.get("version") == "manual-upload-v13-day-code-webp"
+            and coverage.get("publishedNaming") == "codigo-dia.webp"
+            and coverage.get("totals", {}).get("pendingRelationImageFiles") == 0
             and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
             and coverage.get("postPublishAudit") == {"status": "ok", "folders": 4, "images": len(restored_files), "duplicates": 0}
             and all(product.get("photoUploadName") == expected_photo_upload_name(product.get("codigoDia")) for product in catalog_products)
@@ -202,7 +222,7 @@ def audit(root: Path) -> dict:
             and secondary_count == catalog_report.get("secondaryProducts") == catalog_payload.get("meta", {}).get("secondaryProducts")
         )
         pending_images = coverage.get("totals", {}).get("pendingRelationImageFiles", 0)
-        catalog_detail = f"{len(catalog_products):,} artículos; {len(restored_files)} fotos conservadas; {active_with_photo} artículos activos con foto y {pending_images} archivo(s) pendiente(s) de relación"
+        catalog_detail = f"{len(catalog_products):,} artículos; {len(restored_files)} fotos por Código Día en {published_image_bytes / 1024 / 1024:.1f} MB; {active_with_photo} artículos activos con foto y {pending_images} pendiente(s)"
     elif clean_reset:
         active_count = sum(product.get("stockPriority") == "active" for product in catalog_products)
         secondary_count = sum(product.get("stockPriority") == "secondary" for product in catalog_products)
@@ -283,13 +303,14 @@ def audit(root: Path) -> dict:
         ]
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v12-publish-safe"
+            and coverage.get("version") == "manual-upload-v13-day-code-webp"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
             and coverage.get("totals", {}).get("pendingRelationImageFiles") == coverage.get("totals", {}).get("unmatchedImageFiles")
             and all(row.get("status") in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage.get("files", []))
-            and coverage.get("unmatchedPolicy") == "preserve-and-report-do-not-guess"
+            and coverage.get("unmatchedPolicy") == "reject-and-report-do-not-guess"
+            and coverage.get("publishedNaming") == "codigo-dia.webp"
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
             and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
             and coverage.get("crossCheck") == ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"]

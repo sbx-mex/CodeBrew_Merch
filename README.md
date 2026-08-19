@@ -10,7 +10,7 @@ PWA operativa con tres accesos: **Catálogo General**, **Revisión de Merch** y 
 - `assets/catalog/images/lote-01..04/`: las únicas cuatro rutas de fotos; admiten hasta 100 imágenes por carpeta.
 - `scripts/generate_products.py`: construye el cruce operativo.
 - `scripts/generate_manual_catalog.py`: normaliza los artículos sin procesar miles de imágenes; mantiene rápida la actualización.
-- `scripts/integrate_uploaded_images.py`: cruza únicamente por Código Día o SKU internacional y llena primero `lote-01`, después `lote-02`, `lote-03` y `lote-04`.
+- `scripts/integrate_uploaded_images.py`: cruza únicamente por Código Día o SKU internacional, convierte cualquier nombre SKU al Código Día verificado, optimiza a WebP y llena primero `lote-01`, después `lote-02`, `lote-03` y `lote-04`.
 - `Control_Fotos_CodeBrew.xlsx`: pestaña única de validación; muestra primero `CON FOTO` por existencia de mayor a menor y después los artículos `FALTA FOTO`.
 
 Llaves generadas:
@@ -18,7 +18,7 @@ Llaves generadas:
 - `articleKey`: `dia-{codigo-dia}--pos-{sku-pos-o-nombre}`.
 - `nameKey`: nombre del artículo normalizado, sin acentos ni caracteres especiales.
 
-Las fotos manuales tienen prioridad y permanecen después de cada compilación. Si un archivo no coincide exactamente con Código Día o SKU internacional, se conserva, se marca como `pending-match` en `data/photo-coverage.json` y no detiene la publicación; nunca se asigna por nombre, semejanza visual o suposición. En cuanto el código exista en una pestaña operativa, la siguiente compilación lo relaciona automáticamente.
+Las fotos manuales tienen prioridad y permanecen después de cada compilación. El nombre de entrada puede ser Código Día o SKU internacional, pero la publicación siempre queda como `CODIGO_DIA.webp`. Si el cruce falta o apunta a más de un Código Día, la compilación se detiene y reporta el archivo; nunca se asigna por nombre comercial, semejanza visual o suposición.
 
 En Revisión de Merch, los artículos con foto aparecen primero y se ordenan por existencia de mayor a menor. Después se muestran los pendientes con el estado visible **Foto pendiente**. Sólo esas tarjetas muestran la acción compacta **Enviar foto por WhatsApp**. El buscador permanece abierto al seleccionar una coincidencia y cruza Código Día, SAP, SKU internacional, Micros y todas las pestañas operativas, incluso si el artículo aún no tiene ficha visual.
 
@@ -28,7 +28,7 @@ El catálogo es exclusivamente una herramienta interna de conteo: no publica pre
 
 1. Reemplaza o agrega los Excel dentro de `engines/merch-lists/`.
 2. Conserva los encabezados `CÓDIGO DIA`, `Descripción SCI`, `NOMBRE POS`, `NOMBRE INVENTARIO` y `SKU POS`.
-3. Agrega la foto en cualquiera de las cuatro carpetas y nómbrala sólo con Código Día o SKU internacional, por ejemplo `16999.jpg` o `11186659.jpg`.
+3. Agrega la foto en cualquiera de las cuatro carpetas y nómbrala con Código Día (recomendado) o SKU internacional, por ejemplo `16999.jpg` o `11186659.jpg`. El workflow valida el cruce y publica ambos casos como `16999.webp`.
 4. Reemplaza `Merch_Existente15_08(1).csv` cuando cambie la existencia.
 5. Sube el cambio a `main`. El workflow limpia duplicados del CSV, ordena las fotos desde `lote-01`, regenera el catálogo y publica únicamente si toda la auditoría pasa.
 
@@ -61,7 +61,7 @@ El PDF agrega `Conteo` desde `Catalogo Micros` y compacta cada registro a un sol
 
 - Ningún archivo puede alcanzar 25 MB.
 - Cada carpeta admite como máximo 100 imágenes.
-- El catálogo usa una foto directa por artículo, sin atlas ni duplicados.
+- El catálogo usa una foto directa por artículo, sin atlas ni duplicados. Cada foto publicada mide como máximo 960 px y el conjunto tiene un presupuesto de 8 MB.
 - Revisión de Merch carga cinco artículos por bloque mediante `Ver más artículos` y filtra por nombre, Día, SAP, SKU y categoría.
 
 ## Auditoría y limpieza

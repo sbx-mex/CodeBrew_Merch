@@ -9,7 +9,8 @@ import re
 import sys
 import unicodedata
 from collections import Counter
-from datetime import datetime, timezone
+import zipfile
+from xml.etree import ElementTree
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
@@ -501,6 +502,18 @@ def parse_woe_catalog(workbook, products):
     return catalog, report
 
 
+def workbook_modified_at(excel_path: Path) -> str:
+    """Lee la fecha interna del XLSX; no usa el mtime inestable del checkout."""
+    with zipfile.ZipFile(excel_path) as archive:
+        try:
+            core = ElementTree.fromstring(archive.read("docProps/core.xml"))
+        except (KeyError, ElementTree.ParseError):
+            return "unknown"
+    namespace = "{http://purl.org/dc/terms/}"
+    modified = core.find(f"{namespace}modified")
+    return (modified.text or "unknown").strip() if modified is not None else "unknown"
+
+
 def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path):
     workbook = load_workbook(excel_path, data_only=True, read_only=False)
     missing_sheets = [name for name in REQUIRED_SHEETS if name not in workbook.sheetnames]
@@ -531,13 +544,9 @@ def generate(excel_path: Path, js_path: Path, woe_path: Path, report_path: Path)
         f"{latest_product['sourceRow']}"
     )
 
-    # Algunos libros no incluyen docProps/core.xml. En ese caso openpyxl crea
-    # fechas con la hora actual al abrirlos, lo que vuelve distinto cada build.
-    # El mtime del archivo motor es estable y permite salidas reproducibles.
-    generated_at = datetime.fromtimestamp(
-        excel_path.stat().st_mtime,
-        tz=timezone.utc,
-    ).isoformat(timespec="seconds")
+    # La fecha interna forma parte del archivo y permanece igual en cualquier
+    # checkout. El mtime de Git no es reproducible entre equipos o Actions.
+    generated_at = workbook_modified_at(excel_path)
     meta = {
         "sourceFile": excel_path.name,
         "generatedAtUtc": generated_at,

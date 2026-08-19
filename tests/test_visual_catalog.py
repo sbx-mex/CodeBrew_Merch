@@ -12,6 +12,7 @@ from pathlib import Path
 from openpyxl import load_workbook
 from PIL import Image
 from scripts.integrate_uploaded_images import add_woe_merch_products, discover_images, identifier, validate_published_lots
+from scripts.generate_products import workbook_modified_at
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +34,10 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(self.catalog["meta"]["visualSourceFiles"], 3)
         self.assertEqual(len(list((ROOT / "engines/merch-lists").glob("*.xlsx"))), 3)
         self.assertEqual(len(list((ROOT / "engines/visual-sources").glob("*.zip"))), 3)
+
+    def test_build_timestamp_comes_from_workbook_not_checkout_mtime(self) -> None:
+        report = json.loads((ROOT / "data/import-report.json").read_text(encoding="utf-8"))
+        self.assertEqual(report["generatedAtUtc"], workbook_modified_at(ROOT / "Lista_Precios_Base.xlsx"))
 
     def test_stable_article_keys_are_unique(self) -> None:
         keys = [product["articleKey"] for product in self.products]
@@ -80,7 +85,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         self.assertEqual(self.catalog["meta"].get("unmatchedImageFiles"), coverage["totals"]["pendingRelationImageFiles"])
         self.assertEqual(coverage["totals"]["publishedImageFiles"], coverage["totals"]["matchedImageFiles"] + coverage["totals"]["pendingRelationImageFiles"])
-        self.assertEqual(coverage["unmatchedPolicy"], "preserve-and-report-do-not-guess")
+        self.assertEqual(coverage["unmatchedPolicy"], "reject-and-report-do-not-guess")
+        self.assertEqual(coverage["publishedNaming"], "codigo-dia.webp")
+        self.assertEqual(coverage["totals"]["pendingRelationImageFiles"], 0)
+        self.assertTrue(all(path.suffix == ".webp" and path.stem.isdigit() for path in restored))
+        self.assertLessEqual(sum(path.stat().st_size for path in restored), 8_000_000)
         self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage["files"]))
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
@@ -137,8 +146,8 @@ class VisualCatalogContractTests(unittest.TestCase):
         matches = [product for product in self.products if identifier(product.get("codigoDia")) == "16960"]
         self.assertEqual(len(matches), 1)
         self.assertEqual(matches[0].get("photoMatch"), "codigoDia")
-        self.assertEqual(matches[0].get("photoFile"), "lote-01/16960.jpeg")
-        self.assertEqual((matches[0].get("visual") or {}).get("src"), "assets/catalog/images/lote-01/16960.jpeg")
+        self.assertEqual(matches[0].get("photoFile"), "lote-01/16960.webp")
+        self.assertEqual((matches[0].get("visual") or {}).get("src"), "assets/catalog/images/lote-01/16960.webp")
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         file_row = next(row for row in coverage["files"] if row.get("identifier") == "16960")
         self.assertEqual(file_row["status"], "matched")
@@ -149,11 +158,22 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(matches), 1)
         product = matches[0]
         self.assertEqual(product.get("photoMatch"), "codigoDia")
-        self.assertEqual(product.get("photoFile"), "lote-01/16672.jpeg")
+        self.assertEqual(product.get("photoFile"), "lote-01/16672.webp")
         visual = product.get("visual") or {}
         image_path = ROOT / visual.get("src", "")
         self.assertTrue(image_path.is_file())
         self.assertEqual(visual.get("revision"), hashlib.sha256(image_path.read_bytes()).hexdigest()[:12])
+
+    def test_sku_uploads_are_published_only_with_day_code_names(self) -> None:
+        matches = [product for product in self.products if identifier(product.get("skuIntl")) == "11186659"]
+        self.assertTrue(matches)
+        self.assertTrue(all(identifier(product.get("codigoDia")) == "16999" for product in matches))
+        self.assertTrue(all(product.get("photoFile") == "lote-01/16999.webp" for product in matches))
+        published = [
+            path for path in (ROOT / "assets/catalog/images").rglob("*")
+            if path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"}
+        ]
+        self.assertTrue(all(path.suffix.lower() == ".webp" and path.stem.isdigit() and len(path.stem) <= 6 for path in published))
 
     def test_excel_keeps_distinct_sku_intl_and_codigo_dia(self) -> None:
         workbook = load_workbook(ROOT / "Lista_Precios_Base.xlsx", read_only=True, data_only=True)
@@ -169,13 +189,13 @@ class VisualCatalogContractTests(unittest.TestCase):
     def test_day_photo_wins_when_sku_file_has_duplicate_content(self) -> None:
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         rows = {row.get("identifier"): row for row in coverage["files"]}
-        self.assertEqual(rows["16960"].get("file"), "lote-01/16960.jpeg")
+        self.assertEqual(rows["16960"].get("file"), "lote-01/16960.webp")
         sku_duplicate = rows.get("11160979")
         if sku_duplicate is not None:
             self.assertIsNone(sku_duplicate.get("file"))
             self.assertEqual(sku_duplicate.get("status"), "ignored-duplicate-content")
             self.assertEqual(sku_duplicate.get("kept"), "lote-01/16960.jpeg")
-        self.assertFalse(any(product.get("photoFile", "").endswith("/11160979.jpeg") for product in self.products))
+        self.assertFalse(any("/11160979." in product.get("photoFile", "") for product in self.products))
 
     def test_post_publish_audit_rejects_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
