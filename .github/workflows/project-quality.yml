@@ -39,6 +39,7 @@ jobs:
 
       - name: Auditar sin modificar
         run: |
+          python scripts/validate_pos_excel.py --report "$RUNNER_TEMP/pos-excel-validation.json"
           python scripts/cleanup_obsolete.py --report "$RUNNER_TEMP/cleanup-report.json"
           python scripts/audit_project.py --output "$RUNNER_TEMP/audit-report.json" --js-output "$RUNNER_TEMP/app-audit.js"
 

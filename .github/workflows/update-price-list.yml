@@ -53,9 +53,10 @@ jobs:
       - name: Validar recursos estáticos
         run: test -f assets/catalog/catalog-hero.webp
 
-      - name: Normalizar Código Día, optimizar y auditar
+      - name: Reconstruir desde Excel, validar SKU POS y auditar
         run: |
           python scripts/build_all.py
+          python scripts/validate_pos_excel.py --report "$RUNNER_TEMP/pos-excel-validation.json"
           git diff --check
 
       - name: Eliminar obsoletos y duplicados validados
