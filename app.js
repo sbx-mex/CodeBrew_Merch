@@ -135,7 +135,7 @@ function tierKeys(p){ return Object.keys(p.tier || {}).filter(k => moneyClean(p.
 function priceFor(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); return p.tier?.[k] || ''; }
 function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); const price = p.tier?.[k] || ''; return price ? `${k}: ${price}` : '-'; }
 function priceOnly(p, tier){ return priceFor(p, tier) || '-'; }
-function qrValue(p){return String(window.POS_MIRROR?.[p?.skuPos]||p?.skuPos||p?.botonPos||p?.nombrePos||'').trim();}
+function qrValue(p){return String(p?.skuPos||p?.botonPos||p?.nombrePos||'').trim();}
 function posButtonText(p){
 const button = p?.botonPos || 'Botón por validar';
 return p?.campaign ? `${button} / ${p.campaign}` : button;
@@ -233,7 +233,7 @@ ${tierSelectHtml(p, currentTier, 'tierSelect')}
 <div class="grid">
 <div class="field"><span>SKU leído</span><b>${source || p.skuIntl || '-'}</b></div>
 <div class="field"><span>Botón POS</span><b>${boton}</b><em>${p.base || ''}</em></div>
-<div class="field main"><span>${window.POS_MIRROR?.[p?.skuPos]?'SKU POS · ESPEJO':'SKU POS'}</span><b>${skuPos || '-'}</b></div>
+<div class="field main"><span>SKU POS</span><b>${skuPos || '-'}</b></div>
 <div class="field"><span>Código DIA</span><b>${p.codigoDia || '-'}</b></div>
 <div class="field"><span>Nombre POS</span><b>${p.nombrePos || '-'}</b></div>
 <div class="field"><span>Precio</span><b class="price">${priceLabel(p, currentTier)}</b></div>

@@ -84,6 +84,13 @@ def main() -> int:
             "--output", str(STAGE / "ui-config.js"),
         )
         run(
+            "scripts/validate_pos_excel.py",
+            "--excel", "Lista_Precios_Base.xlsx",
+            "--products", str(STAGE / "products.js"),
+            "--project", ".",
+            "--report", str(STAGE / "pos-excel-validation.json"),
+        )
+        run(
             "scripts/generate_manual_catalog.py",
             "--engine-dir", "engines/merch-lists",
             "--output", str(STAGE / "merch-catalog.js"),
@@ -104,7 +111,7 @@ def main() -> int:
         validate_stage()
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
-        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json"):
+        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "pos-excel-validation.json"):
             shutil.copy2(STAGE / name, data / name)
         shutil.copy2(STAGE / "merch-active-products.json", data / "merch-active-products.json")
         shutil.copy2(STAGE / "Merch_Existente15_08(1).csv", ROOT / "Merch_Existente15_08(1).csv")

@@ -1,0 +1,227 @@
+{
+  "ok": true,
+  "source": "Lista_Precios_Base.xlsx",
+  "excelRowsReviewed": 970,
+  "generatedProductsReviewed": 961,
+  "mismatches": [],
+  "missingSkuPos": [],
+  "forbiddenRuntimeOverrides": [],
+  "duplicateSkuPosSummary": {
+    "groups": 19,
+    "rows": 719,
+    "sample": [
+      {
+        "skuPos": "50749",
+        "count": 6,
+        "examples": [
+          {
+            "sheet": "Base_Campaña",
+            "row": 7,
+            "name": "SII26GlCCColor"
+          },
+          {
+            "sheet": "Base_Campaña",
+            "row": 8,
+            "name": "SII26GlCCColor"
+          },
+          {
+            "sheet": "Base_Campaña",
+            "row": 9,
+            "name": "SII26GlCCColor"
+          }
+        ]
+      },
+      {
+        "skuPos": "Tazas SBX",
+        "count": 98,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 2,
+            "name": "Tazas SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 3,
+            "name": "Tazas SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 19,
+            "name": "Tazas SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "Tumb Plastic SBX",
+        "count": 149,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 4,
+            "name": "Tumb Plastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 5,
+            "name": "Tumb Plastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 15,
+            "name": "Tumb Plastic SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "CCupPlastic SBX",
+        "count": 61,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 6,
+            "name": "CCupPlastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 39,
+            "name": "CCupPlastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 80,
+            "name": "CCupPlastic SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "Stanley SBX",
+        "count": 39,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 7,
+            "name": "Stanley SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 8,
+            "name": "Stanley SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 9,
+            "name": "Stanley SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "Tumb acero SBX",
+        "count": 123,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 16,
+            "name": "Tumb acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 23,
+            "name": "Tumb acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 41,
+            "name": "Tumb acero SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "Tumb acero\nSBX",
+        "count": 18,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 17,
+            "name": "Tumb acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 61,
+            "name": "Tumb acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 62,
+            "name": "Tumb acero SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "Tumb Plastic\nSBX",
+        "count": 12,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 18,
+            "name": "Tumb Plastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 73,
+            "name": "Tumb Plastic SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 82,
+            "name": "Tumb Plastic SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "CCup Acero SBX",
+        "count": 30,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 24,
+            "name": "CCup Acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 29,
+            "name": "CCup Acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 45,
+            "name": "CCup Acero SBX"
+          }
+        ]
+      },
+      {
+        "skuPos": "CCup Acero\nSBX",
+        "count": 10,
+        "examples": [
+          {
+            "sheet": "Homologados",
+            "row": 26,
+            "name": "CCup Acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 37,
+            "name": "CCup Acero SBX"
+          },
+          {
+            "sheet": "Homologados",
+            "row": 38,
+            "name": "CCup Acero SBX"
+          }
+        ]
+      }
+    ],
+    "blocking": false
+  },
+  "rule": "SKU POS se toma directamente del encabezado SKU POS del Excel; filas y orden pueden cambiar sin usar parches por artículo."
+}
