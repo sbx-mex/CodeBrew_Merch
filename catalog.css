@@ -32,12 +32,17 @@
 .micros-catalog-results[hidden] { display: none; }
 .micros-results-head { display: flex; justify-content: space-between; gap: 12px; padding: 13px 15px; background: #eaf4ef; color: #174737; }
 .micros-results-head span { color: #60736b; font-size: 12px; }
-.micros-results-list { max-height: 420px; overflow: auto; }
+.micros-results-list { display: grid; }
 .micros-result { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 12px 15px; border-top: 1px solid #e8eeeb; }
 .micros-result div { display: grid; gap: 2px; min-width: 0; }
 .micros-result small,.micros-result span { overflow: hidden; color: #66776f; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .micros-result b { overflow: hidden; color: #123e30; text-overflow: ellipsis; white-space: nowrap; }
 .micros-result button { min-height: 38px; padding: 8px 14px; border-radius: 11px; }
+.micros-results-more { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; border-top: 1px solid #e8eeeb; background: #f8fbf9; }
+.micros-results-more button { min-height: 42px; padding: 9px 16px; border-color: #9bc7b4; color: #006241; font-weight: 900; }
+.micros-results-more small { color: #60736b; font-size: 11px; }
+.micros-count-filter.is-paused { opacity: .62; }
+.micros-count-filter.is-paused::after { content: "Búsqueda global activa"; display: block; margin-top: 4px; color: #006241; font-size: 9px; font-weight: 900; text-transform: none; letter-spacing: 0; }
 .catalog-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 20px 0 14px; }
 .catalog-filters { display: flex; gap: 8px; overflow-x: auto; padding: 2px; scrollbar-width: thin; }
 .catalog-filter { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; min-height: 40px; padding: 8px 11px 8px 13px; border: 1px solid #d5e1dc; border-radius: 999px; background: #fff; color: #52645d; font-size: 12px; font-weight: 900; }

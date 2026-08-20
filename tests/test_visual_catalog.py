@@ -246,6 +246,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("Ampliar", app)
         for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
             self.assertIn(token, app)
+        for token in ("MICROS_RESULT_BATCH", "microsVisibleLimit", "countFilterActive", "data-micros-load-more", "focusFirstCatalogResult", "e.key==='ArrowDown'"):
+            self.assertIn(token, app)
+        self.assertNotIn("allMatches.slice(0,40)", app)
+        self.assertNotIn("max-height: 420px", css)
+        self.assertIn("La búsqueda escrita revisa todo el catálogo", html)
         for token in ("SKU POS", "SKU internacional", "Nombre Inventario", "Descripción SCI"):
             self.assertIn(token, html + app)
         for token in ("grid-template-columns: repeat(5", "object-position: center", ".catalog-options", ".catalog-view-bar"):

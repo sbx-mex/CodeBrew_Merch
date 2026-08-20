@@ -20,7 +20,7 @@ PERFORMANCE_BUDGETS = {
     "index.html": 35_000,
     "styles.css": 45_000,
     "catalog.css": 30_000,
-    "app.js": 134_000,
+    "app.js": 136_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/merch-catalog.js": 1_000_000,
@@ -378,12 +378,12 @@ def audit(root: Path) -> dict:
     required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "MICROS_RESULT_BATCH", "microsVisibleLimit", "countFilterActive", "data-micros-load-more", "focusFirstCatalogResult", "e.key==='ArrowDown'", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",
-        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and all(token not in app_text for token in redundant_catalog_tokens) and "catalogLoadAll" not in html + app_text and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "localStorage.clear" not in app_text and "document.cookie" not in app_text,
-        f"{len(parser.ids)} controles con ID único, navegación por teclado y progreso accesible"
+        not duplicate_ids and not redundant_controls and required_ids.issubset(parser.ids) and all(token in app_text for token in operational_tokens) and all(token not in app_text for token in redundant_catalog_tokens) and "allMatches.slice(0,40)" not in app_text and "max-height: 420px" not in catalog_css and "catalogLoadAll" not in html + app_text and "qrious.min.js" not in html and "openCatalogVisual" not in app_text and "catalogVisualDialog" not in html and "localStorage.clear" not in app_text and "document.cookie" not in app_text,
+        f"{len(parser.ids)} controles con ID único, búsqueda global por lotes y navegación por teclado accesible"
         if not duplicate_ids and not redundant_controls
         else f"Revisar controles: {', '.join(sorted(set(duplicate_ids) | redundant_controls))}",
     ))

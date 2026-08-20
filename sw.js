@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v51-merch-visual-priority-2026-08-19';
+const CACHE_NAME = 'codebrew-v52-catalog-search-navigation-2026-08-20';
 const APP_SHELL = [
   './',
   './index.html',

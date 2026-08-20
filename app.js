@@ -9,7 +9,8 @@ const woeSelection = new Map();
 const catalogItemByKey = new Map();
 let catalogCategory = 'all';
 let catalogPhotoState = 'all',catalogSort = 'priority';
-let catalogNameMode = 'inventory',catalogVisibleLimit = 12,microsCount='all',catalogSearchFrame=0;
+let catalogNameMode = 'inventory',catalogVisibleLimit = 12,microsVisibleLimit = 40,microsCount='all',catalogSearchFrame=0;
+const MICROS_RESULT_BATCH = 40;
 let appMode = '';
 let catalogRenderSignature = '';
 let woePdfExported = false;
@@ -320,8 +321,13 @@ const filters=$('catalogFilters'),grid=$('catalogGrid');if(!filters||!grid)retur
 const merchMode=appMode==='merch',categories=['all','tumbler','mug','cold-cup','bottle','accessory','other'];
 if(!categories.includes(catalogCategory))catalogCategory='all';
 const query=normalizeText(raw),tokens=query.split(' ').filter(Boolean),compactQuery=query.replace(/\s+/g,''),signature=`${appMode}|${catalogCategory}|${catalogPhotoState}|${catalogSort}|${microsCount}|${query}`;
-if(signature!==catalogRenderSignature){catalogVisibleLimit=catalogBatchSize();catalogRenderSignature=signature;}
-const countSel=$('microsCountFilter');if(countSel&&appMode==='catalog'&&countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;renderCatalog($('woeSearch').value)}}const rank=i=>Number(Boolean(i.visualProduct?.visual?.src))*100000000+Number(i.visualProduct?.stockPriority==='active')*10000000+(Number(i.visualProduct?.stockQuantity)||0)*100+Number(i.operationalValidation?.sapMicros)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||Boolean(query)||isMerchItem(row.item))&&(appMode!=='catalog'||microsCount==='all'||(row.item.conteo||[]).includes(microsCount))&&(!query||tokens.every(token=>row.text.includes(token))||row.text.includes(compactQuery))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
+if(signature!==catalogRenderSignature){catalogVisibleLimit=catalogBatchSize();microsVisibleLimit=MICROS_RESULT_BATCH;catalogRenderSignature=signature;}
+const countSel=$('microsCountFilter'),countFilterActive=appMode==='catalog'&&!query&&microsCount!=='all';
+if(countSel&&appMode==='catalog'){
+if(countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo||[]))].sort((a,b)=>a.localeCompare(b,'es')).forEach(v=>countSel.add(new Option(v,v)));countSel.onchange=()=>{microsCount=countSel.value;catalogRenderSignature='';renderCatalog($('woeSearch').value)}}
+countSel.disabled=Boolean(query);$('microsCountFilterWrap')?.classList.toggle('is-paused',Boolean(query));
+}
+const rank=i=>Number(Boolean(i.visualProduct?.visual?.src))*100000000+Number(i.visualProduct?.stockPriority==='active')*10000000+(Number(i.visualProduct?.stockQuantity)||0)*100+Number(i.operationalValidation?.sapMicros)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||Boolean(query)||isMerchItem(row.item))&&(!countFilterActive||(row.item.conteo||[]).includes(microsCount))&&(!query||tokens.every(token=>row.text.includes(token))||row.text.includes(compactQuery))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
 const fullCatalogPool=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))),recommended=merchMode&&!query&&catalogPhotoState==='all',catalogPool=recommended?fullCatalogPool.filter(row=>Boolean(row.item.visualProduct.visual?.src)&&row.item.visualProduct.stockPriority==='active'&&Number(row.item.visualProduct.stockQuantity)>0):fullCatalogPool;
 const uniqueItems=rows=>{const items=[],keys=new Set();for(const row of rows){const key=row.item.visualProduct.visual?.src||row.item.visualProduct.articleKey;if(keys.has(key))continue;keys.add(key);items.push(row.item);}return items;};
 const categoryCounts=Object.fromEntries(categories.map(category=>[category,uniqueItems(catalogPool.filter(row=>matchesCatalogCategory(row.item.visualProduct,category))).length]));
@@ -347,13 +353,18 @@ grid.querySelectorAll('[data-catalog-step]').forEach(button=>button.addEventList
 grid.querySelectorAll('[data-catalog-add]').forEach(button=>button.addEventListener('click',()=>{const item=catalogItemByKey.get(button.dataset.catalogAdd),input=grid.querySelector(`[data-catalog-qty="${CSS.escape(button.dataset.catalogAdd)}"]`);addWoeItem(item,true,Number(input?.value)||1);renderWoeResults();}));
 const results=$('microsCatalogResults');
 if(results){
-const showResults=Boolean(query)||(appMode==='catalog'&&microsCount!=='all'),rows=allMatches.slice(0,40);
+const showResults=Boolean(query)||(appMode==='catalog'&&microsCount!=='all'),rows=allMatches.slice(0,microsVisibleLimit),remainingMicros=Math.max(0,allMatches.length-rows.length),resultsTitle=query?'Búsqueda en todo el catálogo':`Conteo · ${escapeHtml(microsCount)}`;
 results.hidden=!showResults;
-results.innerHTML=!showResults?'':rows.length?`<div class="micros-results-head"><b>${microsCount!=='all'?`Conteo · ${escapeHtml(microsCount)}`:'Resultados del catálogo'}</b><span>${allMatches.length.toLocaleString('es-MX')} coincidencias · SAP exacto primero</span></div><div class="micros-results-list">${rows.map((row,index)=>{const item=row.item,key=catalogItemKey(item);catalogItemByKey.set(key,item);return `<article class="micros-result"><div><small>Conteo: ${escapeHtml((item.conteo||[])[0]||'Sin clasificación')}</small><b>${escapeHtml(articleName(item))}</b><span>${item.operationalValidation?.sapMicros?'Coincidencia SAP · ':item.idWoe?'SAP disponible · ':'SAP por validar · '}Día ${escapeHtml(item.codigoDia||'—')}</span></div><button type="button" data-micros-add="${escapeHtml(key)}">Añadir</button></article>`;}).join('')}</div>`:'<div class="catalog-empty"><b>Sin coincidencias.</b><br>Prueba otra palabra o Código Día.</div>';
+results.innerHTML=!showResults?'':rows.length?`<div class="micros-results-head"><b>${resultsTitle}</b><span>${rows.length.toLocaleString('es-MX')} visibles de ${allMatches.length.toLocaleString('es-MX')} · SAP exacto primero</span></div><div class="micros-results-list">${rows.map((row,index)=>{const item=row.item,key=catalogItemKey(item);catalogItemByKey.set(key,item);return `<article class="micros-result" data-micros-index="${index}"><div><small>Conteo: ${escapeHtml((item.conteo||[])[0]||'Sin clasificación')}</small><b>${escapeHtml(articleName(item))}</b><span>${item.operationalValidation?.sapMicros?'Coincidencia SAP · ':item.idWoe?'SAP disponible · ':'SAP por validar · '}Día ${escapeHtml(item.codigoDia||'—')}</span></div><button type="button" data-micros-add="${escapeHtml(key)}">Añadir</button></article>`;}).join('')}</div>${remainingMicros?`<div class="micros-results-more"><button type="button" class="ghost" data-micros-load-more>Ver ${Math.min(MICROS_RESULT_BATCH,remainingMicros)} resultados más</button><small>Quedan ${remainingMicros.toLocaleString('es-MX')} coincidencias</small></div>`:''}`:'<div class="catalog-empty"><b>Sin coincidencias.</b><br>Prueba otra palabra, Código Día, SKU o nombre.</div>';
 results.querySelectorAll('[data-micros-add]').forEach(button=>button.addEventListener('click',()=>{addWoeItem(catalogItemByKey.get(button.dataset.microsAdd),true,1);renderWoeResults();}));
+results.querySelector('[data-micros-load-more]')?.addEventListener('click',()=>{const firstNewIndex=microsVisibleLimit;microsVisibleLimit+=MICROS_RESULT_BATCH;renderCatalog($('woeSearch').value);requestAnimationFrame(()=>results.querySelector(`[data-micros-index="${firstNewIndex}"] [data-micros-add]`)?.focus());});
 }
 }
 function scheduleCatalogRender(value){cancelAnimationFrame(catalogSearchFrame);catalogSearchFrame=requestAnimationFrame(()=>{catalogSearchFrame=0;renderCatalog(value);});}
+function focusFirstCatalogResult(){
+const suggestion=$('woeSuggestions')?.querySelector('[data-woe-suggestion]'),result=$('microsCatalogResults')?.querySelector('[data-micros-add]');
+(suggestion||result)?.focus();
+}
 function splitWoeQueries(raw){ return String(raw||'').split(/[\n,;]+/).map(value=>value.trim()).filter(Boolean); }
 function findWoeMatches(raw,limit=12){
 const input=String(raw||'').trim(),numeric=normalizeSku(input),query=normalizeText(input),compactQuery=query.replace(/\s+/g,'');
@@ -1381,7 +1392,7 @@ $('catalogReset').addEventListener('click',()=>{catalogCategory='all';catalogPho
 $('woeSearch').addEventListener('input',e=>{clearTimeout(woeSuggestionTimer);const value=e.target.value;woePdfExported=false;updateWoeFlow();scheduleCatalogRender(value);woeSuggestionTimer=setTimeout(()=>renderWoeSuggestions(value),100);});
 $('woeSearch').addEventListener('input',event=>{$('woeSearchClear').hidden=!event.target.value;});
 $('woeSearchClear').addEventListener('click',()=>{$('woeSearch').value='';$('woeSearchClear').hidden=true;$('woeSuggestions').hidden=true;$('woeSearch').setAttribute('aria-expanded','false');updateWoeFlow();scheduleCatalogRender('');$('woeSearch').focus();});
-$('woeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
+$('woeSearch').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key==='ArrowDown')&&appMode==='catalog'){e.preventDefault();renderCatalog(e.target.value);requestAnimationFrame(focusFirstCatalogResult);return;}if(e.key==='Enter'){e.preventDefault();addWoeQueries(e.target.value);renderWoeResults();}if(e.key==='Escape'){$('woeSuggestions').hidden=true;e.target.setAttribute('aria-expanded','false');}});
 $('woeAdd').addEventListener('click',()=>{addWoeQueries($('woeSearch').value);renderWoeResults();requestAnimationFrame(()=>$('woeStatus').scrollIntoView({behavior:'smooth',block:'nearest'}));});
 $('woeExport').addEventListener('click',generateWoePdf);
 $('woeClear').addEventListener('click',()=>{woeSelection.clear();woePdfExported=false;renderWoeSelection();$('woeResults').innerHTML='';$('woeStatus').classList.remove('warning');$('woeStatus').textContent='Selección limpia. Escribe un dato para comenzar.';$('woeSearch').focus();});
