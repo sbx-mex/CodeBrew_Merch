@@ -28,14 +28,14 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 91,
+    "images": 92,
     "duplicates": 0
   },
   "lots": [
     {
       "folder": "lote-01",
-      "images": 91,
-      "accepted": 91,
+      "images": 92,
+      "accepted": 92,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -62,16 +62,16 @@
     }
   ],
   "totals": {
-    "imageFiles": 91,
-    "publishedImageFiles": 91,
-    "matchedImageFiles": 91,
+    "imageFiles": 92,
+    "publishedImageFiles": 92,
+    "matchedImageFiles": 92,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 95,
+    "matchedProducts": 96,
     "activeProducts": 1017,
-    "activeWithPhoto": 81,
-    "activeMissingPhoto": 936,
+    "activeWithPhoto": 82,
+    "activeMissingPhoto": 935,
     "secondaryProducts": 178,
     "appendedOperationalProducts": 72,
     "appendedWoeProducts": 104
@@ -488,6 +488,23 @@
           "skuIntl": "11179880",
           "skuPos": "50747",
           "displayName": "SII26SS16Resort",
+          "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16611.webp",
+      "uploadedFrom": "lote-01/16611.webp",
+      "identifier": "16611",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16611--pos-58761",
+          "codigoDia": "16611",
+          "skuIntl": "11177937",
+          "skuPos": "58761",
+          "displayName": "Sp26CCup16Cherry",
           "stockPriority": "active"
         }
       ]
