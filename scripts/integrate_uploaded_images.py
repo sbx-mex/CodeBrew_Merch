@@ -180,18 +180,27 @@ def discover_images(source_dir: Path) -> tuple[list[Path], list[dict]]:
         lot.mkdir(exist_ok=True)
     images: list[Path] = []
     lot_report: list[dict] = []
-    seen_keys: dict[str, Path] = {}
+    lot_files: dict[str, list[Path]] = {}
     for lot in lots:
         lot_images = sorted(path for path in lot.iterdir() if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES)
         if len(lot_images) > MAX_IMAGES_PER_LOT:
             raise ValueError(f"{lot.name}: admite como máximo {MAX_IMAGES_PER_LOT} imágenes")
+        lot_files[lot.name] = lot_images
+    # El lote más reciente gana cuando el mismo Código Día fue copiado en más
+    # de una carpeta. Así una carga nueva en lote-02 sustituye la copia antigua
+    # de lote-01 y la sincronización posterior elimina el duplicado.
+    chosen: dict[str, Path] = {}
+    for lot in lots:
+        for image in lot_files[lot.name]:
+            chosen[normalize_name(re.sub(r"_\d+$", "", image.stem))] = image
+    for lot in lots:
+        lot_images = lot_files[lot.name]
         ignored: list[dict] = []
         for image in lot_images:
             key = normalize_name(re.sub(r"_\d+$", "", image.stem))
-            if key in seen_keys:
-                ignored.append({"file": image.name, "reason": "duplicate-name", "kept": seen_keys[key].relative_to(source_dir).as_posix()})
+            if chosen[key] != image:
+                ignored.append({"file": image.name, "reason": "duplicate-name-superseded", "kept": chosen[key].relative_to(source_dir).as_posix()})
                 continue
-            seen_keys[key] = image
             images.append(image)
         lot_report.append({"folder": lot.name, "images": len(lot_images), "accepted": len(lot_images) - len(ignored), "duplicatesIgnored": len(ignored), "ignoredFiles": ignored})
     return images, lot_report
@@ -466,7 +475,11 @@ def integrate(
         for product in matches:
             assigned_files[product.get("articleKey")] = source
 
-        target_lot = LOT_NAMES[published_files // MAX_IMAGES_PER_LOT]
+        # Cada lote es una fuente independiente. No reempaquetar lote-02 en lote-01:
+        # hacerlo duplica archivos y rompe las rutas que el usuario subió a GitHub.
+        target_lot = source.parent.name
+        if target_lot not in LOT_NAMES:
+            raise ValueError(f"Lote de origen no permitido: {source.relative_to(source_dir)}")
         relative = Path(target_lot) / f"{day_key}{PUBLISHED_SUFFIX}"
         used_output_lots.add(target_lot)
         destination = image_output / relative
@@ -579,7 +592,7 @@ def integrate(
 
     coverage = {
         "status": "ok",
-        "version": "manual-upload-v13-day-code-webp",
+        "version": "manual-upload-v14-preserve-lots",
         "source": "assets/catalog/images/lote-01..04",
         "matchOrder": ["codigoDia", "skuIntl"],
         "duplicateProtection": "one-photo-per-article",
@@ -588,7 +601,7 @@ def integrate(
         "publishedNaming": "codigo-dia.webp",
         "publishedMaxPixels": list(PUBLISHED_MAX_SIZE),
         "publishedQuality": PUBLISHED_QUALITY,
-        "packing": "fill-lote-01-first-then-02-03-04",
+        "packing": "preserve-source-lote-01..04",
         "crossCheck": ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"],
         "stockPriority": "Merch_Existente15_08(1).csv · existencia mayor a menor",
         "postPublishAudit": post_publish_audit,

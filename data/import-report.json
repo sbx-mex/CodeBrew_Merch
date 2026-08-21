@@ -1,11 +1,11 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-21T23:14:15Z",
-  "sourceModifiedAtUtc": "2026-08-21T23:14:15Z",
-  "latestItemCell": "Base_Campaña!D13",
-  "latestItem": "SII26SSBTL12Aniv",
-  "totalValidProducts": 966,
+  "generatedAtUtc": "2026-08-21T22:27:52Z",
+  "sourceModifiedAtUtc": "2026-08-21T22:27:52Z",
+  "latestItemCell": "Base_Campaña!D2",
+  "latestItem": "",
+  "totalValidProducts": 981,
   "sheets": [
     {
       "sheet": "Base_Campaña",
@@ -20,68 +20,16 @@
         "C2"
       ],
       "records": 142,
-      "valid": 129,
+      "valid": 142,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
-      "invalidRows": [
-        {
-          "row": 2,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 3,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 4,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 5,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 6,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 7,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 8,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 9,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 10,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 11,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 12,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 85,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 86,
-          "reason": "sin identificador útil o sin precio"
-        }
-      ],
+      "invalidRows": [],
+      "pendingPriceRows": 13,
       "duplicateHeaders": [],
       "campaigns": {
         "Summer": 28,
         "World Cup": 28,
-        "Spring": 38,
+        "Spring": 40,
         "Winter": 34
       }
     },
@@ -108,6 +56,7 @@
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [],
+      "pendingPriceRows": 0,
       "duplicateHeaders": [],
       "campaigns": {}
     },
@@ -129,19 +78,11 @@
         "C6"
       ],
       "records": 716,
-      "valid": 714,
+      "valid": 716,
       "emptyRows": 0,
       "duplicatesIgnored": 0,
-      "invalidRows": [
-        {
-          "row": 540,
-          "reason": "sin identificador útil o sin precio"
-        },
-        {
-          "row": 541,
-          "reason": "sin identificador útil o sin precio"
-        }
-      ],
+      "invalidRows": [],
+      "pendingPriceRows": 2,
       "duplicateHeaders": [],
       "campaigns": {}
     },
@@ -162,6 +103,7 @@
       "emptyRows": 0,
       "duplicatesIgnored": 0,
       "invalidRows": [],
+      "pendingPriceRows": 0,
       "duplicateHeaders": [],
       "campaigns": {}
     }
@@ -169,9 +111,9 @@
   "woe": {
     "sapRows": 1705,
     "sapHeaderRow": 1,
-    "catalogRows": 2374,
+    "catalogRows": 2376,
     "sapCatalogRows": 1698,
-    "orphanCatalogRows": 676,
+    "orphanCatalogRows": 678,
     "uniqueWoe": 1698,
     "uniqueDiaSap": 1698,
     "exactSapDuplicatesIgnored": 0,
@@ -207,19 +149,19 @@
     ],
     "multiWoeRelations": 0,
     "multiDiaRelations": 0,
-    "microsRows": 1187,
+    "microsRows": 1165,
     "microsHeaderRow": 1,
     "invalidMicrosRows": [],
-    "uniqueDiaMicros": 1180,
+    "uniqueDiaMicros": 1162,
     "microsUnitsPopulated": 0,
     "microsGroups": 7,
     "microsFamilies": 22,
     "microsCountGroups": 12,
-    "withMicros": 1180,
-    "withMerch": 913,
-    "withoutSap": 676,
-    "operationalSapMicrosMatch": 979,
-    "operationalNeedsReview": 1395,
-    "completeTripleMatch": 219
+    "withMicros": 1162,
+    "withMerch": 928,
+    "withoutSap": 678,
+    "operationalSapMicrosMatch": 961,
+    "operationalNeedsReview": 1415,
+    "completeTripleMatch": 214
   }
 }

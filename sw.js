@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v53-excel-pos-authority-2026-08-20';
+const CACHE_NAME = 'codebrew-v54-lotes-cruzados-2026-08-21';
 const APP_SHELL = [
   './',
   './index.html',

@@ -141,3 +141,6 @@
   .catalog-thumb { aspect-ratio: 4/3; }
   .catalog-card h3 { min-height: 0; }
 }
+.product-reference-photo{margin:0 0 14px;max-width:260px;border:1px solid #c9ded4;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 10px 24px rgba(0,98,65,.1)}
+.product-reference-photo img{display:block;width:100%;aspect-ratio:1;object-fit:contain;background:#fff}
+.product-reference-photo figcaption{padding:8px 10px;color:#006241;font-size:.78rem;font-weight:800;text-align:center}

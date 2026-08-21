@@ -133,8 +133,8 @@ function escapeHtml(value){ return String(value ?? '').replace(/[&<>"']/g, char 
 function moneyClean(v){ return String(v || '').trim(); }
 function tierKeys(p){ return Object.keys(p.tier || {}).filter(k => moneyClean(p.tier[k])); }
 function priceFor(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); return p.tier?.[k] || ''; }
-function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); const price = p.tier?.[k] || ''; return price ? `${k}: ${price}` : '-'; }
-function priceOnly(p, tier){ return priceFor(p, tier) || '-'; }
+function priceLabel(p, tier){ const keys = tierKeys(p); const k = keys.includes(tier) ? tier : (keys[0] || 'C1'); const price = p.tier?.[k] || ''; return price ? `${k}: ${price}` : 'Pendiente de precio'; }
+function priceOnly(p, tier){ return priceFor(p, tier) || 'Pendiente de precio'; }
 function qrValue(p){return String(p?.skuPos||p?.botonPos||p?.nombrePos||'').trim();}
 function posButtonText(p){
 const button = p?.botonPos || 'Botón por validar';
@@ -222,10 +222,13 @@ currentProduct = p;
 const keys = tierKeys(p); if (!keys.includes(currentTier)) currentTier = keys[0] || 'C1';
 const boton = posButtonText(p);
 const skuPos = qrValue(p);
+const productVisual=(visualByDay.get(normalizeSku(p.codigoDia))||[])[0];
+const productPhoto=productVisual?.visual?.src?`<figure class="product-reference-photo"><img src="${catalogImageUrl(productVisual)}" alt="${escapeHtml(p.nombreInventario||p.nombrePos||'Artículo')} · Código Día ${escapeHtml(p.codigoDia||'—')}" width="960" height="960"><figcaption>Referencia visual · Código Día ${escapeHtml(p.codigoDia||'—')}</figcaption></figure>`:'';
 $('result').className = 'result';
 $('result').innerHTML = `
 <div class="card">
 <div class="info">
+${productPhoto}
 <span class="badge">Mercancía → ${boton}</span>
 <div class="title product-pos-name">${p.nombrePos || 'Sin nombre POS'}</div>
 <p class="desc sap-description"><span>Descripción SAP</span>${productSapDesc(p)}</p>
@@ -328,7 +331,7 @@ if(countSel.options.length<2){[...new Set(woeSearchRows.flatMap(r=>r.item.conteo
 countSel.disabled=Boolean(query);$('microsCountFilterWrap')?.classList.toggle('is-paused',Boolean(query));
 }
 const rank=i=>Number(Boolean(i.visualProduct?.visual?.src))*100000000+Number(i.visualProduct?.stockPriority==='active')*10000000+(Number(i.visualProduct?.stockQuantity)||0)*100+Number(i.operationalValidation?.sapMicros)*10+Number(Boolean(i.idWoe)),allMatches=woeSearchRows.filter(row=>(!merchMode||Boolean(query)||isMerchItem(row.item))&&(!countFilterActive||(row.item.conteo||[]).includes(microsCount))&&(!query||tokens.every(token=>row.text.includes(token))||row.text.includes(compactQuery))).sort((a,b)=>rank(b.item)-rank(a.item)||articleName(a.item).localeCompare(articleName(b.item),'es'));
-const fullCatalogPool=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))),recommended=merchMode&&!query&&catalogPhotoState==='all',catalogPool=recommended?fullCatalogPool.filter(row=>Boolean(row.item.visualProduct.visual?.src)&&row.item.visualProduct.stockPriority==='active'&&Number(row.item.visualProduct.stockQuantity)>0):fullCatalogPool;
+const fullCatalogPool=allMatches.filter(row=>row.item.visualProduct&&(!merchMode||isMerchProduct(row.item.visualProduct))),recommended=merchMode&&!query&&catalogPhotoState==='all',catalogPool=recommended?fullCatalogPool.filter(row=>Boolean(row.item.visualProduct.visual?.src)):fullCatalogPool;
 const effectiveCategory=query?'all':catalogCategory,effectivePhotoState=query?'all':catalogPhotoState;
 const uniqueItems=rows=>{const items=[],keys=new Set();for(const row of rows){const key=row.item.visualProduct.visual?.src||row.item.visualProduct.articleKey;if(keys.has(key))continue;keys.add(key);items.push(row.item);}return items;};
 const categoryCounts=Object.fromEntries(categories.map(category=>[category,uniqueItems(catalogPool.filter(row=>matchesCatalogCategory(row.item.visualProduct,category))).length]));
@@ -338,7 +341,7 @@ const unique=[];const seen=new Set();for(const row of matches){const visualKey=r
 if(catalogSort==='stock')unique.sort((a,b)=>(Number(b.visualProduct?.stockQuantity)||0)-(Number(a.visualProduct?.stockQuantity)||0)||articleName(a).localeCompare(articleName(b),'es'));
 if(catalogSort==='name')unique.sort((a,b)=>catalogNames(a)[0].localeCompare(catalogNames(b)[0],'es'));
 if(catalogSort==='day')unique.sort((a,b)=>String(a.codigoDia||'').localeCompare(String(b.codigoDia||''),'es',{numeric:true}));
-const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore'),remaining=Math.max(0,unique.length-visible.length);$('catalogSummary').textContent=recommended?`${unique.length.toLocaleString('es-MX')} recomendados con foto y existencia`:`${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
+const visible=unique.slice(0,catalogVisibleLimit),loadMore=$('catalogLoadMore'),remaining=Math.max(0,unique.length-visible.length);$('catalogSummary').textContent=recommended?`${unique.length.toLocaleString('es-MX')} fotografías disponibles`:`${visible.length.toLocaleString('es-MX')} de ${unique.length.toLocaleString('es-MX')}`;
 loadMore.hidden=!remaining;loadMore.textContent=`Ver ${Math.min(catalogBatchSize(),remaining)} más`;
 $('catalogActiveFilters').innerHTML=[query?`Búsqueda global: “${escapeHtml(raw.trim())}”`:'',!query&&catalogCategory!=='all'?catalogCategoryLabel(catalogCategory):'',!query&&catalogPhotoState==='with-photo'?'Con foto':!query&&catalogPhotoState==='missing-photo'?'Foto pendiente':'',catalogSort!=='priority'?`Orden: ${{stock:'existencia',name:'nombre',day:'Código Día'}[catalogSort]}`:''].filter(Boolean).map(value=>`<span>${value}</span>`).join('');
 grid.innerHTML=visible.length?visible.map(item=>{

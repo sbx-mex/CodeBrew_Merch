@@ -20,6 +20,8 @@ ALLOWLIST = (
     Path(".github/workflows/cleanup-catalog-images.yml"),
     Path("engines/image-overrides/16999.png"),
     Path("data/pos-operational-overrides.js"),
+    Path("LEEME.txt"),
+    Path("aplicar_actualizacion.py"),
 )
 TEXT_SUFFIXES = {".html", ".js", ".css", ".json", ".webmanifest", ".md", ".yml", ".yaml", ".py"}
 SKIP_PARTS = {".git", "__pycache__"}

@@ -19,7 +19,7 @@ def run(*arguments: str) -> None:
 
 
 def validate_stage() -> None:
-    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "merch-active-products.json", "Merch_Existente15_08(1).csv")
+    required = ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "image-source-audit.json", "merch-active-products.json", "Merch_Existente15_08(1).csv")
     missing = [name for name in required if not (STAGE / name).is_file()]
     if missing or not (STAGE / "images").is_dir() or not (STAGE / "featured").is_dir():
         raise RuntimeError(f"Construcción incompleta: {missing}")
@@ -107,11 +107,16 @@ def main() -> int:
             "--image-output", str(STAGE / "images"),
             "--coverage-output", str(STAGE / "photo-coverage.json"),
         )
+        run(
+            "scripts/audit_image_sources.py",
+            "--images", str(STAGE / "images"),
+            "--output", str(STAGE / "image-source-audit.json"),
+        )
         (STAGE / "featured").mkdir(exist_ok=True)
         validate_stage()
         data = ROOT / "data"
         data.mkdir(exist_ok=True)
-        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "pos-excel-validation.json"):
+        for name in ("products.js", "woe.js", "import-report.json", "woe-pdf-config.js", "stock-config.js", "ui-config.js", "merch-catalog.js", "merch-catalog-report.json", "photo-coverage.json", "image-source-audit.json", "pos-excel-validation.json"):
             shutil.copy2(STAGE / name, data / name)
         shutil.copy2(STAGE / "merch-active-products.json", data / "merch-active-products.json")
         shutil.copy2(STAGE / "Merch_Existente15_08(1).csv", ROOT / "Merch_Existente15_08(1).csv")

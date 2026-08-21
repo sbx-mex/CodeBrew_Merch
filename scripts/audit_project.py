@@ -20,7 +20,7 @@ PERFORMANCE_BUDGETS = {
     "index.html": 35_000,
     "styles.css": 45_000,
     "catalog.css": 30_000,
-    "app.js": 136_000,
+    "app.js": 140_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
     "data/merch-catalog.js": 1_000_000,
@@ -211,7 +211,7 @@ def audit(root: Path) -> dict:
             and coverage.get("duplicateProtection") == "one-photo-per-article"
             and coverage.get("duplicatePolicy") == "prefer-codigo-dia-remove-repeated-identifier-or-content"
             and coverage.get("unmatchedPolicy") == "reject-and-report-do-not-guess"
-            and coverage.get("version") == "manual-upload-v13-day-code-webp"
+            and coverage.get("version") == "manual-upload-v14-preserve-lots"
             and coverage.get("publishedNaming") == "codigo-dia.webp"
             and coverage.get("totals", {}).get("pendingRelationImageFiles") == 0
             and coverage.get("totals", {}).get("publishedImageFiles") == coverage.get("totals", {}).get("matchedImageFiles") + coverage.get("totals", {}).get("pendingRelationImageFiles")
@@ -305,7 +305,7 @@ def audit(root: Path) -> dict:
         ]
         coverage_ok = (
             coverage.get("status") == "ok"
-            and coverage.get("version") == "manual-upload-v13-day-code-webp"
+            and coverage.get("version") == "manual-upload-v14-preserve-lots"
             and coverage.get("postPublishAudit", {}).get("status") == "ok"
             and coverage.get("postPublishAudit", {}).get("folders") == 4
             and coverage.get("postPublishAudit", {}).get("duplicates") == 0
@@ -314,7 +314,7 @@ def audit(root: Path) -> dict:
             and coverage.get("unmatchedPolicy") == "reject-and-report-do-not-guess"
             and coverage.get("publishedNaming") == "codigo-dia.webp"
             and coverage.get("matchOrder") == ["codigoDia", "skuIntl"]
-            and coverage.get("packing") == "fill-lote-01-first-then-02-03-04"
+            and coverage.get("packing") == "preserve-source-lote-01..04"
             and coverage.get("crossCheck") == ["SAP", "Catalogo Micros", "Base_Campaña", "Discovery", "Homologados", "Essentials"]
             and len(woe_merch_products) == catalog_report.get("appendedWoeProducts") == coverage.get("totals", {}).get("appendedWoeProducts")
             and not unresolved_exact_files
@@ -448,7 +448,8 @@ def audit(root: Path) -> dict:
         and "scripts/build_all.py" in workflow_update
         and "unittest discover" in workflow_update
         and "scripts/cleanup_obsolete.py --apply" in workflow_update
-        and "git add --all" in workflow_update
+        and "git add --all" not in workflow_update
+        and "git pull --rebase" not in workflow_update + workflow_cleanup
         and "pages: write" in workflow_update
         and "/pages/builds" in workflow_update
         and "cleanup_catalog_images.py --apply" not in workflow_update

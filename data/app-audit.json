@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-21T23:14:15Z",
+  "auditedAtUtc": "2026-08-21T22:27:52Z",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "6d723af42bd807f104ac302c7b5153f8a976285385c1d35d16e7a7a3d7168aab",
+  "sourceSha256": "f2f3b7fce19fba7e58ec42508a82a1c6abb7568bf56623cadceb7a9cc9fb4585",
   "checksTotal": 15,
   "checksOk": 15,
   "warnings": 0,
@@ -11,7 +11,7 @@
     {
       "name": "Motor Excel",
       "status": "ok",
-      "detail": "966 artículos MERCH válidos"
+      "detail": "981 artículos MERCH válidos"
     },
     {
       "name": "Estructura MERCH",
@@ -21,7 +21,7 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,201 artículos; 98 fotos por Código Día en 1.7 MB; 83 artículos activos con foto y 0 pendiente(s)"
+      "detail": "1,201 artículos; 98 fotos por Código Día en 1.7 MB; 82 artículos activos con foto y 0 pendiente(s)"
     },
     {
       "name": "Listado y Excel de fotos",
@@ -36,7 +36,7 @@
     {
       "name": "Integridad WOE",
       "status": "ok",
-      "detail": "2,374 relaciones; 979 cruces SAP + Micros"
+      "detail": "2,376 relaciones; 961 cruces SAP + Micros"
     },
     {
       "name": "Exportación PDF",
@@ -81,18 +81,18 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2641 KB auditados en archivos críticos"
+      "detail": "2671 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
       "index.html": 22905,
       "styles.css": 43421,
-      "catalog.css": 12680,
-      "app.js": 135961,
-      "data/products.js": 360109,
-      "data/woe.js": 1183726,
-      "data/merch-catalog.js": 943542,
+      "catalog.css": 13078,
+      "app.js": 136359,
+      "data/products.js": 389615,
+      "data/woe.js": 1183853,
+      "data/merch-catalog.js": 944388,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
@@ -100,7 +100,7 @@
       "index.html": 35000,
       "styles.css": 45000,
       "catalog.css": 30000,
-      "app.js": 136000,
+      "app.js": 140000,
       "data/products.js": 500000,
       "data/woe.js": 1200000,
       "data/merch-catalog.js": 1000000,

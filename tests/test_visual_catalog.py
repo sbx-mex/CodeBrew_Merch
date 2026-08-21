@@ -85,7 +85,9 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual([lot.name for lot in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
         counts = [sum(path.is_file() and path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"} for path in lot.iterdir()) for lot in lots]
         self.assertTrue(all(count <= 100 for count in counts))
-        self.assertTrue(all(not counts[index] or counts[index - 1] == 100 for index in range(1, len(counts))))
+        # Los cuatro lotes son fuentes independientes; no se exige llenar el
+        # anterior antes de publicar el siguiente.
+        self.assertEqual(len(restored), len({path.stem for path in restored}))
         self.assertEqual(featured, [])
         self.assertEqual(self.catalog["meta"].get("imageMode"), "manual-upload")
         self.assertEqual(self.catalog["meta"].get("publishedImageFiles"), len(restored))
@@ -101,6 +103,9 @@ class VisualCatalogContractTests(unittest.TestCase):
                 self.assertEqual(image.size, (960, 960), path.name)
         self.assertLessEqual(sum(path.stat().st_size for path in restored), 8_000_000)
         self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage["files"]))
+        for codigo in ("16889", "16972", "16990", "17336", "17337", "17338"):
+            self.assertTrue((ROOT / f"assets/catalog/images/lote-02/{codigo}.webp").is_file())
+            self.assertFalse((ROOT / f"assets/catalog/images/lote-01/{codigo}.webp").exists())
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
     def test_missing_empty_lots_are_created_in_a_clean_checkout(self) -> None:
@@ -111,7 +116,7 @@ class VisualCatalogContractTests(unittest.TestCase):
             self.assertEqual([row["folder"] for row in lots], ["lote-01", "lote-02", "lote-03", "lote-04"])
             self.assertTrue(all((source / row["folder"]).is_dir() for row in lots))
 
-    def test_duplicate_images_in_later_lots_are_ignored(self) -> None:
+    def test_newer_lot_supersedes_duplicate_from_earlier_lot(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             source = Path(temp) / "images"
             for number in range(1, 5):
@@ -120,7 +125,7 @@ class VisualCatalogContractTests(unittest.TestCase):
             image.save(source / "lote-01/16999.jpg")
             image.save(source / "lote-02/16999.jpg")
             images, lots = discover_images(source)
-            self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-01/16999.jpg"])
+            self.assertEqual([path.relative_to(source).as_posix() for path in images], ["lote-02/16999.jpg"])
             self.assertEqual(sum(row["duplicatesIgnored"] for row in lots), 1)
 
     def test_equal_content_with_distinct_identifiers_is_preserved(self) -> None:
@@ -196,6 +201,25 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(len(matches), 1)
         self.assertNotEqual(identifier(matches[0][0]), identifier(matches[0][1]))
 
+    def test_campaign_rows_without_price_remain_searchable(self) -> None:
+        text = (ROOT / "data/products.js").read_text(encoding="utf-8")
+        products = json.loads(text.split("window.PRODUCTS = ", 1)[1].split(";\nwindow.PRODUCT_META", 1)[0])
+        by_day = {identifier(product.get("codigoDia")): product for product in products}
+        for codigo in ("16889", "16972", "16990", "17336", "17337", "17338"):
+            self.assertIn(codigo, by_day)
+            self.assertEqual(by_day[codigo].get("priceStatus"), "pending")
+
+    def test_every_photo_is_unique_and_crossed_against_all_excel_sources(self) -> None:
+        report = json.loads((ROOT / "data/image-source-audit.json").read_text(encoding="utf-8"))
+        self.assertEqual(report["status"], "ok")
+        self.assertEqual(report["imageFiles"], 98)
+        self.assertEqual(report["uniqueCodes"], 98)
+        self.assertEqual(report["lotCounts"], {"lote-01": 92, "lote-02": 6, "lote-03": 0, "lote-04": 0})
+        self.assertTrue(all(row["excelMatches"] for row in report["files"]))
+        workbook_names = {row["workbook"] for row in report["workbooks"]}
+        self.assertIn("Lista_Precios_Base.xlsx", workbook_names)
+        self.assertTrue(any(name.startswith("engines/merch-lists/") for name in workbook_names))
+
     def test_day_photo_wins_when_sku_file_has_duplicate_content(self) -> None:
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
         rows = {row.get("identifier"): row for row in coverage["files"]}
@@ -225,6 +249,8 @@ class VisualCatalogContractTests(unittest.TestCase):
         sw = (ROOT / "sw.js").read_text(encoding="utf-8")
         for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogLoadMore", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
+        for token in ("Pendiente de precio", "product-reference-photo", "fotografías disponibles", "missingPhotoWhatsappUrl"):
+            self.assertIn(token, app + css)
         self.assertNotIn("catalogLoadAll", html + app)
         self.assertNotIn("microsGroupFilter", html)
         self.assertNotIn("microsFamilyFilter", html)

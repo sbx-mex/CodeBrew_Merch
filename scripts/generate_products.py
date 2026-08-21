@@ -282,9 +282,10 @@ def parse_sheet(ws):
         searchable = any(
             product[key] for key in ("skuIntl", "codigoDia", "nombrePos", "nombreInventario", "skuPos")
         )
-        if not searchable or not product["tier"]:
-            invalid_rows.append({"row": row_number, "reason": "sin identificador útil o sin precio"})
+        if not searchable:
+            invalid_rows.append({"row": row_number, "reason": "sin identificador útil"})
             continue
+        product["priceStatus"] = "available" if product["tier"] else "pending"
 
         fingerprint = json.dumps(
             {key: value for key, value in product.items() if key not in ("sourceRow",)},
@@ -306,6 +307,7 @@ def parse_sheet(ws):
         "emptyRows": empty_rows,
         "duplicatesIgnored": duplicate_rows,
         "invalidRows": invalid_rows,
+        "pendingPriceRows": sum(product.get("priceStatus") == "pending" for product in products),
         "duplicateHeaders": duplicate_headers,
         "campaigns": dict(Counter(
             product["campaign"] for product in products if product.get("campaign")

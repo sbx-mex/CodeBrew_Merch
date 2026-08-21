@@ -2,13 +2,13 @@
   "ok": true,
   "source": "Lista_Precios_Base.xlsx",
   "excelRowsReviewed": 981,
-  "generatedProductsReviewed": 966,
+  "generatedProductsReviewed": 981,
   "mismatches": [],
   "missingSkuPos": [],
   "forbiddenRuntimeOverrides": [],
   "duplicateSkuPosSummary": {
-    "groups": 19,
-    "rows": 719,
+    "groups": 20,
+    "rows": 721,
     "sample": [
       {
         "skuPos": "50749",
@@ -28,6 +28,22 @@
             "sheet": "Base_Campaña",
             "row": 20,
             "name": "SII26GlCCColor"
+          }
+        ]
+      },
+      {
+        "skuPos": "-",
+        "count": 2,
+        "examples": [
+          {
+            "sheet": "Base_Campaña",
+            "row": 85,
+            "name": "Sp26ReusTierra"
+          },
+          {
+            "sheet": "Base_Campaña",
+            "row": 86,
+            "name": "Sp26CCReusTierra"
           }
         ]
       },
@@ -195,27 +211,6 @@
           {
             "sheet": "Homologados",
             "row": 45,
-            "name": "CCup Acero SBX"
-          }
-        ]
-      },
-      {
-        "skuPos": "CCup Acero\nSBX",
-        "count": 10,
-        "examples": [
-          {
-            "sheet": "Homologados",
-            "row": 26,
-            "name": "CCup Acero SBX"
-          },
-          {
-            "sheet": "Homologados",
-            "row": 37,
-            "name": "CCup Acero SBX"
-          },
-          {
-            "sheet": "Homologados",
-            "row": 38,
             "name": "CCup Acero SBX"
           }
         ]
