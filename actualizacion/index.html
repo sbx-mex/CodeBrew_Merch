@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#006241" />
+  <meta name="description" content="Catálogo general para consultar artículos, revisar Merch y exportar inventario SAP." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>CodeBrew · Catálogo General</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="catalog.css" />
+  <script src="data/products.js" defer></script>
+  <script src="data/woe.js" defer></script>
+  <script src="data/merch-catalog.js" defer></script>
+  <script src="data/woe-pdf-config.js" defer></script>
+  <script src="data/stock-config.js" defer></script>
+  <script src="data/ui-config.js" defer></script>
+  <script src="data/app-audit.js" defer></script>
+  <script src="app.js" defer></script>
+
+</head>
+<body class="home-mode">
+  <a class="skip-link" href="#mainContent">Saltar al contenido</a>
+  <header class="hero">
+    <img src="assets/icon-192.png" alt="CodeBrew" class="logo">
+    <div>
+      <h1>CodeBrew <span>v2</span></h1>
+      <p>5 herramientas · operación en tienda</p>
+    </div>
+    <div id="connectionStatus" class="connection-status" role="status" aria-live="polite">En línea</div>
+    <div id="appHealth" class="app-health" aria-live="polite">Validando motor...</div>
+  </header>
+
+  <section id="modeMenu" class="mode-menu" aria-labelledby="modeMenuTitle">
+    <div class="mode-menu-intro">
+      <span>Inicio</span>
+      <h2 id="modeMenuTitle">¿Qué necesitas resolver?</h2>
+      <p>Elige una tarea. Mostramos sólo lo necesario.</p>
+    </div>
+    <div id="modeMenuGrid" class="mode-menu-grid" aria-live="polite">
+      <button type="button" class="tool-card tool-card-consulta has-image" data-app-mode="consulta" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">$</span><span><b>Precio &amp; POS</b><small>Consulta, valida y escanea</small></span></button>
+      <button type="button" class="tool-card tool-card-catalog has-image" data-app-mode="catalog" style="--tool-image:url('assets/catalog/catalog-general-hero.webp')"><span class="tool-card-icon">#</span><span><b>WOE | Catálogo</b><small>Encuentra y valida artículos</small></span></button>
+      <button type="button" class="tool-card tool-card-merch has-image" data-app-mode="merch" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">M</span><span><b>Revisión de Merch</b><small>Tumblers, tazas y mercancía</small></span></button>
+      <button type="button" class="tool-card tool-card-export has-image" data-app-mode="export" style="--tool-image:url('assets/stock_pdf_woe.jpeg')"><span class="tool-card-icon">↗</span><span><b>Exportar inventario</b><small>HTML → CodeBrew · PDF / Excel</small></span></button>
+      <button type="button" class="tool-card tool-card-etiquetado has-image" data-app-mode="etiquetado" style="--tool-image:url('assets/catalog/catalog-hero.webp')"><span class="tool-card-icon">▤</span><span><b>Etiquetas</b><small>Prepara e imprime etiquetas POS</small></span></button>
+    </div>
+  </section>
+
+  <nav id="toolSwitcher" class="tool-switcher" aria-label="Cambiar herramienta" hidden>
+    <button type="button" data-app-mode="consulta">Precio &amp; POS</button>
+    <button type="button" data-app-mode="catalog">WOE | Catálogo</button>
+    <button type="button" data-app-mode="merch">Merch</button>
+    <button type="button" data-app-mode="export">Exportar</button>
+    <button type="button" data-app-mode="etiquetado">Etiquetas</button>
+  </nav>
+
+  <section id="toolContext" class="tool-context" hidden>
+    <button id="modeBack" class="mode-back ghost" type="button">← Herramientas</button>
+    <div id="toolContextVisual" class="tool-context-visual">
+      <div class="tool-context-copy">
+        <span id="toolContextEyebrow" class="tool-context-eyebrow">CodeBrew</span>
+        <h2 id="toolContextTitle">Herramienta</h2>
+        <p id="toolContextDescription"></p>
+      </div>
+      <details id="toolGuide" class="tool-guide">
+        <summary>¿Quieres ver el atajo?</summary>
+        <div id="toolGuideSteps" class="tool-guide-steps"></div>
+      </details>
+    </div>
+  </section>
+
+  <main id="mainContent">
+    <section id="consulta" class="tabpage" role="tabpanel" tabindex="0" hidden>
+      <details class="panel quick-guide">
+        <summary class="guide-title">Cómo consultar en POS</summary>
+        <div class="quick-steps">
+          <div><b>1</b><span><strong>Escanea cerca</strong><br>Enfoca el texto <em>SKU # 011...</em> de la etiqueta.</span></div>
+          <div><b>2</b><span><strong>Valida el item</strong><br>Confirma Nombre POS, precio y SKU POS.</span></div>
+          <div><b>3</b><span><strong>Marca en POS</strong><br>Mercancía → Botón POS → escanea el código generado.</span></div>
+        </div>
+      </details>
+      <section class="panel price-warning">
+        <div class="warning-icon">!</div>
+        <div>
+          <h2>Antes de escanear</h2>
+          <p><b>Para validar precio, entra primero a <span>Consultar Precio</span> en POS.</b></p>
+          <p>Escanear directo puede agregar el artículo a la cuenta.</p>
+        </div>
+      </section>
+      <section class="panel search-panel">
+        <label for="manualSku">Buscar por SKU #, SKU POS, Código DIA o Nombre Inventario</label>
+        <div class="search-row">
+          <input id="manualSku" placeholder="Ej. 011178945, 58828 o WC26SSCC24Grad" autocomplete="off" />
+          <button id="manualBtn">Buscar</button>
+        </div>
+        <small>También funciona cuando el SKU INTL viene como <b>NA</b>: busca por <b>Nombre POS</b> o <b>Nombre Inventario</b>.</small>
+        <p id="latestItem" class="latest-item" aria-live="polite">Último artículo actualizado: información no disponible</p>
+      </section>
+
+      <section class="panel camera-panel">
+        <div class="camera-head"><h2>Escaneo por cámara</h2><span id="ocrStatus">Listo</span></div>
+        <div class="camera-stage">
+          <video id="video" playsinline muted></video>
+          <div class="sku-frame" aria-hidden="true"><span>Centra aquí el SKU #</span></div>
+        </div>
+        <canvas id="snapshot" hidden></canvas>
+        <div class="quality-meter" aria-label="Calidad de imagen para OCR">
+          <div><span>Calidad</span><b id="qualityValue">-</b></div>
+          <div><span>Enfoque</span><b id="focusValue">-</b></div>
+          <div><span>Resolución</span><b id="resolutionValue">-</b></div>
+          <div><span>Estado</span><b id="readyValue">Listo</b></div>
+        </div>
+        <label class="zoom-helper"><input id="smartZoom" type="checkbox" checked> Modo SKU pequeño / zoom inteligente</label>
+        <div class="camera-tools">
+          <label class="camera-selector" hidden>Cámara<select id="cameraSelect" aria-label="Seleccionar cámara"></select></label>
+          <label id="zoomControl" class="zoom-control" hidden>Zoom <input id="zoomRange" type="range"><output id="zoomValue">1.0×</output><button id="resetZoomBtn" class="zoom-reset" type="button">Restablecer</button></label>
+          <button id="torchBtn" class="ghost compact-control" type="button" hidden>Linterna</button>
+        </div>
+        <div class="actions">
+          <button id="startCamera">Abrir cámara</button>
+          <button id="scanBtn" disabled>Leer SKU #</button>
+          <button id="stopCamera" disabled>Detener</button>
+          <label class="file-action">Elegir foto<input id="photoInput" type="file" accept="image/*"></label>
+          <label class="file-action">Tomar foto<input id="takePhotoInput" type="file" accept="image/*" capture="environment"></label>
+        </div>
+        <img id="photoPreview" class="photo-preview" alt="Vista previa de la fotografía" hidden>
+        <p class="hint">Centra la etiqueta donde diga <b>SKU # 011...</b> dentro del marco. La app valida enfoque antes de leer.</p>
+      </section>
+
+      <section id="result" class="result empty">
+        <div class="empty-card">Escanea o escribe un SKU para ver Botón POS, precio y código para escanear en POS.</div>
+      </section>
+    </section>
+
+    <section id="woe" class="tabpage" role="tabpanel" tabindex="0" hidden>
+      <section id="woeCatalog" class="panel woe-search-panel mode-catalog-only mode-merch-only">
+        <div class="woe-context-line"><span id="woeScopeLabel">Catálogo General</span><span><b id="woeTotal">0</b> referencias visuales</span></div>
+        <div id="woeFlow" class="visually-hidden" aria-hidden="true"></div>
+        <p id="woeNextAction" class="next-action" aria-live="polite">Busca un artículo o revisa las recomendaciones con foto.</p>
+        <label for="woeSearch">Buscar en todo el catálogo</label>
+        <div class="woe-search-row">
+          <div class="woe-search-box">
+            <input id="woeSearch" placeholder="Código Día, SKU POS, SKU INTL o nombre" autocomplete="off" inputmode="search" enterkeyhint="search" spellcheck="false" aria-describedby="woeHelp" aria-controls="woeSuggestions" aria-expanded="false" />
+            <button id="woeSearchClear" class="woe-search-clear" type="button" aria-label="Borrar búsqueda" title="Borrar búsqueda" hidden>×</button>
+            <div id="woeSuggestions" class="woe-suggestions" role="listbox" hidden></div>
+          </div>
+          <button id="woeAdd" type="button">Agregar coincidencia</button>
+        </div>
+        <p id="woeHelp" class="hint"><b>Búsqueda global:</b> Código Día · SKU POS · SKU internacional · Nombre Inventario · Descripción SCI. La búsqueda escrita revisa todo el catálogo y muestra también los artículos sin foto, con acceso para enviarla por WhatsApp.</p>
+        <div class="catalog-toolbar">
+          <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
+          <label id="microsCountFilterWrap" class="micros-count-filter mode-catalog-content" for="microsCountFilter">Ver Conteo<select id="microsCountFilter"><option value="all">Selecciona un conteo</option></select></label>
+          <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
+        </div>
+        <details class="catalog-options mode-merch-content">
+          <summary>Filtros y orden</summary>
+          <div class="catalog-controls" aria-label="Orden y disponibilidad del catálogo">
+            <label for="catalogPhotoFilter">Fotografía<select id="catalogPhotoFilter"><option value="all">Recomendadas</option><option value="with-photo">Con foto</option><option value="missing-photo">Foto pendiente</option></select></label>
+            <label for="catalogSort">Ordenar<select id="catalogSort"><option value="priority">Recomendados</option><option value="stock">Mayor existencia</option><option value="name">Nombre A–Z</option><option value="day">Código Día</option></select></label>
+            <button id="catalogReset" class="ghost catalog-reset" type="button">Limpiar filtros</button>
+          </div>
+        </details>
+        <div id="catalogActiveFilters" class="catalog-active-filters mode-merch-content" aria-live="polite"></div>
+        <div class="catalog-view-bar mode-merch-content">
+          <span>Foto + existencia primero</span>
+          <button id="catalogNameToggle" class="ghost" type="button" aria-pressed="false">Mostrar Descripción SCI</button>
+        </div>
+        <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>
+        <div id="catalogGrid" class="catalog-grid mode-merch-content" aria-label="Vista visual destacada del catálogo" aria-busy="false"></div>
+        <div class="catalog-pagination mode-merch-content">
+          <button id="catalogLoadMore" class="catalog-load-more ghost" type="button" hidden>Ver más artículos</button>
+        </div>
+        <p class="catalog-image-note mode-merch-content">Busca cualquier código para encontrar artículos fuera de las recomendaciones.</p>
+        <div id="woeSelection" class="woe-selection" aria-live="polite"><span class="woe-empty-selection">Sin elementos seleccionados.</span></div>
+        <div class="woe-actions">
+          <span class="woe-selected-total"><b id="woeSelectedCount">0</b> seleccionados</span>
+          <span class="woe-pdf-note">PDF carta vertical · incluye piezas</span>
+          <button id="woeExport" type="button" disabled>Generar PDF</button>
+          <button id="woeClear" type="button" class="ghost">Limpiar listado</button>
+        </div>
+      </section>
+
+      <section id="woeStatus" class="woe-status mode-catalog-only mode-merch-only" aria-live="polite">Escribe un dato para comenzar.</section>
+      <section id="woeResults" class="woe-results mode-catalog-only mode-merch-only" aria-label="Resultados WOE"></section>
+
+      <section id="stockPanel" class="panel stock-panel mode-export-only" aria-labelledby="stockTitle" aria-busy="false">
+        <div id="stockPrintHeader" class="stock-print-header" aria-hidden="true"></div>
+        <div class="stock-head">
+          <div>
+            <span class="woe-kicker stock-kicker">HTML → CodeBrew</span>
+            <h2 id="stockTitle">Cruza y exporta inventario SAP</h2>
+            <p>Adjunta el HTML guardado desde WOE Web. CodeBrew identifica el reporte y prioriza el Código SAP comprobable.</p>
+          </div>
+        </div>
+        <div id="stockFlow" class="stock-flow operational-flow" aria-label="Progreso del cruce de inventario">
+          <div data-step="attach"><b>1</b><span>Adjunta HTML o PDF SAP.</span></div>
+          <div data-step="review"><b>2</b><span>Confirma la lectura antes de exportar.</span></div>
+          <div data-step="export"><b>3</b><span>Exporta o imprime el detalle cruzado.</span></div>
+        </div>
+        <details class="save-html-tutorial">
+          <summary>¿Cómo guardo el HTML y exporto a CodeBrew?</summary>
+          <div class="save-html-guide">
+            <div class="save-html-step"><b>1</b><span><strong>Guarda</strong>En WOE Web: clic derecho → Guardar como → Página web completa (*.html).</span></div>
+            <div class="save-html-step"><b>2</b><span><strong>Pásalo al celular</strong>Usa correo u OneDrive.</span></div>
+            <div class="save-html-step"><b>3</b><span><strong>Adjunta</strong>CodeBrew detecta el reporte y cruza SAP.</span></div>
+          </div>
+          <div class="transfer-chooser" aria-label="Elegir forma de llevar el HTML al celular">
+            <span>¿Cómo lo vas a llevar al celular?</span>
+            <div><button type="button" data-transfer-route="email">Correo</button><button type="button" data-transfer-route="onedrive">OneDrive</button></div>
+            <p id="transferHint">Elige una opción para ver la ruta más corta.</p>
+          </div>
+        </details>
+        <p id="stockNextAction" class="next-action" aria-live="polite">Adjunta el HTML SAP más actual.</p>
+        <div class="inventory-source-guide" aria-label="Formatos compatibles">
+          <div class="recommended"><b>HTML SAP · recomendado</b><span>Lectura directa y conserva datos del reporte</span></div>
+          <div><b>PDF SAP · respaldo</b><span>Úsalo sólo si no tienes el HTML</span></div>
+        </div>
+        <div class="stock-upload-row">
+          <button id="stockAttach" type="button" class="stock-file stock-attach">1 · Adjuntar HTML / PDF</button>
+          <input id="stockPdfInput" class="visually-hidden" type="file" accept="text/html,.html,.htm,application/pdf,.pdf">
+          <button id="stockExport" type="button" class="stock-export" disabled>2 · Exportar PDF cruzado</button>
+          <button id="stockExcel" type="button" class="stock-excel" disabled>Exportar Excel</button>
+          <button id="stockPrint" type="button" class="ghost" disabled>Imprimir vista</button>
+          <button id="stockClear" type="button" class="ghost" disabled>Reiniciar</button>
+        </div>
+        <input id="stockStoreInput" type="hidden" value="">
+        <input id="stockIncludeZero" type="checkbox" hidden>
+        <div id="stockProgressWrap" class="stock-progress" hidden>
+          <label for="stockProgress">Lectura del reporte</label>
+          <progress id="stockProgress" max="100" value="0">0%</progress>
+          <output id="stockProgressText" for="stockProgress">Preparando…</output>
+        </div>
+        <div id="stockStatus" class="woe-status" aria-live="polite">Adjunta el HTML SAP más actual para iniciar el cruce.</div>
+        <div id="stockMeta" class="stock-meta" hidden></div>
+        <div id="stockResults" class="stock-results"></div>
+      </section>
+
+      <dialog id="stockConfirmDialog" class="stock-dialog" aria-labelledby="stockConfirmTitle" aria-describedby="stockConfirmIntro">
+        <form method="dialog" class="stock-dialog-card">
+          <button id="stockConfirmClose" class="stock-dialog-close" value="cancel" aria-label="Cerrar confirmación">×</button>
+          <div id="stockConfirmGrid" class="stock-dialog-grid">
+            <figure class="stock-dialog-visual">
+              <img src="assets/stock_pdf_woe.jpeg" alt="Guía visual para capturar, revisar y comparar el Stock on Hand" loading="lazy" decoding="async">
+              <figcaption>Guía operativa · revisa antes de generar.</figcaption>
+            </figure>
+            <section class="stock-dialog-content">
+              <span class="woe-kicker stock-kicker">Revisión final</span>
+              <h2 id="stockConfirmTitle">Datos listos</h2>
+              <p id="stockConfirmIntro">Confirma los datos antes de exportar.</p>
+              <div id="stockConfirmSummary" class="stock-confirm-summary"></div>
+              <p id="stockConfirmBlock" class="stock-confirm-block" hidden></p>
+              <div class="stock-dialog-actions">
+                <button id="stockConfirmAccept" type="button" disabled>Exportar PDF</button>
+                <button id="stockConfirmExcel" class="ghost" type="button" disabled>Exportar Excel</button>
+              </div>
+            </section>
+          </div>
+        </form>
+      </dialog>
+    </section>
+
+    <section id="etiquetado" class="tabpage" role="tabpanel" tabindex="0" hidden>
+      <section class="panel label-panel">
+        <h2>Generador de etiquetas POS</h2>
+        <details class="label-guide">
+          <summary>Cómo generar etiquetas</summary>
+          <div class="guide">
+          <div><b>1</b><span>Escanea o busca el SKU del artículo.</span></div>
+          <div><b>2</b><span>Valida nombre, precio y Botón POS.</span></div>
+          <div><b>3</b><span>Coloca piezas, agrega y continúa con el siguiente modelo.</span></div>
+            <div><b>4</b><span>Genera PDF para imprimir etiquetas 2” x 1.5”.</span></div>
+          </div>
+        </details>
+        <div class="label-camera">
+          <div class="camera-head"><h3>Escaneo rápido para etiquetado</h3><span id="labelOcrStatus">Listo</span></div>
+          <div class="camera-stage small">
+            <video id="labelVideo" playsinline muted></video>
+            <div class="sku-frame" aria-hidden="true"><span>Centra aquí el SKU #</span></div>
+          </div>
+          <canvas id="labelSnapshot" hidden></canvas>
+          <div class="quality-meter compact" aria-label="Calidad de imagen para etiquetado">
+            <div><span>Calidad</span><b id="labelQualityValue">-</b></div>
+            <div><span>Enfoque</span><b id="labelFocusValue">-</b></div>
+            <div><span>Resolución</span><b id="labelResolutionValue">-</b></div>
+            <div><span>Estado</span><b id="labelReadyValue">Listo</b></div>
+          </div>
+          <label class="zoom-helper"><input id="labelSmartZoom" type="checkbox" checked> Modo SKU pequeño / zoom inteligente</label>
+          <div class="camera-tools">
+            <label class="camera-selector" hidden>Cámara<select id="labelCameraSelect" aria-label="Seleccionar cámara para etiquetado"></select></label>
+            <label id="labelZoomControl" class="zoom-control" hidden>Zoom <input id="labelZoomRange" type="range"><output id="labelZoomValue">1.0×</output><button id="labelResetZoomBtn" class="zoom-reset" type="button">Restablecer</button></label>
+            <button id="labelTorchBtn" class="ghost compact-control" type="button" hidden>Linterna</button>
+          </div>
+          <div class="actions">
+            <button id="labelStartCamera">Abrir cámara</button>
+            <button id="labelScanBtn" disabled>Leer SKU #</button>
+            <button id="labelStopCamera" disabled>Detener</button>
+            <label class="file-action">Elegir foto<input id="labelPhotoInput" type="file" accept="image/*"></label>
+            <label class="file-action">Tomar foto<input id="labelTakePhotoInput" type="file" accept="image/*" capture="environment"></label>
+          </div>
+          <img id="labelPhotoPreview" class="photo-preview" alt="Vista previa de la fotografía para etiquetado" hidden>
+          <p class="hint">Centra el SKU dentro del marco y valida el artículo.</p>
+        </div>
+        <div class="label-grid">
+          <div>
+            <label for="labelSku">SKU / Nombre para etiqueta</label>
+            <input id="labelSku" placeholder="Ej. 011178945 o WC26Stan20IceF" autocomplete="off" />
+          </div>
+          <div>
+            <label for="labelQty">Piezas</label>
+            <input id="labelQty" inputmode="numeric" type="number" min="1" max="500" value="1" />
+          </div>
+          <div>
+            <label for="labelTier">Tier</label>
+            <select id="labelTier"><option value="C2">C2</option></select>
+          </div>
+          <div class="align-end"><button id="labelAddBtn">Agregar etiquetas</button></div>
+        </div>
+        <div id="labelPreview" class="label-preview empty-small">Escanea o escribe un SKU para preparar etiquetas.</div>
+      </section>
+
+      <section class="panel cart-panel">
+        <div class="cart-head">
+          <h2>Plantilla de etiquetas</h2>
+          <div><b id="totalLabels">0</b> etiquetas</div>
+        </div>
+        <div id="labelCart" class="cart empty-small">Sin etiquetas agregadas.</div>
+        <div class="actions right">
+          <button id="clearLabels" class="ghost">Limpiar</button>
+          <button id="pdfLabels" disabled>Generar PDF</button>
+        </div>
+      </section>
+    </section>
+  </main>
+  <footer class="app-footer">
+    <span>Diseñado: Jorge Alcantar Aguiar &amp; Enrique César Flores *La información publicada es propiedad de la marca y está prohibida su divulgación*</span> 
+    <a href="https://wa.me/message/ENKDSAHYHIGAN1" target="_blank" rel="noopener noreferrer">Comentarios y/o Sugerencias</a>
+  </footer>
+</body>
+</html>

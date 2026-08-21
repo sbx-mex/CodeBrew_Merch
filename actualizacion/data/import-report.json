@@ -1,0 +1,225 @@
+{
+  "status": "ok",
+  "sourceFile": "Lista_Precios_Base.xlsx",
+  "generatedAtUtc": "2026-08-21T22:27:52Z",
+  "sourceModifiedAtUtc": "2026-08-21T22:27:52Z",
+  "latestItemCell": "Base_Campaña!D13",
+  "latestItem": "SII26SSBTL12Aniv",
+  "totalValidProducts": 966,
+  "sheets": [
+    {
+      "sheet": "Base_Campaña",
+      "headerRow": 1,
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C2"
+      ],
+      "records": 142,
+      "valid": 129,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [
+        {
+          "row": 2,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 3,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 4,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 5,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 6,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 7,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 8,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 9,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 10,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 11,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 12,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 85,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 86,
+          "reason": "sin identificador útil o sin precio"
+        }
+      ],
+      "duplicateHeaders": [],
+      "campaigns": {
+        "Summer": 28,
+        "World Cup": 28,
+        "Spring": 38,
+        "Winter": 34
+      }
+    },
+    {
+      "sheet": "Discovery",
+      "headerRow": 1,
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "Botón POS",
+        "SKU POS",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6"
+      ],
+      "records": 50,
+      "valid": 50,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [],
+      "duplicateHeaders": [],
+      "campaigns": {}
+    },
+    {
+      "sheet": "Homologados",
+      "headerRow": 1,
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6"
+      ],
+      "records": 716,
+      "valid": 714,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [
+        {
+          "row": 540,
+          "reason": "sin identificador útil o sin precio"
+        },
+        {
+          "row": 541,
+          "reason": "sin identificador útil o sin precio"
+        }
+      ],
+      "duplicateHeaders": [],
+      "campaigns": {}
+    },
+    {
+      "sheet": "Essentials",
+      "headerRow": 1,
+      "headers": [
+        "SKU INTL",
+        "CÓDIGO DIA",
+        "Descripción SCI",
+        "NOMBRE POS",
+        "NOMBRE INVENTARIO",
+        "SKU POS",
+        "C2"
+      ],
+      "records": 73,
+      "valid": 73,
+      "emptyRows": 0,
+      "duplicatesIgnored": 0,
+      "invalidRows": [],
+      "duplicateHeaders": [],
+      "campaigns": {}
+    }
+  ],
+  "woe": {
+    "sapRows": 1705,
+    "sapHeaderRow": 1,
+    "catalogRows": 2374,
+    "sapCatalogRows": 1698,
+    "orphanCatalogRows": 676,
+    "uniqueWoe": 1698,
+    "uniqueDiaSap": 1698,
+    "exactSapDuplicatesIgnored": 0,
+    "invalidSapRows": [
+      {
+        "row": 293,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 333,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 774,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 985,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1389,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1390,
+        "reason": "falta Codigo DIA"
+      },
+      {
+        "row": 1520,
+        "reason": "falta Codigo DIA"
+      }
+    ],
+    "multiWoeRelations": 0,
+    "multiDiaRelations": 0,
+    "microsRows": 1165,
+    "microsHeaderRow": 1,
+    "invalidMicrosRows": [],
+    "uniqueDiaMicros": 1162,
+    "microsUnitsPopulated": 0,
+    "microsGroups": 7,
+    "microsFamilies": 22,
+    "microsCountGroups": 12,
+    "withMicros": 1162,
+    "withMerch": 913,
+    "withoutSap": 676,
+    "operationalSapMicrosMatch": 961,
+    "operationalNeedsReview": 1413,
+    "completeTripleMatch": 212
+  }
+}

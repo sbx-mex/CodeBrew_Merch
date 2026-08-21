@@ -1,0 +1,16 @@
+CODEBREW MERCH · ACTUALIZACIÓN CONTUNDENTE
+
+1. Descomprime este ZIP.
+2. Ejecuta desde una terminal:
+   python aplicar_actualizacion.py /ruta/a/CodeBrew_Merch
+
+El instalador copia únicamente los archivos corregidos, mueve las seis imágenes
+procesadas desde lote-02 a lote-01 para cumplir el contrato de 100 imágenes por
+lote, elimina las rutas obsoletas y ejecuta las 22 pruebas más la auditoría integral.
+
+Validación incluida:
+- 22/22 pruebas funcionales correctas.
+- 15/15 controles de auditoría correctos.
+- 98 imágenes publicadas y relacionadas; 0 pendientes de relación.
+- Los artículos sin foto permanecen visibles al buscar y ofrecen WhatsApp.
+- Las WebP 960 x 960 existentes se copian sin recompresión ni pérdida acumulativa.
