@@ -3,8 +3,8 @@
   "imageFiles": 98,
   "uniqueCodes": 98,
   "lotCounts": {
-    "lote-01": 92,
-    "lote-02": 6,
+    "lote-01": 98,
+    "lote-02": 0,
     "lote-03": 0,
     "lote-04": 0
   },
@@ -1172,6 +1172,22 @@
       ]
     },
     {
+      "codigoDia": "16889",
+      "file": "lote-01/16889.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R9C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1500C2"
+        }
+      ]
+    },
+    {
       "codigoDia": "16896",
       "file": "lote-01/16896.webp",
       "excelMatches": [
@@ -1921,6 +1937,22 @@
       ]
     },
     {
+      "codigoDia": "16972",
+      "file": "lote-01/16972.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R10C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1595C2"
+        }
+      ]
+    },
+    {
       "codigoDia": "16977",
       "file": "lote-01/16977.webp",
       "excelMatches": [
@@ -1964,6 +1996,22 @@
           "workbook": "Lista_Precios_Base.xlsx",
           "sheet": "Catalogo Micros",
           "cell": "R986C5"
+        }
+      ]
+    },
+    {
+      "codigoDia": "16990",
+      "file": "lote-01/16990.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R11C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1598C2"
         }
       ]
     },
@@ -2162,6 +2210,54 @@
       ]
     },
     {
+      "codigoDia": "17336",
+      "file": "lote-01/17336.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R7C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1626C2"
+        }
+      ]
+    },
+    {
+      "codigoDia": "17337",
+      "file": "lote-01/17337.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R8C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1627C2"
+        }
+      ]
+    },
+    {
+      "codigoDia": "17338",
+      "file": "lote-01/17338.webp",
+      "excelMatches": [
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "Base_Campaña",
+          "cell": "R12C2"
+        },
+        {
+          "workbook": "Lista_Precios_Base.xlsx",
+          "sheet": "SAP",
+          "cell": "R1628C2"
+        }
+      ]
+    },
+    {
       "codigoDia": "17343",
       "file": "lote-01/17343.webp",
       "excelMatches": [
@@ -2281,102 +2377,6 @@
           "workbook": "Lista_Precios_Base.xlsx",
           "sheet": "Catalogo Micros",
           "cell": "R1066C5"
-        }
-      ]
-    },
-    {
-      "codigoDia": "16889",
-      "file": "lote-02/16889.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R9C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1500C2"
-        }
-      ]
-    },
-    {
-      "codigoDia": "16972",
-      "file": "lote-02/16972.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R10C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1595C2"
-        }
-      ]
-    },
-    {
-      "codigoDia": "16990",
-      "file": "lote-02/16990.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R11C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1598C2"
-        }
-      ]
-    },
-    {
-      "codigoDia": "17336",
-      "file": "lote-02/17336.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R7C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1626C2"
-        }
-      ]
-    },
-    {
-      "codigoDia": "17337",
-      "file": "lote-02/17337.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R8C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1627C2"
-        }
-      ]
-    },
-    {
-      "codigoDia": "17338",
-      "file": "lote-02/17338.webp",
-      "excelMatches": [
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "Base_Campaña",
-          "cell": "R12C2"
-        },
-        {
-          "workbook": "Lista_Precios_Base.xlsx",
-          "sheet": "SAP",
-          "cell": "R1628C2"
         }
       ]
     }

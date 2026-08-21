@@ -1,4 +1,4 @@
-const CACHE_NAME = 'codebrew-v54-lotes-cruzados-2026-08-21';
+const CACHE_NAME = 'codebrew-v55-filtros-campana-2026-08-21';
 const APP_SHELL = [
   './',
   './index.html',

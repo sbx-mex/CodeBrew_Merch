@@ -137,7 +137,7 @@
       <section id="woeCatalog" class="panel woe-search-panel mode-catalog-only mode-merch-only">
         <div class="woe-context-line"><span id="woeScopeLabel">Catálogo General</span><span><b id="woeTotal">0</b> referencias visuales</span></div>
         <div id="woeFlow" class="visually-hidden" aria-hidden="true"></div>
-        <p id="woeNextAction" class="next-action" aria-live="polite">Busca un artículo o revisa las recomendaciones con foto.</p>
+        <p id="woeNextAction" class="next-action" aria-live="polite">Busca un artículo o explora todas las fotografías disponibles.</p>
         <label for="woeSearch">Buscar en todo el catálogo</label>
         <div class="woe-search-row">
           <div class="woe-search-box">
@@ -149,21 +149,21 @@
         </div>
         <p id="woeHelp" class="hint"><b>Búsqueda global:</b> Código Día · SKU POS · SKU internacional · Nombre Inventario · Descripción SCI. La búsqueda escrita revisa todo el catálogo y muestra también los artículos sin foto, con acceso para enviarla por WhatsApp.</p>
         <div class="catalog-toolbar">
-          <div id="catalogFilters" class="catalog-filters" role="group" aria-label="Filtrar catálogo"></div>
           <label id="microsCountFilterWrap" class="micros-count-filter mode-catalog-content" for="microsCountFilter">Ver Conteo<select id="microsCountFilter"><option value="all">Selecciona un conteo</option></select></label>
           <span id="catalogSummary" class="catalog-summary" aria-live="polite"></span>
         </div>
-        <details class="catalog-options mode-merch-content">
-          <summary>Filtros y orden</summary>
-          <div class="catalog-controls" aria-label="Orden y disponibilidad del catálogo">
-            <label for="catalogPhotoFilter">Fotografía<select id="catalogPhotoFilter"><option value="all">Recomendadas</option><option value="with-photo">Con foto</option><option value="missing-photo">Foto pendiente</option></select></label>
-            <label for="catalogSort">Ordenar<select id="catalogSort"><option value="priority">Recomendados</option><option value="stock">Mayor existencia</option><option value="name">Nombre A–Z</option><option value="day">Código Día</option></select></label>
+        <section class="catalog-options mode-merch-content" aria-label="Filtros del catálogo Merch">
+          <div id="catalogFilters" class="catalog-controls" aria-label="Año, campaña y tipo de Merch">
+            <label for="catalogYear">Año<select id="catalogYear"><option value="all">Todos los años</option></select></label>
+            <label for="catalogCampaign">Campaña<select id="catalogCampaign"><option value="all">Todas las campañas</option></select></label>
+            <label for="catalogType">Tipo de Merch<select id="catalogType"><option value="all">Todo tipo de Merch</option></select></label>
+            <label for="catalogSort">Ordenar<select id="catalogSort"><option value="name">Nombre Inventario A–Z</option><option value="day">Código Día</option><option value="stock">Mayor existencia</option></select></label>
             <button id="catalogReset" class="ghost catalog-reset" type="button">Limpiar filtros</button>
           </div>
-        </details>
+        </section>
         <div id="catalogActiveFilters" class="catalog-active-filters mode-merch-content" aria-live="polite"></div>
         <div class="catalog-view-bar mode-merch-content">
-          <span>Foto + existencia primero</span>
+          <span>Todas las fotografías · agrupadas por Nombre Inventario</span>
           <button id="catalogNameToggle" class="ghost" type="button" aria-pressed="false">Mostrar Descripción SCI</button>
         </div>
         <div id="microsCatalogResults" class="micros-catalog-results mode-catalog-content" aria-live="polite" hidden></div>

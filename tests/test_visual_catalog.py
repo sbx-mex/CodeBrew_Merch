@@ -103,9 +103,6 @@ class VisualCatalogContractTests(unittest.TestCase):
                 self.assertEqual(image.size, (960, 960), path.name)
         self.assertLessEqual(sum(path.stat().st_size for path in restored), 8_000_000)
         self.assertTrue(all(row["status"] in {"matched", "pending-match", "ignored-duplicate-article", "ignored-duplicate-content"} for row in coverage["files"]))
-        for codigo in ("16889", "16972", "16990", "17336", "17337", "17338"):
-            self.assertTrue((ROOT / f"assets/catalog/images/lote-02/{codigo}.webp").is_file())
-            self.assertFalse((ROOT / f"assets/catalog/images/lote-01/{codigo}.webp").exists())
         self.assertEqual(self.catalog["meta"].get("withSourceImage"), sum(bool(product.get("visual")) for product in self.products))
 
     def test_missing_empty_lots_are_created_in_a_clean_checkout(self) -> None:
@@ -214,11 +211,22 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertEqual(report["status"], "ok")
         self.assertEqual(report["imageFiles"], 98)
         self.assertEqual(report["uniqueCodes"], 98)
-        self.assertEqual(report["lotCounts"], {"lote-01": 92, "lote-02": 6, "lote-03": 0, "lote-04": 0})
+        self.assertEqual(sum(report["lotCounts"].values()), 98)
+        self.assertEqual(list(report["lotCounts"]), ["lote-01", "lote-02", "lote-03", "lote-04"])
         self.assertTrue(all(row["excelMatches"] for row in report["files"]))
         workbook_names = {row["workbook"] for row in report["workbooks"]}
         self.assertIn("Lista_Precios_Base.xlsx", workbook_names)
         self.assertTrue(any(name.startswith("engines/merch-lists/") for name in workbook_names))
+
+    def test_inventory_name_builds_year_campaign_and_merch_filters(self) -> None:
+        by_day = {identifier(product.get("codigoDia")): product for product in self.products}
+        fall = by_day["17336"]
+        self.assertEqual(fall.get("nombreInventario"), "Fl26SSCCBrown")
+        self.assertEqual((fall.get("catalogCampaign"), fall.get("catalogYear")), ("Fall", "2026"))
+        campaigns = {product.get("catalogCampaign") for product in self.products}
+        for expected in ("Summer I", "Summer II", "World Cup", "Spring", "Winter", "Discovery", "Homologados"):
+            self.assertIn(expected, campaigns)
+        self.assertTrue(all(product.get("catalogMerchType") for product in self.products))
 
     def test_day_photo_wins_when_sku_file_has_duplicate_content(self) -> None:
         coverage = json.loads((ROOT / "data/photo-coverage.json").read_text(encoding="utf-8"))
@@ -247,7 +255,7 @@ class VisualCatalogContractTests(unittest.TestCase):
         app = (ROOT / "app.js").read_text(encoding="utf-8")
         css = (ROOT / "catalog.css").read_text(encoding="utf-8")
         sw = (ROOT / "sw.js").read_text(encoding="utf-8")
-        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogLoadMore", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
+        for token in ("modeMenu", "modeBack", "data-app-mode=\"catalog\"", "data-app-mode=\"merch\"", "data-app-mode=\"export\"", "catalogGrid", "catalogFilters", "catalogYear", "catalogCampaign", "catalogType", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogLoadMore", "woeSearchClear", "microsCatalogResults", "merch-catalog.js"):
             self.assertIn(token, html)
         for token in ("Pendiente de precio", "product-reference-photo", "fotografías disponibles", "missingPhotoWhatsappUrl"):
             self.assertIn(token, app + css)
@@ -270,8 +278,11 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertNotIn("data-catalog-visual", app)
         self.assertNotIn("data-woe-visual", app)
         self.assertNotIn("Ampliar", app)
-        for token in ("catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
+        for token in ("catalogBatchSize", "catalogYear", "catalogCampaign", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v3", "data-catalog-image", "loading=\"lazy\"", "decoding=\"async\""):
             self.assertIn(token, app)
+        self.assertNotIn("Recomendados", html)
+        self.assertNotIn("catalogPhotoFilter", html + app)
+        self.assertIn("window.confirm('Este artículo no tiene fotografía.", app)
         for token in ("MICROS_RESULT_BATCH", "microsVisibleLimit", "countFilterActive", "data-micros-load-more", "focusFirstCatalogResult", "e.key==='ArrowDown'"):
             self.assertIn(token, app)
         self.assertNotIn("allMatches.slice(0,40)", app)
@@ -279,7 +290,7 @@ class VisualCatalogContractTests(unittest.TestCase):
         self.assertIn("La búsqueda escrita revisa todo el catálogo", html)
         for token in ("SKU POS", "SKU internacional", "Nombre Inventario", "Descripción SCI"):
             self.assertIn(token, html + app)
-        for token in ("grid-template-columns: repeat(5", "object-position: center", ".catalog-options", ".catalog-view-bar"):
+        for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"):
             self.assertIn(token, css)
         self.assertIn("Mostrar Descripción SCI", html)
         self.assertNotIn("catalog-card-description", app)

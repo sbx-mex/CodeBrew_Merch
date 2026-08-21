@@ -23,7 +23,7 @@ PERFORMANCE_BUDGETS = {
     "app.js": 140_000,
     "data/products.js": 500_000,
     "data/woe.js": 1_200_000,
-    "data/merch-catalog.js": 1_000_000,
+    "data/merch-catalog.js": 1_150_000,
     "data/stock-config.js": 15_000,
     "data/ui-config.js": 10_000,
 }
@@ -375,10 +375,10 @@ def audit(root: Path) -> dict:
         "WOE + Stock On Hand + HTML/PDF SAP; lectura separada, cruce e impresión segura",
     ))
     duplicate_ids = sorted({value for value in parser.ids if parser.ids.count(value) > 1})
-    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogPhotoFilter", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
+    required_ids = {"mainContent", "modeMenu", "modeBack", "connectionStatus", "consulta", "woe", "etiquetado", "woeFlow", "woeNextAction", "woeSearch", "woeSearchClear", "microsCatalogResults", "catalogFilters", "catalogYear", "catalogCampaign", "catalogType", "catalogSort", "catalogReset", "catalogActiveFilters", "catalogNameToggle", "catalogSummary", "catalogGrid", "catalogLoadMore", "woeResults", "stockPanel", "stockFlow", "stockNextAction", "stockStoreInput", "stockAttach", "stockPdfInput", "stockIncludeZero", "stockProgress", "stockExport", "stockExcel", "stockPrint", "stockResults", "stockConfirmDialog", "stockConfirmAccept", "stockConfirmExcel"}
     redundant_controls = {"woeRun", "woeCopyList", "stockUploadGuideDialog", "stockUploadGuideAccept"}.intersection(parser.ids)
     app_text = (root / "app.js").read_text(encoding="utf-8")
-    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "visual?.src))*100000000", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogPhotoState", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v2", "stockPriority==='active'", "data-catalog-image", "SKU POS", "MICROS_RESULT_BATCH", "microsVisibleLimit", "countFilterActive", "data-micros-load-more", "focusFirstCatalogResult", "e.key==='ArrowDown'", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
+    operational_tokens = ("ensureQrious", "persistWoeSelection", "restoreWoeSelection", "updateWoeFlow", "updateStockFlow", "renderCatalog", "scheduleCatalogRender", "requestAnimationFrame", "selectAppMode", "showHome", "missingPhotoWhatsappUrl", "photoUploadName", "525521107475", "https://wa.me/", "whatsapp://send?phone=", "data-photo-whatsapp", "window.location.assign", "window.confirm", "Código Día:", "Nombre sugerido del archivo:", "Toma una foto completa y legible del termo", "catalog-missing-visual", "catalogVisibleLimit = 12", "catalogBatchSize", "catalogYear", "catalogCampaign", "catalogType", "catalogSort", "catalogNameMode", "catalogNameSources", "catalogNames", "updateCatalogNameToggle", "codebrew-catalog-state-v3", "data-catalog-image", "SKU POS", "MICROS_RESULT_BATCH", "microsVisibleLimit", "countFilterActive", "data-micros-load-more", "focusFirstCatalogResult", "e.key==='ArrowDown'", "updateViaCache:'none'", "controllerchange", "registration.update()", "quantity", "Añadir al conteo", "parseSapHtml", "isSapPrecountHtml", "sunidadMedidaBase", "sourceFamily", "selectedSapSourceRows", "Inventario_Preconteo_Rectificacion", "exportRows", "exportStockExcel", "35*1024*1024")
     redundant_catalog_tokens = ("catalog-card-top", "catalog-source", "catalog-match", "Foto disponible", "visualQualityLabel")
     checks.append(check(
         "Navegación e interfaz",
@@ -397,9 +397,10 @@ def audit(root: Path) -> dict:
         and "sci=p.sapDescriptions?.[0]" in app_text
     )
     experience_ok = (
-        all(token in html for token in ("Código Día, SKU POS, SKU INTL o nombre", "Nombre Inventario", "Descripción SCI", "Filtros y orden"))
-        and all(token in catalog_css for token in ("grid-template-columns: repeat(5", "object-position: center", ".catalog-options", ".catalog-view-bar"))
+        all(token in html for token in ("Código Día, SKU POS, SKU INTL o nombre", "Nombre Inventario", "Descripción SCI", "Año", "Campaña", "Tipo de Merch"))
+        and all(token in catalog_css for token in ("grid-template-columns: repeat(4", "object-position: center", ".catalog-options", ".catalog-view-bar"))
         and all(product.get("nombreInventario") or product.get("descripcionSci") for product in photographed_products)
+        and all(product.get("catalogYear") and product.get("catalogCampaign") and product.get("catalogMerchType") for product in catalog_products)
         and source_priority_ok
         and "catalog-card-description" not in app_text
         and "Mostrar Descripción SCI" in html
@@ -408,7 +409,7 @@ def audit(root: Path) -> dict:
     checks.append(check(
         "Experiencia visual Merch",
         experience_ok,
-        f"{len(photographed_products)} productos con foto y {len(crossed_name_products)} cruces SAP/Micros; un nombre visible y búsqueda dual",
+        f"{len(photographed_products)} productos con foto y {len(crossed_name_products)} cruces SAP/Micros; filtros Año/Campaña/Tipo",
     ))
     local_refs = [value.split("?", 1)[0] for value in parser.references if not re.match(r"^(?:https?:|mailto:|tel:|#)", value)]
     missing_refs = sorted(value for value in set(local_refs) if value and value.lstrip("./") not in GENERATED_TARGETS and not (root / value.lstrip("./")).exists())

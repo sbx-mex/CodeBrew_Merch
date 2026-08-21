@@ -26,6 +26,24 @@ PUBLISHED_PRODUCT_SIZE = (900, 900)
 PUBLISHED_BACKGROUND = (255, 253, 249)
 PUBLISHED_QUALITY = 84
 
+CAMPAIGN_PATTERNS = (
+    (r"\bSII\s*(\d{2})", "Summer II"),
+    (r"\bSI\s*(\d{2})", "Summer I"),
+    (r"\bWC\s*(\d{2})", "World Cup"),
+    (r"\bFL\s*(\d{2})", "Fall"),
+    (r"\bSP\s*(\d{2})", "Spring"),
+    (r"\bWT\s*(\d{2})", "Winter"),
+    (r"\bCH(?:R|RISTMAS)?\s*(\d{2})", "Christmas"),
+)
+MERCH_TYPE_LABELS = {
+    "mug": "Tazas",
+    "tumbler": "Tumblers",
+    "cold-cup": "Cold Cups",
+    "bottle": "Botellas",
+    "accessory": "Accesorios",
+    "other": "Otros",
+}
+
 
 def normalize_name(value: object) -> str:
     text = unicodedata.normalize("NFD", str(value or "").casefold())
@@ -64,6 +82,46 @@ def category_for(value: object) -> str:
     if any(token in key for token in ("bag", "tote", "keyring", "iman", "magnet")):
         return "accessory"
     return "other"
+
+
+def catalog_facets(product: dict, source_sheet: str = "") -> dict:
+    """Deriva Año, Campaña y Tipo desde Nombre Inventario y Descripción SCI."""
+    inventory = str(product.get("nombreInventario") or product.get("nombrePos") or product.get("displayName") or "").strip()
+    description = str(product.get("descripcionSci") or "").strip()
+    text = f"{inventory} {description}".upper()
+    sheet = str(source_sheet or product.get("sourceSheet") or product.get("section") or "").strip()
+    campaign = ""
+    year = ""
+    for pattern, label in CAMPAIGN_PATTERNS:
+        match = re.search(pattern, text, re.I)
+        if match:
+            campaign = label
+            year = f"20{match.group(1)}"
+            break
+    fy_match = re.search(r"\bFY\s*(\d{2})\b", text, re.I)
+    if not year and fy_match:
+        year = f"20{fy_match.group(1)}"
+    if sheet == "Discovery":
+        campaign = "Discovery"
+    elif sheet == "Homologados":
+        campaign = "Homologados"
+    elif sheet == "Essentials":
+        campaign = campaign or "Essentials"
+    elif sheet in {"Base_Campaña", "Campaña"}:
+        campaign = campaign or "Campaña"
+    if not campaign:
+        source = str(product.get("source") or "")
+        campaign = next((label for label in ("Summer II", "Summer I", "World Cup", "Fall", "Spring", "Winter", "Christmas") if label.casefold() in source.casefold()), "Sin campaña")
+    if not year:
+        source_year = re.search(r"\b(20\d{2})\b", str(product.get("source") or ""))
+        year = source_year.group(1) if source_year else "Sin año"
+    category = str(product.get("category") or category_for(text))
+    return {
+        "catalogYear": year,
+        "catalogCampaign": campaign,
+        "catalogMerchType": MERCH_TYPE_LABELS.get(category, "Otros"),
+        "catalogSource": sheet or "Catálogo",
+    }
 
 
 def load_catalog(path: Path) -> dict:
@@ -313,6 +371,29 @@ def enrich_products_with_woe(products: list[dict], woe_catalog_path: Path) -> No
         )
 
 
+def enrich_products_with_operational(products: list[dict], operational_path: Path) -> None:
+    """Cruza las pestañas Excel y conserva la clasificación comercial más específica."""
+    rows = load_operational_products(operational_path)
+    priority = {"Base_Campaña": 0, "Discovery": 1, "Essentials": 2, "Homologados": 3}
+    by_day: dict[str, list[dict]] = defaultdict(list)
+    by_sku: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        if identifier(row.get("codigoDia")):
+            by_day[identifier(row.get("codigoDia"))].append(row)
+        if identifier(row.get("skuIntl")):
+            by_sku[identifier(row.get("skuIntl"))].append(row)
+    for product in products:
+        matches = by_day.get(identifier(product.get("codigoDia")), []) or by_sku.get(identifier(product.get("skuIntl")), [])
+        row = min(matches, key=lambda value: priority.get(str(value.get("sourceSheet") or ""), 9)) if matches else None
+        if row:
+            for target, source in (("nombreInventario", "nombreInventario"), ("nombrePos", "nombrePos"), ("descripcionSci", "descripcion"), ("skuIntl", "skuIntl"), ("skuPos", "skuPos")):
+                if row.get(source):
+                    product[target] = str(row[source]).strip()
+            product["displayName"] = product.get("nombreInventario") or product.get("nombrePos") or product.get("displayName")
+            product["sourceSheet"] = str(row.get("sourceSheet") or "")
+        product.update(catalog_facets(product, str(row.get("sourceSheet") or "") if row else ""))
+
+
 def add_woe_merch_products(products: list[dict], woe_catalog_path: Path, image_keys: set[str] | None = None) -> int:
     """Añade Merch confirmado o respaldado por una foto con Código Día exacto."""
     image_keys = image_keys or set()
@@ -385,6 +466,7 @@ def integrate(
     appended_woe_products = add_woe_merch_products(products, woe_catalog, image_keys)
     appended_products = add_operational_products(products, operational_products, image_keys, set(stock_profile))
     enrich_products_with_woe(products, woe_catalog)
+    enrich_products_with_operational(products, operational_products)
     indices = build_indices(products)
     images.sort(key=lambda path: (
         0 if image_identifier(path) in indices["codigoDia"] else

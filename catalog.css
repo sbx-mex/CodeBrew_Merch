@@ -52,7 +52,7 @@
 .catalog-summary { flex: 0 0 auto; color: #5e6f69; font-size: 12px; font-weight: 800; }
 .catalog-options { margin: 0 0 12px; border: 1px solid #dce6e1; border-radius: 14px; background: #f8faf9; }
 .catalog-options summary { padding: 11px 14px; color: #174737; font-size: 13px; font-weight: 900; cursor: pointer; }
-.catalog-controls { display: grid; grid-template-columns: minmax(150px,220px) minmax(170px,240px) auto; gap: 10px; align-items: end; padding: 0 12px 12px; }
+.catalog-controls { display: grid; grid-template-columns: repeat(4,minmax(150px,1fr)) auto; gap: 10px; align-items: end; padding: 14px; border:1px solid #d8e5df; border-radius:18px; background:linear-gradient(135deg,#f5faf7,#fff); }
 .catalog-controls label { margin: 0; color: #52645d; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
 .catalog-controls select { margin-top: 5px; padding: 10px 12px; border-radius: 12px; font-size: 14px; }
 .catalog-reset { min-height: 42px; padding: 10px 15px; font-size: 13px; }

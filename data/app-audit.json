@@ -21,7 +21,7 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,201 artículos; 98 fotos por Código Día en 1.7 MB; 82 artículos activos con foto y 0 pendiente(s)"
+      "detail": "1,201 artículos; 98 fotos por Código Día en 1.7 MB; 83 artículos activos con foto y 0 pendiente(s)"
     },
     {
       "name": "Listado y Excel de fotos",
@@ -46,12 +46,12 @@
     {
       "name": "Navegación e interfaz",
       "status": "ok",
-      "detail": "128 controles con ID único, búsqueda global por lotes y navegación por teclado accesible"
+      "detail": "130 controles con ID único, búsqueda global por lotes y navegación por teclado accesible"
     },
     {
       "name": "Experiencia visual Merch",
       "status": "ok",
-      "detail": "102 productos con foto y 720 cruces SAP/Micros; un nombre visible y búsqueda dual"
+      "detail": "102 productos con foto y 720 cruces SAP/Micros; filtros Año/Campaña/Tipo"
     },
     {
       "name": "Referencias locales",
@@ -81,18 +81,18 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2671 KB auditados en archivos críticos"
+      "detail": "2836 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 22905,
+      "index.html": 22978,
       "styles.css": 43421,
-      "catalog.css": 13078,
-      "app.js": 136359,
+      "catalog.css": 13154,
+      "app.js": 137347,
       "data/products.js": 389615,
       "data/woe.js": 1183853,
-      "data/merch-catalog.js": 944388,
+      "data/merch-catalog.js": 1111565,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },
@@ -103,7 +103,7 @@
       "app.js": 140000,
       "data/products.js": 500000,
       "data/woe.js": 1200000,
-      "data/merch-catalog.js": 1000000,
+      "data/merch-catalog.js": 1150000,
       "data/stock-config.js": 15000,
       "data/ui-config.js": 10000
     }

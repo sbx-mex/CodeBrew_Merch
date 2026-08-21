@@ -34,15 +34,15 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 92,
-      "accepted": 92,
+      "images": 98,
+      "accepted": 98,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
     {
       "folder": "lote-02",
-      "images": 6,
-      "accepted": 6,
+      "images": 0,
+      "accepted": 0,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -69,10 +69,10 @@
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
     "matchedProducts": 102,
-    "activeProducts": 1017,
-    "activeWithPhoto": 82,
-    "activeMissingPhoto": 935,
-    "secondaryProducts": 184,
+    "activeProducts": 997,
+    "activeWithPhoto": 83,
+    "activeMissingPhoto": 914,
+    "secondaryProducts": 204,
     "appendedOperationalProducts": 72,
     "appendedWoeProducts": 110
   },
@@ -215,8 +215,8 @@
           "articleKey": "dia-15857--pos-ccup-acero-sbx",
           "codigoDia": "15857",
           "skuIntl": "11157547",
-          "skuPos": "CCup Acero SBX",
-          "displayName": "CCup Acero SBX Genérico",
+          "skuPos": "58834",
+          "displayName": "SII26SSCC24White",
           "stockPriority": "active"
         }
       ]
@@ -368,8 +368,8 @@
           "articleKey": "dia-16477--pos-dinamica-con-bebida",
           "codigoDia": "16477",
           "skuIntl": "11173043",
-          "skuPos": "Dinámica con bebida",
-          "displayName": "Xm25GlassBear",
+          "skuPos": "52508",
+          "displayName": "SII26BearGlass",
           "stockPriority": "secondary"
         }
       ]
@@ -393,8 +393,8 @@
           "articleKey": "dia-16531--pos-58775",
           "codigoDia": "16531",
           "skuIntl": "NA",
-          "skuPos": "58775",
-          "displayName": "Sp26NEWhite",
+          "skuPos": "58769",
+          "displayName": "Sp26NEBlack",
           "stockPriority": "active"
         }
       ]
@@ -418,8 +418,8 @@
           "articleKey": "dia-16532--pos-58773",
           "codigoDia": "16532",
           "skuIntl": "NA",
-          "skuPos": "58773",
-          "displayName": "Sp26NELlavero",
+          "skuPos": "58771",
+          "displayName": "Sp26NECrossB",
           "stockPriority": "active"
         }
       ]
@@ -468,8 +468,8 @@
         {
           "articleKey": "dia-16601--pos-sap-152541",
           "codigoDia": "16601",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170187",
+          "skuPos": "58743",
           "displayName": "ToteBag MxPais",
           "stockPriority": "active"
         }
@@ -519,8 +519,8 @@
         {
           "articleKey": "dia-16642--pos-sap-152572",
           "codigoDia": "16642",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170100",
+          "skuPos": "58703",
           "displayName": "DiscoveryMxPaís",
           "stockPriority": "active"
         }
@@ -536,8 +536,8 @@
         {
           "articleKey": "dia-16643--pos-sap-152573",
           "codigoDia": "16643",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170102",
+          "skuPos": "58701",
           "displayName": "DiscoveryCDMX",
           "stockPriority": "active"
         }
@@ -587,8 +587,8 @@
         {
           "articleKey": "dia-16681--pos-sap-152611",
           "codigoDia": "16681",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170174",
+          "skuPos": "58739",
           "displayName": "DiscCC24MxPais",
           "stockPriority": "active"
         }
@@ -604,8 +604,8 @@
         {
           "articleKey": "dia-16682--pos-sap-152612",
           "codigoDia": "16682",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170184",
+          "skuPos": "58740",
           "displayName": "DiscSS20MxPais",
           "stockPriority": "active"
         }
@@ -621,8 +621,8 @@
         {
           "articleKey": "dia-16684--pos-sap-152614",
           "codigoDia": "16684",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170158",
+          "skuPos": "58737",
           "displayName": "Disc2ozChiapas",
           "stockPriority": "active"
         }
@@ -638,8 +638,8 @@
         {
           "articleKey": "dia-16688--pos-sap-152618",
           "codigoDia": "16688",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170147",
+          "skuPos": "58728",
           "displayName": "Disc2ozMxPais",
           "stockPriority": "active"
         }
@@ -655,8 +655,8 @@
         {
           "articleKey": "dia-16689--pos-sap-152619",
           "codigoDia": "16689",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11170149",
+          "skuPos": "58726",
           "displayName": "Disc2ozCDMX",
           "stockPriority": "active"
         }
@@ -846,6 +846,23 @@
           "skuPos": "50737",
           "displayName": "SII26CC24GID",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16889.webp",
+      "uploadedFrom": "lote-01/16889.webp",
+      "identifier": "16889",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16889--pos-sap-154153",
+          "codigoDia": "16889",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26ResuAMx",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -1285,8 +1302,8 @@
           "articleKey": "dia-16955--pos-58842",
           "codigoDia": "16955",
           "skuIntl": "NA",
-          "skuPos": "58842",
-          "displayName": "WC26NESBX",
+          "skuPos": "58840",
+          "displayName": "WC26NESiren",
           "stockPriority": "active"
         },
         {
@@ -1326,10 +1343,10 @@
         {
           "articleKey": "dia-16960--pos-sap-155962",
           "codigoDia": "16960",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "60979 C2P CORE PLSTC HTCDCP DCHRC 24OZ",
-          "stockPriority": "secondary"
+          "skuIntl": "11160979",
+          "skuPos": "50759",
+          "displayName": "SII26CC24Rain",
+          "stockPriority": "active"
         }
       ]
     },
@@ -1343,9 +1360,26 @@
         {
           "articleKey": "dia-16969--pos-sap-155967",
           "codigoDia": "16969",
-          "skuIntl": "",
+          "skuIntl": "11186639",
           "skuPos": "",
-          "displayName": "86639 C2P F26 PLSTC WTRBTL PSL 24OZ",
+          "displayName": "Fl26PPBTL24",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16972.webp",
+      "uploadedFrom": "lote-01/16972.webp",
+      "identifier": "16972",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16972--pos-sap-156335",
+          "codigoDia": "16972",
+          "skuIntl": "11186644",
+          "skuPos": "",
+          "displayName": "Fl26Glass18Aniv",
           "stockPriority": "secondary"
         }
       ]
@@ -1377,10 +1411,27 @@
         {
           "articleKey": "dia-16989--pos-sap-156338",
           "codigoDia": "16989",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11186648",
+          "skuPos": "50757",
           "displayName": "SII26SS12Aniv",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16990.webp",
+      "uploadedFrom": "lote-01/16990.webp",
+      "identifier": "16990",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16990--pos-sap-156339",
+          "codigoDia": "16990",
+          "skuIntl": "11186654",
+          "skuPos": "",
+          "displayName": "Fl26SS16AnivCharm",
+          "stockPriority": "secondary"
         }
       ]
     },
@@ -1411,9 +1462,9 @@
         {
           "articleKey": "dia-16996--pos-sap-156345",
           "codigoDia": "16996",
-          "skuIntl": "",
+          "skuIntl": "11186645",
           "skuPos": "",
-          "displayName": "86645 C2P FL26 SS TMBLR DSKTP 12OZ",
+          "displayName": "Fl26SS12psl",
           "stockPriority": "secondary"
         }
       ]
@@ -1479,9 +1530,9 @@
         {
           "articleKey": "dia-17297--pos-sap-156349",
           "codigoDia": "17297",
-          "skuIntl": "",
+          "skuIntl": "11186652",
           "skuPos": "",
-          "displayName": "86652 C2P FL26 SS TMBLR CHRM PSL 16OZ",
+          "displayName": "Fl26SS16pslCharm",
           "stockPriority": "secondary"
         }
       ]
@@ -1496,8 +1547,8 @@
         {
           "articleKey": "dia-17298--pos-sap-156350",
           "codigoDia": "17298",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11186647",
+          "skuPos": "50756",
           "displayName": "SII26SSBTL12Aniv",
           "stockPriority": "active"
         }
@@ -1513,8 +1564,8 @@
         {
           "articleKey": "dia-17299--pos-sap-156351",
           "codigoDia": "17299",
-          "skuIntl": "",
-          "skuPos": "",
+          "skuIntl": "11186632",
+          "skuPos": "50758",
           "displayName": "SII26Mug14Aniv",
           "stockPriority": "active"
         }
@@ -1530,9 +1581,60 @@
         {
           "articleKey": "dia-17303--pos-sap-156355",
           "codigoDia": "17303",
-          "skuIntl": "",
+          "skuIntl": "11186638",
           "skuPos": "",
-          "displayName": "86638 C2P FL26 PLSTC CDCP CNFT 24OZ",
+          "displayName": "Fl26CC24psl",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17336.webp",
+      "uploadedFrom": "lote-01/17336.webp",
+      "identifier": "17336",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17336--pos-sap-159930",
+          "codigoDia": "17336",
+          "skuIntl": "11186665",
+          "skuPos": "",
+          "displayName": "Fl26SSCCBrown",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17337.webp",
+      "uploadedFrom": "lote-01/17337.webp",
+      "identifier": "17337",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17337--pos-sap-159931",
+          "codigoDia": "17337",
+          "skuIntl": "11186666",
+          "skuPos": "",
+          "displayName": "Fl26ThruST16Brown",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17338.webp",
+      "uploadedFrom": "lote-01/17338.webp",
+      "identifier": "17338",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17338--pos-sap-159932",
+          "codigoDia": "17338",
+          "skuIntl": "11186660",
+          "skuPos": "",
+          "displayName": "Fl26SS20Hand",
           "stockPriority": "secondary"
         }
       ]
@@ -1547,9 +1649,9 @@
         {
           "articleKey": "dia-17343--pos-sap-159937",
           "codigoDia": "17343",
-          "skuIntl": "",
+          "skuIntl": "11186653",
           "skuPos": "",
-          "displayName": "86653 C1P FL26 SS CLDCP STRW TPPR 16OZ",
+          "displayName": "Fl26SSCCpsl",
           "stockPriority": "secondary"
         }
       ]
@@ -1564,9 +1666,9 @@
         {
           "articleKey": "dia-17357--pos-sap-159943",
           "codigoDia": "17357",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA TRANSP SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1581,9 +1683,9 @@
         {
           "articleKey": "dia-17358--pos-sap-159944",
           "codigoDia": "17358",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA NARANJA SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1598,9 +1700,9 @@
         {
           "articleKey": "dia-17359--pos-sap-159945",
           "codigoDia": "17359",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1615,9 +1717,9 @@
         {
           "articleKey": "dia-17360--pos-sap-159946",
           "codigoDia": "17360",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA AZUL SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1632,9 +1734,9 @@
         {
           "articleKey": "dia-17361--pos-sap-159947",
           "codigoDia": "17361",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA VERDE SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1649,9 +1751,9 @@
         {
           "articleKey": "dia-17362--pos-sap-159948",
           "codigoDia": "17362",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO VDR SODA AMARILLO SBX 470ML CJ1PZA",
+          "skuIntl": "-",
+          "skuPos": "50749",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1670,108 +1772,6 @@
           "skuPos": "",
           "displayName": "WC26Reus",
           "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/16889.webp",
-      "uploadedFrom": "lote-02/16889.webp",
-      "identifier": "16889",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16889--pos-sap-154153",
-          "codigoDia": "16889",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO/TAPA 16OZ REUSABLE WCUP26 CJ52PZAS",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/16972.webp",
-      "uploadedFrom": "lote-02/16972.webp",
-      "identifier": "16972",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16972--pos-sap-156335",
-          "codigoDia": "16972",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86644 C2P FL26 GLSS CDCP MTTLD LSTR 18OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/16990.webp",
-      "uploadedFrom": "lote-02/16990.webp",
-      "identifier": "16990",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16990--pos-sap-156339",
-          "codigoDia": "16990",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86654 C2P FL26 SS TMBLR CHRM 16OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/17336.webp",
-      "uploadedFrom": "lote-02/17336.webp",
-      "identifier": "17336",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17336--pos-sap-159930",
-          "codigoDia": "17336",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86665 C2P FL26 SS CLDCP CRRY LOOP 24OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/17337.webp",
-      "uploadedFrom": "lote-02/17337.webp",
-      "identifier": "17337",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17337--pos-sap-159931",
-          "codigoDia": "17337",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86666 C1P FL26 SS VAC TMBLR 24OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-02/17338.webp",
-      "uploadedFrom": "lote-02/17338.webp",
-      "identifier": "17338",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17338--pos-sap-159932",
-          "codigoDia": "17338",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86660 C1P FL26 SS VAC TMBLR 20OZ",
-          "stockPriority": "secondary"
         }
       ]
     }
