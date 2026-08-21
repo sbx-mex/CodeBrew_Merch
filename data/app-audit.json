@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "auditedAtUtc": "2026-08-18T19:38:44Z",
+  "auditedAtUtc": "2026-08-21T22:27:52Z",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "sourceSha256": "8aa8a7845baba8de946a1cedfeb98669b60281c655ce0942e9fea73a1c56a013",
+  "sourceSha256": "f2f3b7fce19fba7e58ec42508a82a1c6abb7568bf56623cadceb7a9cc9fb4585",
   "checksTotal": 15,
   "checksOk": 15,
   "warnings": 0,
@@ -11,7 +11,7 @@
     {
       "name": "Motor Excel",
       "status": "ok",
-      "detail": "961 artículos MERCH válidos"
+      "detail": "966 artículos MERCH válidos"
     },
     {
       "name": "Estructura MERCH",
@@ -21,17 +21,17 @@
     {
       "name": "Catálogo visual",
       "status": "ok",
-      "detail": "1,195 artículos; 92 fotos por Código Día en 1.3 MB; 82 artículos activos con foto y 0 pendiente(s)"
+      "detail": "1,201 artículos; 98 fotos por Código Día en 1.7 MB; 82 artículos activos con foto y 0 pendiente(s)"
     },
     {
       "name": "Listado y Excel de fotos",
       "status": "ok",
-      "detail": "1157 códigos Día; 92 con foto; una pestaña de control"
+      "detail": "1163 códigos Día; 98 con foto; una pestaña de control"
     },
     {
       "name": "Control de fotos",
       "status": "ok",
-      "detail": "92 fotos relacionadas, 0 pendientes y 0 cruces exactos omitidos"
+      "detail": "98 fotos relacionadas, 0 pendientes y 0 cruces exactos omitidos"
     },
     {
       "name": "Integridad WOE",
@@ -51,7 +51,7 @@
     {
       "name": "Experiencia visual Merch",
       "status": "ok",
-      "detail": "96 productos con foto y 714 cruces SAP/Micros; un nombre visible y búsqueda dual"
+      "detail": "102 productos con foto y 720 cruces SAP/Micros; un nombre visible y búsqueda dual"
     },
     {
       "name": "Referencias locales",
@@ -81,18 +81,18 @@
     {
       "name": "Presupuesto de rendimiento",
       "status": "ok",
-      "detail": "2630 KB auditados en archivos críticos"
+      "detail": "2639 KB auditados en archivos críticos"
     }
   ],
   "performance": {
     "sizes": {
-      "index.html": 22896,
+      "index.html": 22905,
       "styles.css": 43421,
-      "catalog.css": 12513,
-      "app.js": 135328,
-      "data/products.js": 358203,
-      "data/woe.js": 1179982,
-      "data/merch-catalog.js": 938428,
+      "catalog.css": 12680,
+      "app.js": 135961,
+      "data/products.js": 360109,
+      "data/woe.js": 1180801,
+      "data/merch-catalog.js": 944388,
       "data/stock-config.js": 1413,
       "data/ui-config.js": 544
     },

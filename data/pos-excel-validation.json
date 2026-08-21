@@ -1,8 +1,8 @@
 {
   "ok": true,
   "source": "Lista_Precios_Base.xlsx",
-  "excelRowsReviewed": 970,
-  "generatedProductsReviewed": 961,
+  "excelRowsReviewed": 981,
+  "generatedProductsReviewed": 966,
   "mismatches": [],
   "missingSkuPos": [],
   "forbiddenRuntimeOverrides": [],
@@ -16,17 +16,17 @@
         "examples": [
           {
             "sheet": "Base_Campaña",
-            "row": 7,
+            "row": 18,
             "name": "SII26GlCCColor"
           },
           {
             "sheet": "Base_Campaña",
-            "row": 8,
+            "row": 19,
             "name": "SII26GlCCColor"
           },
           {
             "sheet": "Base_Campaña",
-            "row": 9,
+            "row": 20,
             "name": "SII26GlCCColor"
           }
         ]

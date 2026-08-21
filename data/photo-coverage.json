@@ -28,7 +28,7 @@
   "postPublishAudit": {
     "status": "ok",
     "folders": 4,
-    "images": 92,
+    "images": 98,
     "duplicates": 0
   },
   "lots": [
@@ -41,8 +41,8 @@
     },
     {
       "folder": "lote-02",
-      "images": 0,
-      "accepted": 0,
+      "images": 6,
+      "accepted": 6,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
@@ -62,19 +62,19 @@
     }
   ],
   "totals": {
-    "imageFiles": 92,
-    "publishedImageFiles": 92,
-    "matchedImageFiles": 92,
+    "imageFiles": 98,
+    "publishedImageFiles": 98,
+    "matchedImageFiles": 98,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
     "duplicateImageFilesIgnored": 0,
-    "matchedProducts": 96,
+    "matchedProducts": 102,
     "activeProducts": 1017,
     "activeWithPhoto": 82,
     "activeMissingPhoto": 935,
-    "secondaryProducts": 178,
+    "secondaryProducts": 184,
     "appendedOperationalProducts": 72,
-    "appendedWoeProducts": 104
+    "appendedWoeProducts": 110
   },
   "files": [
     {
@@ -1670,6 +1670,108 @@
           "skuPos": "",
           "displayName": "WC26Reus",
           "stockPriority": "active"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16889.webp",
+      "uploadedFrom": "lote-01/16889.webp",
+      "identifier": "16889",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16889--pos-sap-154153",
+          "codigoDia": "16889",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "VASO/TAPA 16OZ REUSABLE WCUP26 CJ52PZAS",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16972.webp",
+      "uploadedFrom": "lote-01/16972.webp",
+      "identifier": "16972",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16972--pos-sap-156335",
+          "codigoDia": "16972",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86644 C2P FL26 GLSS CDCP MTTLD LSTR 18OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16990.webp",
+      "uploadedFrom": "lote-01/16990.webp",
+      "identifier": "16990",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16990--pos-sap-156339",
+          "codigoDia": "16990",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86654 C2P FL26 SS TMBLR CHRM 16OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17336.webp",
+      "uploadedFrom": "lote-01/17336.webp",
+      "identifier": "17336",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17336--pos-sap-159930",
+          "codigoDia": "17336",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86665 C2P FL26 SS CLDCP CRRY LOOP 24OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17337.webp",
+      "uploadedFrom": "lote-01/17337.webp",
+      "identifier": "17337",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17337--pos-sap-159931",
+          "codigoDia": "17337",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86666 C1P FL26 SS VAC TMBLR 24OZ",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17338.webp",
+      "uploadedFrom": "lote-01/17338.webp",
+      "identifier": "17338",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17338--pos-sap-159932",
+          "codigoDia": "17338",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "86660 C1P FL26 SS VAC TMBLR 20OZ",
+          "stockPriority": "secondary"
         }
       ]
     }

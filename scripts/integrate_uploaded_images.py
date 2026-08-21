@@ -145,6 +145,15 @@ def encode_catalog_image(source: Path, destination: Path) -> tuple[int, int, str
     if source.stat().st_size >= MAX_FILE_BYTES:
         raise ValueError(f"Imagen mayor a 25 MB: {source}")
     with Image.open(source) as opened:
+        source_size = opened.size
+        source_format = opened.format
+        opened.verify()
+    if source_format == "WEBP" and source_size == PUBLISHED_MAX_SIZE:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        digest = hashlib.sha256(destination.read_bytes()).hexdigest()
+        return source_size[0], source_size[1], digest
+    with Image.open(source) as opened:
         image = ImageOps.exif_transpose(opened).convert("RGB")
         image.thumbnail(PUBLISHED_PRODUCT_SIZE, Image.Resampling.LANCZOS)
         canvas = Image.new("RGB", PUBLISHED_MAX_SIZE, PUBLISHED_BACKGROUND)

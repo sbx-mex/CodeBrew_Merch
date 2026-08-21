@@ -59,6 +59,7 @@
 .catalog-active-filters { display: flex; gap: 7px; flex-wrap: wrap; min-height: 31px; margin: 0 0 14px; }
 .catalog-active-filters:empty { display: none; }
 .catalog-active-filters span { padding: 6px 10px; border-radius: 999px; background: #e9f4ef; color: #07583c; font-size: 11px; font-weight: 800; }
+.catalog-active-filters span:first-child { border: 1px solid #9fc9b7; background: #f0faf5; }
 .catalog-active-filters .is-default { background: #f4f1eb; color: #6e756f; font-weight: 700; }
 .catalog-view-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 0 12px; color: #52645d; font-size: 12px; font-weight: 800; }
 .catalog-view-bar button { min-height: 38px; padding: 8px 12px; border: 1px solid #cbdad4; border-radius: 12px; font-size: 12px; }
@@ -97,7 +98,7 @@
 .catalog-quantity input::-webkit-inner-spin-button { appearance: none; }
 .catalog-add { min-height: 42px; padding: 9px 12px; border-radius: 13px; font-size: 12px; }
 .catalog-photo-request { margin: -3px 0 12px; }
-.catalog-photo-request a { display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 9px; align-items: center; min-height: 46px; padding: 8px 10px; border: 1px solid #b9d9cb; border-radius: 12px; background: #eef8f3; color: #006241; text-decoration: none; transition: background .16s ease, border-color .16s ease, transform .16s ease; }
+.catalog-photo-request a { display: grid; grid-template-columns: 28px minmax(0,1fr); gap: 9px; align-items: center; min-height: 46px; padding: 8px 10px; border: 1px solid #83bda4; border-radius: 12px; background: linear-gradient(135deg,#eef8f3,#e2f3ea); color: #006241; text-decoration: none; box-shadow: 0 5px 14px rgba(0,98,65,.08); transition: background .16s ease, border-color .16s ease, transform .16s ease; }
 .catalog-photo-request a:hover { border-color: #79b49b; background: #e3f3eb; transform: translateY(-1px); }
 .catalog-photo-request a:focus-visible { outline: 3px solid rgba(0,98,65,.2); outline-offset: 2px; }
 .catalog-photo-request svg { width: 24px; height: 24px; fill: currentColor; }
