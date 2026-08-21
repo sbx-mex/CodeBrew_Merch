@@ -1,8 +1,8 @@
 {
   "status": "ok",
   "sourceFile": "Lista_Precios_Base.xlsx",
-  "generatedAtUtc": "2026-08-21T22:27:52Z",
-  "sourceModifiedAtUtc": "2026-08-21T22:27:52Z",
+  "generatedAtUtc": "2026-08-21T23:14:15Z",
+  "sourceModifiedAtUtc": "2026-08-21T23:14:15Z",
   "latestItemCell": "Base_Campaña!D13",
   "latestItem": "SII26SSBTL12Aniv",
   "totalValidProducts": 966,
@@ -207,19 +207,19 @@
     ],
     "multiWoeRelations": 0,
     "multiDiaRelations": 0,
-    "microsRows": 1165,
+    "microsRows": 1187,
     "microsHeaderRow": 1,
     "invalidMicrosRows": [],
-    "uniqueDiaMicros": 1162,
+    "uniqueDiaMicros": 1180,
     "microsUnitsPopulated": 0,
     "microsGroups": 7,
     "microsFamilies": 22,
     "microsCountGroups": 12,
-    "withMicros": 1162,
+    "withMicros": 1180,
     "withMerch": 913,
     "withoutSap": 676,
-    "operationalSapMicrosMatch": 961,
-    "operationalNeedsReview": 1413,
-    "completeTripleMatch": 212
+    "operationalSapMicrosMatch": 979,
+    "operationalNeedsReview": 1395,
+    "completeTripleMatch": 219
   }
 }

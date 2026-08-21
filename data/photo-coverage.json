@@ -34,17 +34,48 @@
   "lots": [
     {
       "folder": "lote-01",
-      "images": 92,
-      "accepted": 92,
+      "images": 98,
+      "accepted": 98,
       "duplicatesIgnored": 0,
       "ignoredFiles": []
     },
     {
       "folder": "lote-02",
       "images": 6,
-      "accepted": 6,
-      "duplicatesIgnored": 0,
-      "ignoredFiles": []
+      "accepted": 0,
+      "duplicatesIgnored": 6,
+      "ignoredFiles": [
+        {
+          "file": "16889.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/16889.webp"
+        },
+        {
+          "file": "16972.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/16972.webp"
+        },
+        {
+          "file": "16990.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/16990.webp"
+        },
+        {
+          "file": "17336.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/17336.webp"
+        },
+        {
+          "file": "17337.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/17337.webp"
+        },
+        {
+          "file": "17338.webp",
+          "reason": "duplicate-name",
+          "kept": "lote-01/17338.webp"
+        }
+      ]
     },
     {
       "folder": "lote-03",
@@ -62,17 +93,17 @@
     }
   ],
   "totals": {
-    "imageFiles": 98,
+    "imageFiles": 104,
     "publishedImageFiles": 98,
     "matchedImageFiles": 98,
     "unmatchedImageFiles": 0,
     "pendingRelationImageFiles": 0,
-    "duplicateImageFilesIgnored": 0,
+    "duplicateImageFilesIgnored": 6,
     "matchedProducts": 102,
-    "activeProducts": 1017,
-    "activeWithPhoto": 82,
+    "activeProducts": 1018,
+    "activeWithPhoto": 83,
     "activeMissingPhoto": 935,
-    "secondaryProducts": 184,
+    "secondaryProducts": 183,
     "appendedOperationalProducts": 72,
     "appendedWoeProducts": 110
   },
@@ -850,6 +881,23 @@
       ]
     },
     {
+      "file": "lote-01/16889.webp",
+      "uploadedFrom": "lote-01/16889.webp",
+      "identifier": "16889",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16889--pos-sap-154153",
+          "codigoDia": "16889",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26ResuAMx",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16896.webp",
       "uploadedFrom": "lote-01/16896.webp",
       "identifier": "16896",
@@ -1328,8 +1376,8 @@
           "codigoDia": "16960",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "60979 C2P CORE PLSTC HTCDCP DCHRC 24OZ",
-          "stockPriority": "secondary"
+          "displayName": "SII26CC24Rain",
+          "stockPriority": "active"
         }
       ]
     },
@@ -1345,7 +1393,24 @@
           "codigoDia": "16969",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "86639 C2P F26 PLSTC WTRBTL PSL 24OZ",
+          "displayName": "Fl26PPBTL24",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/16972.webp",
+      "uploadedFrom": "lote-01/16972.webp",
+      "identifier": "16972",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16972--pos-sap-156335",
+          "codigoDia": "16972",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26Glass18Aniv",
           "stockPriority": "secondary"
         }
       ]
@@ -1385,6 +1450,23 @@
       ]
     },
     {
+      "file": "lote-01/16990.webp",
+      "uploadedFrom": "lote-01/16990.webp",
+      "identifier": "16990",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-16990--pos-sap-156339",
+          "codigoDia": "16990",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26SS16AnivCharm",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
       "file": "lote-01/16995.webp",
       "uploadedFrom": "lote-01/16995.webp",
       "identifier": "16995",
@@ -1413,7 +1495,7 @@
           "codigoDia": "16996",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "86645 C2P FL26 SS TMBLR DSKTP 12OZ",
+          "displayName": "Fl26SS12psl",
           "stockPriority": "secondary"
         }
       ]
@@ -1481,7 +1563,7 @@
           "codigoDia": "17297",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "86652 C2P FL26 SS TMBLR CHRM PSL 16OZ",
+          "displayName": "Fl26SS16pslCharm",
           "stockPriority": "secondary"
         }
       ]
@@ -1532,7 +1614,58 @@
           "codigoDia": "17303",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "86638 C2P FL26 PLSTC CDCP CNFT 24OZ",
+          "displayName": "Fl26CC24psl",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17336.webp",
+      "uploadedFrom": "lote-01/17336.webp",
+      "identifier": "17336",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17336--pos-sap-159930",
+          "codigoDia": "17336",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26SSCCBrown",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17337.webp",
+      "uploadedFrom": "lote-01/17337.webp",
+      "identifier": "17337",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17337--pos-sap-159931",
+          "codigoDia": "17337",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26ThruST16Brown",
+          "stockPriority": "secondary"
+        }
+      ]
+    },
+    {
+      "file": "lote-01/17338.webp",
+      "uploadedFrom": "lote-01/17338.webp",
+      "identifier": "17338",
+      "status": "matched",
+      "matchedBy": "codigoDia",
+      "products": [
+        {
+          "articleKey": "dia-17338--pos-sap-159932",
+          "codigoDia": "17338",
+          "skuIntl": "",
+          "skuPos": "",
+          "displayName": "Fl26SS20Hand",
           "stockPriority": "secondary"
         }
       ]
@@ -1549,7 +1682,7 @@
           "codigoDia": "17343",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "86653 C1P FL26 SS CLDCP STRW TPPR 16OZ",
+          "displayName": "Fl26SSCCpsl",
           "stockPriority": "secondary"
         }
       ]
@@ -1566,7 +1699,7 @@
           "codigoDia": "17357",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA TRANSP SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1583,7 +1716,7 @@
           "codigoDia": "17358",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA NARANJA SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1600,7 +1733,7 @@
           "codigoDia": "17359",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA ROJO SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1617,7 +1750,7 @@
           "codigoDia": "17360",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA AZUL SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1634,7 +1767,7 @@
           "codigoDia": "17361",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA VERDE SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1651,7 +1784,7 @@
           "codigoDia": "17362",
           "skuIntl": "",
           "skuPos": "",
-          "displayName": "VASO VDR SODA AMARILLO SBX 470ML CJ1PZA",
+          "displayName": "SII26GlCCColor",
           "stockPriority": "secondary"
         }
       ]
@@ -1670,108 +1803,6 @@
           "skuPos": "",
           "displayName": "WC26Reus",
           "stockPriority": "active"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/16889.webp",
-      "uploadedFrom": "lote-01/16889.webp",
-      "identifier": "16889",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16889--pos-sap-154153",
-          "codigoDia": "16889",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "VASO/TAPA 16OZ REUSABLE WCUP26 CJ52PZAS",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/16972.webp",
-      "uploadedFrom": "lote-01/16972.webp",
-      "identifier": "16972",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16972--pos-sap-156335",
-          "codigoDia": "16972",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86644 C2P FL26 GLSS CDCP MTTLD LSTR 18OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/16990.webp",
-      "uploadedFrom": "lote-01/16990.webp",
-      "identifier": "16990",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-16990--pos-sap-156339",
-          "codigoDia": "16990",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86654 C2P FL26 SS TMBLR CHRM 16OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/17336.webp",
-      "uploadedFrom": "lote-01/17336.webp",
-      "identifier": "17336",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17336--pos-sap-159930",
-          "codigoDia": "17336",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86665 C2P FL26 SS CLDCP CRRY LOOP 24OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/17337.webp",
-      "uploadedFrom": "lote-01/17337.webp",
-      "identifier": "17337",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17337--pos-sap-159931",
-          "codigoDia": "17337",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86666 C1P FL26 SS VAC TMBLR 24OZ",
-          "stockPriority": "secondary"
-        }
-      ]
-    },
-    {
-      "file": "lote-01/17338.webp",
-      "uploadedFrom": "lote-01/17338.webp",
-      "identifier": "17338",
-      "status": "matched",
-      "matchedBy": "codigoDia",
-      "products": [
-        {
-          "articleKey": "dia-17338--pos-sap-159932",
-          "codigoDia": "17338",
-          "skuIntl": "",
-          "skuPos": "",
-          "displayName": "86660 C1P FL26 SS VAC TMBLR 20OZ",
-          "stockPriority": "secondary"
         }
       ]
     }
